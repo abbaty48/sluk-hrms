@@ -261,31 +261,22 @@ public/
 
 ### Front-end
 
-- **UI Library:** React 19+
+- **UI Library:** [React 19+](https://react.dev/blog/2024/12/05/react-19)
+- **Language:** [Typescript 5+](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS 4+](https://tailwindcss.com/), [React Icons](https://react-icons.github.io/react-icons/)
+- **Component Library:** [Shadcn/UI](https://ui.shadcn.com/docs/installation/vite)
+- **Forms:** [React Hook Form](https://react-hook-form.com/) + [Zod validation](https://zod.dev/)
+- **State Management:** [Zustand](https://zustand.pm/) / [React Context](https://react.dev/reference/react/useState)
+- **Data Fetching:** [TanStack Query (React Query)](https://tanstack.com/query/latest/docs/react)
+- **Charts:** [Recharts](https://recharts.org/en-US/)
+- **Tables:** [TanStack Table](https://tanstack.com/table/latest/docs/guide/introduction)
+- **Calendar:** [React Big Calendar](https://react-big-calendar.com/)
+- **Rich Text Editor:** [Lexical](https://lexical.dev/)
+- **Date Handling:** [date-fns](https://date-fns.org/)
 
-- **Language:** Typescript 5+
-
-- **Styling:** Tailwind CSS 4+
-
-- **Component Library:** Shadcn/UI
-
-- **Forms:** React Hook Form + Zod validation
-
-- **State Management:** Zustand / React Context
-
-- **Data Fetching:** TanStack Query (React Query)
-
-- **Charts:** Recharts / Chart.js
-
-- **Tables:** TanStack Table
-
-- **Calendar:** React Big Calendar
-
-- **Rich Text Editor:** Tiptap / Lexical
-
-- **Date Handling:** date-fns
-
-  ``npm install tailwind next-auth date-fns lexical @lexical/react`
+  - `npm install tailwindcss @tailwindcss/vite next-auth date-fns lexical @lexical/react recharts react-big-calendar react-icons react-router-dom @tanstack/react-query @tanstack/react-table zod react-hook-form zustand`
+  - `npx shadcn@latest init`
+- Dev Dependencies: `npm install -D json-server concurrently`
 
 ### Back-end
 
