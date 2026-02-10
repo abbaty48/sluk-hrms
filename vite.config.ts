@@ -11,6 +11,20 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    host: true,
+    strictPort: true,
+    allowedHosts: ["*"],
+    port: process.env.PORT ? Number(process.env.PORT) : 3500,
+    proxy: {
+      "/api": {
+        secure: false,
+        changeOrigin: true,
+        target: "http://localhost:3000",
+        rewrite: (path) => path.replace(/^\/api/, "/api"),
+      },
+    },
+  },
   resolve: {
     alias: {
       "@sluk": path.resolve(__dirname, "./"),
