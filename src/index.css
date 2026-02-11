@@ -49,8 +49,6 @@
 *,
 html,
 body {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
@@ -135,10 +133,15 @@ body {
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
     }
+}
+
+.lucide {
+    stroke-width: 1.4;
+    stroke: currentColor;
 }
