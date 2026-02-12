@@ -16,7 +16,7 @@ function RoleSwitcher() {
       type="single"
       size={"sm"}
       defaultValue="as_admin"
-      className="hidden sm:flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-1 py-1 transition-all hover:bg-gray-100"
+      className="hidden sm:flex items-center gap-2 rounded-full border px-1 py-1 transition-all"
     >
       {roles.map(({ label, value, icon }) => (
         <ToggleGroupItem
@@ -28,11 +28,11 @@ function RoleSwitcher() {
           style={{
             border: "none",
             borderRadius: "100px",
-            background: roleView === value ? "#2b7fff" : "transparent",
-            color: roleView === value ? "white" : "inherit",
           }}
           onClick={() => handleRoleChange(value)}
-          className={` flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all  text-primary shadow-sm`}
+          className={`flex items-center gap-1.5 cursor-pointer
+            ${roleView === value ? "bg-blue-500! text-white!" : ""}
+             rounded-full px-3 py-1 text-xs font-medium transition-all text-primary shadow-sm`}
         >
           {icon}
           {label}
@@ -44,12 +44,12 @@ function RoleSwitcher() {
 
 export function DashboardHeader() {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-gray-200 px-4 lg:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b px-4 lg:px-6">
       <form className="flex-1 relative">
         <Search className="absolute left-2 top-1/2 -translate-y-1/2 opacity-30" />
         <input
           type="text"
-          className="flex h-10 w-full rounded-md border-0 px-3 py-2 text-sm pl-9 bg-gray-50 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="flex h-10 w-full rounded-md border-0 px-3 py-2 text-sm pl-9 bg-input placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
           placeholder="Search staff, departments..."
         />
       </form>

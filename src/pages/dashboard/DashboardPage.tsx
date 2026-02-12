@@ -19,8 +19,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@sluk/src/components/ui/dropdown-menu";
-import { UserContext } from "@sluk/src/states/contexts/UserContext";
-import { UserProvider } from "@sluk/src/states/providers/UserProvider";
 import {
   Bell,
   User,
@@ -41,6 +39,9 @@ import {
 } from "lucide-react";
 import { use } from "react";
 import { Link, Outlet } from "react-router-dom";
+import { ThemeButton } from "@/components/ThemeButton";
+import { UserContext } from "@/states/contexts/UserContext";
+import { UserProvider } from "@/states/providers/UserProvider";
 
 /**
  * Admin Sidebar Component
@@ -48,14 +49,14 @@ import { Link, Outlet } from "react-router-dom";
 export function AdminSidebar() {
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-5 border-b border-gray-200">
+      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-5 border-b">
         <SidebarMenu>
           <SidebarMenuButton>
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
+            <div className="flex items-center justify-center rounded-lg bg-secondary">
               <GraduationCap />
             </div>
             <hgroup className="flex flex-col">
-              <h1 className="text-sm font-bold text-gray-900">SLU HRMS</h1>
+              <h1 className="text-sm font-bold text-foreground">SLU HRMS</h1>
               <p className="text-xs text-gray-500">Admin Portal</p>
             </hgroup>
           </SidebarMenuButton>
@@ -133,8 +134,8 @@ export function AdminSidebar() {
       <SidebarFooter className="border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton>
-              <SunMoon /> Dark Mode
+            <SidebarMenuButton asChild>
+              <ThemeButton />
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -150,7 +151,7 @@ export function AdminSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <div className="flex items-center gap-2 py-4 -m-1">
-                    <UserCircle className="rounded-full bg-gray-100 border" />
+                    <UserCircle className="rounded-full bg-secondary border" />
                     <p className="flex flex-col max-w-prose">
                       <span>John Doe</span>
                       <span>john.doe@example.com</span>
@@ -186,14 +187,14 @@ export function AdminSidebar() {
 export function EmployeeSidebar() {
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-5 border-b border-gray-200">
+      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-5 border-b">
         <SidebarMenu>
           <SidebarMenuButton>
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
+            <div className="flex items-center justify-center rounded-lg bg-secondary">
               <GraduationCap />
             </div>
             <hgroup className="flex flex-col">
-              <h1 className="text-sm font-bold text-gray-900">SLU HRMS</h1>
+              <h1 className="text-sm font-bold text-foreground">SLU HRMS</h1>
               <p className="text-xs text-gray-500">Staff Portal</p>
             </hgroup>
           </SidebarMenuButton>
@@ -262,8 +263,8 @@ export function EmployeeSidebar() {
       <SidebarFooter className="border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton>
-              <SunMoon /> Dark Mode
+            <SidebarMenuButton asChild>
+              <ThemeButton />
             </SidebarMenuButton>
           </SidebarMenuItem>
           {/**/}
@@ -272,7 +273,7 @@ export function EmployeeSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <div className="flex items-center gap-2 py-4 -m-1">
-                    <UserCircle className="rounded-full bg-gray-100 border" />
+                    <UserCircle className="rounded-full bg-secondary border" />
                     <p className="flex flex-col max-w-prose">
                       <span>John Doe</span>
                       <span>john.doe@example.com</span>

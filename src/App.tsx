@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { DashBoardPage } from "@/pages/dashboard/DashboardPage";
 import { DashBoardMain } from "@/pages/dashboard/Dashboard";
+import { ThemeProvider } from "./states/providers/ThemeProvider";
 
 function App() {
   const routers = createBrowserRouter([
@@ -20,7 +21,11 @@ function App() {
     // { path: '/auth', lazy: () => import('@/pages/auth/AuthPage') },
   ]);
 
-  return <RouterProvider router={routers} />;
+  return (
+    <ThemeProvider>
+      <RouterProvider router={routers} />
+    </ThemeProvider>
+  );
 }
 
 export default App;

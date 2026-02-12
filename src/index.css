@@ -143,5 +143,5 @@ body {
 
 .lucide {
     stroke-width: 1.4;
-    stroke: currentColor;
+    @apply stroke-blue-500 dark:stroke-pink-400;
 }
