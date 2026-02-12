@@ -144,7 +144,7 @@ export function DashBoardPage() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
+      <main className="full-container mx-auto w-full">
         <SidebarTrigger />
         <Outlet />
       </main>
