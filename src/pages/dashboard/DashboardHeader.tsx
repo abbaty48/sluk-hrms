@@ -1,10 +1,11 @@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { UserContext } from "@sluk/src/states/contexts/UserContext";
 import { Bell, Search, Shield, User } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { use } from "react";
 
 function RoleSwitcher() {
-  const [role, setRole] = useState("as_admin");
+  const { roleView, handleRoleChange } = use(UserContext);
   const roles = [
     { label: "Admin", value: "as_admin", icon: <Shield /> },
     { label: "Employee", value: "as_employee", icon: <User /> },
@@ -27,10 +28,10 @@ function RoleSwitcher() {
           style={{
             border: "none",
             borderRadius: "100px",
-            background: role === value ? "#2b7fff" : "transparent",
-            color: role === value ? "white" : "inherit",
+            background: roleView === value ? "#2b7fff" : "transparent",
+            color: roleView === value ? "white" : "inherit",
           }}
-          onClick={() => setRole(value)}
+          onClick={() => handleRoleChange(value)}
           className={` flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all  text-primary shadow-sm`}
         >
           {icon}
