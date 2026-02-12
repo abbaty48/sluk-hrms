@@ -25,7 +25,6 @@ import {
   Clock,
   Users,
   UserCog,
-  SunMoon,
   Settings,
   FileText,
   ChartBar,
