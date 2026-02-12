@@ -16,7 +16,7 @@ export default defineConfig({
   server: {
     host: true,
     strictPort: true,
-    allowedHosts: ["https://sluk-hrms.onrender.com"],
+    allowedHosts: ["sluk-hrms.onrender.com"],
     port: process.env.PORT ? Number(process.env.PORT) : 3500,
     proxy: {
       "/api": {
