@@ -1,7 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ThemeProvider } from "./states/providers/ThemeProvider";
 import { DashBoardPage } from "@/pages/dashboard/DashboardPage";
 import { DashBoardMain } from "@/pages/dashboard/Dashboard";
-import { ThemeProvider } from "./states/providers/ThemeProvider";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/utils";
 
 function App() {
   const routers = createBrowserRouter([
@@ -22,9 +24,11 @@ function App() {
   ]);
 
   return (
-    <ThemeProvider>
-      <RouterProvider router={routers} />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <RouterProvider router={routers} />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
