@@ -14,16 +14,25 @@ import {
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@sluk/src/components/ui/dropdown-menu";
+import {
   Bell,
   Clock,
   Users,
+  UserCog,
   SunMoon,
   Settings,
   ChartBar,
   Calendar,
+  UserCircle,
   DollarSign,
   LogOutIcon,
   GraduationCap,
+  ChevronsUpDown,
   LayoutDashboardIcon,
 } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
@@ -129,9 +138,32 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton>
-              <LogOutIcon /> Logout
-            </SidebarMenuButton>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton>
+                  <div className="flex items-center gap-2 py-4 -m-1">
+                    <UserCircle className="rounded-full bg-gray-100 border" />
+                    <p className="flex flex-col max-w-prose">
+                      <span>John Doe</span>
+                      <span>john.doe@example.com</span>
+                    </p>
+                  </div>
+                  <ChevronsUpDown className="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
+                <DropdownMenuItem>
+                  <SidebarMenuButton>
+                    <UserCog /> Account Settings
+                  </SidebarMenuButton>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <SidebarMenuButton>
+                    <LogOutIcon /> Logout
+                  </SidebarMenuButton>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
