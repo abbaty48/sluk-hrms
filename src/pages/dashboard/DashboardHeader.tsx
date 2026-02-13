@@ -1,6 +1,7 @@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { UserContext } from "@sluk/src/states/contexts/UserContext";
 import { Bell, Search, Shield, User } from "lucide-react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
 import { use } from "react";
 
@@ -44,7 +45,8 @@ function RoleSwitcher() {
 
 export function DashboardHeader() {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b px-4 lg:px-6">
+    <header className="sticky top-0 z-30 flex flex-1  items-center justify-between gap-4 border-b pl-1 pr-4 py-3">
+      <SidebarTrigger />
       <form className="flex-1 relative">
         <Search className="absolute left-2 top-1/2 -translate-y-1/2 opacity-30" />
         <input

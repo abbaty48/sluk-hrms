@@ -5,7 +5,6 @@ import {
   SidebarGroup,
   SidebarFooter,
   SidebarHeader,
-  SidebarTrigger,
   SidebarContent,
   SidebarProvider,
   SidebarMenuItem,
@@ -48,7 +47,7 @@ import { UserProvider } from "@/states/providers/UserProvider";
 export function AdminSidebar() {
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-5 border-b">
+      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-4 border-b">
         <SidebarMenu>
           <SidebarMenuButton>
             <div className="flex items-center justify-center rounded-lg bg-secondary">
@@ -186,7 +185,7 @@ export function AdminSidebar() {
 export function EmployeeSidebar() {
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-5 border-b">
+      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-4 border-b">
         <SidebarMenu>
           <SidebarMenuButton>
             <div className="flex items-center justify-center rounded-lg bg-secondary">
@@ -318,7 +317,6 @@ export function DashBoardPage() {
       <SidebarProvider>
         <DashboardSideBar />
         <main className="full-container mx-auto w-full">
-          <SidebarTrigger />
           <Outlet />
         </main>
       </SidebarProvider>
