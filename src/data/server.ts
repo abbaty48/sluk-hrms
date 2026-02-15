@@ -1,7 +1,7 @@
-import jsonServer from "json-server";
 import type { Response, NextFunction } from "express";
-import path from "path";
+import jsonServer from "json-server";
 import { fileURLToPath } from "url";
+import path from "path";
 import fs from "fs";
 import type {
   Database,
@@ -21,6 +21,15 @@ import type {
   StaffPerDepartment,
   MonthlyAttendanceTrend,
   LeaveTypeDistribution,
+  LeaveApplication,
+  LeaveApproval,
+  LeaveCalendarEntry,
+  LeaveConflict,
+  LeaveTrend,
+  LeaveUtilization,
+  LeaveEligibility,
+  LeaveValidation,
+  LeaveStatus,
 } from "../types/types";
 
 // Get current directory
@@ -423,10 +432,18 @@ server.get(
   },
 );
 
-// Search staff
+// Search staff with pagination
 server.get("/api/staff/search", (req: AuthRequest, res: Response): void => {
   const db = getDb();
-  const { q, department, cadre, status, state } = req.query;
+  const {
+    q,
+    department,
+    cadre,
+    status,
+    state,
+    page = "1",
+    limit = "20",
+  } = req.query;
 
   let staff = db.staff;
 
@@ -457,16 +474,34 @@ server.get("/api/staff/search", (req: AuthRequest, res: Response): void => {
     staff = staff.filter((s) => s.state === state);
   }
 
+  // Pagination
+  const pageNum = parseInt(page as string);
+  const limitNum = parseInt(limit as string);
+  const startIndex = (pageNum - 1) * limitNum;
+  const endIndex = startIndex + limitNum;
+  const total = staff.length;
+  const paginatedStaff = staff.slice(startIndex, endIndex);
+
   const departments = db.departments;
   const ranks = db.ranks;
 
-  const enrichedStaff: EnrichedStaff[] = staff.map((s) => ({
+  const enrichedStaff: EnrichedStaff[] = paginatedStaff.map((s) => ({
     ...s,
     department: departments.find((d) => d.id === s.departmentId),
     rankDetails: ranks.find((r) => r.id === s.rankId),
   }));
 
-  res.json(enrichedStaff);
+  res.json({
+    data: enrichedStaff,
+    pagination: {
+      page: pageNum,
+      limit: limitNum,
+      total,
+      totalPages: Math.ceil(total / limitNum),
+      hasNextPage: endIndex < total,
+      hasPrevPage: pageNum > 1,
+    },
+  });
 });
 
 // Staff per department (for bar chart)
@@ -648,6 +683,549 @@ server.get(
   },
 );
 
+// ============================================
+// LEAVE MANAGEMENT ENDPOINTS
+// ============================================
+
+// Apply for leave
+server.post("/api/leaves", (req: AuthRequest, res: Response): void => {
+  const db = getDb();
+  const { staffId, leaveTypeId, startDate, endDate, reason }: LeaveApplication =
+    req.body;
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const totalDays =
+    Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+  const leaveType = db.leaveTypes.find((lt) => lt.id === leaveTypeId);
+  if (!leaveType) {
+    res.status(400).json({ error: "Invalid leave type" });
+    return;
+  }
+
+  const currentYear = new Date().getFullYear();
+  const usedLeaves = db.leaves
+    .filter(
+      (l) =>
+        l.staffId === staffId &&
+        l.leaveTypeId === leaveTypeId &&
+        l.status === "APPROVED" &&
+        new Date(l.startDate).getFullYear() === currentYear,
+    )
+    .reduce((sum, l) => sum + l.totalDays, 0);
+
+  if (usedLeaves + totalDays > leaveType.allowedDays) {
+    res.status(400).json({
+      error: "Insufficient leave balance",
+      available: leaveType.allowedDays - usedLeaves,
+      requested: totalDays,
+    });
+    return;
+  }
+
+  const newLeave = {
+    id: `leave_${Date.now()}`,
+    staffId,
+    leaveTypeId,
+    startDate,
+    endDate,
+    totalDays,
+    reason,
+    status: "PENDING" as LeaveStatus,
+    approverId: null,
+    approverComments: null,
+    appliedAt: new Date().toISOString(),
+    respondedAt: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  db.leaves.push(newLeave);
+  res.status(201).json(newLeave);
+});
+
+// Approve/Reject leave
+server.patch(
+  "/api/leaves/:id/:status",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const { comments }: LeaveApproval = req.body;
+    const leave = db.leaves.find((l) => l.id === req.params.id);
+
+    if (!leave) {
+      res.status(404).json({ error: "Leave not found" });
+      return;
+    }
+
+    if (leave.status !== "PENDING") {
+      res.status(400).json({ error: "Leave already processed" });
+      return;
+    }
+
+    leave.status = req.params.status as LeaveStatus;
+    leave.approverComments = comments;
+    leave.approverId = req.user?.staffId || null;
+    leave.respondedAt = new Date().toISOString();
+    leave.updatedAt = new Date().toISOString();
+
+    res.json(leave);
+  },
+);
+
+// Get pending leave approvals with pagination
+server.get("/api/leaves/pending", (req: AuthRequest, res: Response): void => {
+  const db = getDb();
+  const { departmentId, page = "1", limit = "5" } = req.query;
+
+  let pendingLeaves = db.leaves.filter((l) => l.status === "PENDING");
+
+  if (departmentId) {
+    const deptStaff = db.staff
+      .filter((s) => s.departmentId === departmentId)
+      .map((s) => s.id);
+    pendingLeaves = pendingLeaves.filter((l) => deptStaff.includes(l.staffId));
+  }
+
+  // Pagination
+  const pageNum = parseInt(page as string);
+  const limitNum = parseInt(limit as string);
+  const startIndex = (pageNum - 1) * limitNum;
+  const endIndex = startIndex + limitNum;
+  const total = pendingLeaves.length;
+  const paginatedLeaves = pendingLeaves.slice(startIndex, endIndex);
+
+  const enrichedLeaves = paginatedLeaves.map((leave) => {
+    const staff = db.staff.find((s) => s.id === leave.staffId);
+    const leaveType = db.leaveTypes.find((lt) => lt.id === leave.leaveTypeId);
+    const department = db.departments.find((d) => d.id === staff?.departmentId);
+
+    return {
+      ...leave,
+      staff: {
+        id: staff?.id,
+        name: staff?.name,
+        staffNo: staff?.staffNo,
+        department: department?.name,
+      },
+      leaveType: leaveType?.name,
+    };
+  });
+
+  const result = {
+    data: enrichedLeaves,
+    pagination: {
+      page: pageNum,
+      limit: limitNum,
+      total,
+      totalPages: Math.ceil(total / limitNum),
+      hasNextPage: endIndex < total,
+      hasPrevPage: pageNum > 1,
+    },
+  };
+  res.json(result);
+});
+
+// Get staff leave history with pagination
+server.get("/api/staff/:id/leaves", (req: AuthRequest, res: Response): void => {
+  const db = getDb();
+  const { year, status, page = "1", limit = "20" } = req.query;
+
+  let leaves = db.leaves.filter((l) => l.staffId === req.params.id);
+
+  if (year) {
+    leaves = leaves.filter(
+      (l) => new Date(l.startDate).getFullYear() === parseInt(year as string),
+    );
+  }
+
+  if (status) {
+    leaves = leaves.filter((l) => l.status === status);
+  }
+
+  // Pagination
+  const pageNum = parseInt(page as string);
+  const limitNum = parseInt(limit as string);
+  const startIndex = (pageNum - 1) * limitNum;
+  const endIndex = startIndex + limitNum;
+  const total = leaves.length;
+  const paginatedLeaves = leaves.slice(startIndex, endIndex);
+
+  const enrichedLeaves = paginatedLeaves.map((leave) => {
+    const leaveType = db.leaveTypes.find((lt) => lt.id === leave.leaveTypeId);
+    const approver = leave.approverId
+      ? db.staff.find((s) => s.id === leave.approverId)
+      : null;
+
+    return {
+      ...leave,
+      leaveType: leaveType?.name,
+      approver: approver ? { id: approver.id, name: approver.name } : null,
+    };
+  });
+
+  res.json({
+    data: enrichedLeaves,
+    pagination: {
+      page: pageNum,
+      limit: limitNum,
+      total,
+      totalPages: Math.ceil(total / limitNum),
+      hasNextPage: endIndex < total,
+      hasPrevPage: pageNum > 1,
+    },
+  });
+});
+
+// Team leave calendar
+server.get(
+  "/api/departments/:id/leaves/calendar",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const { month, year } = req.query;
+
+    const deptStaff = db.staff.filter((s) => s.departmentId === req.params.id);
+    const staffIds = deptStaff.map((s) => s.id);
+
+    let leaves = db.leaves.filter(
+      (l) =>
+        staffIds.includes(l.staffId) &&
+        (l.status === "APPROVED" || l.status === "PENDING"),
+    );
+
+    if (month && year) {
+      leaves = leaves.filter((l) => {
+        const leaveDate = new Date(l.startDate);
+        return (
+          leaveDate.getMonth() + 1 === parseInt(month as string) &&
+          leaveDate.getFullYear() === parseInt(year as string)
+        );
+      });
+    }
+
+    const calendar: LeaveCalendarEntry[] = [];
+    leaves.forEach((leave) => {
+      const staff = deptStaff.find((s) => s.id === leave.staffId);
+      const leaveType = db.leaveTypes.find((lt) => lt.id === leave.leaveTypeId);
+
+      calendar.push({
+        date: leave.startDate,
+        staffId: staff?.id || "",
+        staffName: staff?.name || "",
+        leaveType: leaveType?.name || "",
+        totalDays: leave.totalDays,
+        status: leave.status,
+      });
+    });
+
+    res.json(calendar);
+  },
+);
+
+// Check leave conflicts
+server.get("/api/leaves/conflicts", (req: AuthRequest, res: Response): void => {
+  const db = getDb();
+  const { departmentId, startDate, endDate } = req.query;
+
+  if (!departmentId || !startDate || !endDate) {
+    res.status(400).json({ error: "Missing required parameters" });
+    return;
+  }
+
+  const deptStaff = db.staff
+    .filter((s) => s.departmentId === departmentId)
+    .map((s) => s.id);
+  const start = new Date(startDate as string);
+  const end = new Date(endDate as string);
+
+  const conflictingLeaves = db.leaves.filter((l) => {
+    if (!deptStaff.includes(l.staffId)) return false;
+    if (l.status !== "APPROVED" && l.status !== "PENDING") return false;
+
+    const leaveStart = new Date(l.startDate);
+    const leaveEnd = new Date(l.endDate);
+
+    return leaveStart <= end && leaveEnd >= start;
+  });
+
+  const staffNames = conflictingLeaves.map((l) => {
+    const staff = db.staff.find((s) => s.id === l.staffId);
+    return staff?.name || "Unknown";
+  });
+
+  const details = conflictingLeaves.map((l) => {
+    const staff = db.staff.find((s) => s.id === l.staffId);
+    const leaveType = db.leaveTypes.find((lt) => lt.id === l.leaveTypeId);
+
+    return {
+      staffId: l.staffId,
+      name: staff?.name || "",
+      leaveType: leaveType?.name || "",
+      dates: `${l.startDate} to ${l.endDate}`,
+    };
+  });
+
+  const conflict: LeaveConflict = {
+    conflictCount: conflictingLeaves.length,
+    staffOnLeave: staffNames,
+    details,
+  };
+
+  res.json(conflict);
+});
+
+// Leave eligibility check
+server.get(
+  "/api/staff/:id/leave/eligibility",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const { leaveTypeId } = req.query;
+
+    const staff = db.staff.find((s) => s.id === req.params.id);
+    if (!staff) {
+      res.status(404).json({ error: "Staff not found" });
+      return;
+    }
+
+    const leaveType = db.leaveTypes.find((lt) => lt.id === leaveTypeId);
+    if (!leaveType) {
+      res.status(400).json({ error: "Invalid leave type" });
+      return;
+    }
+
+    const currentYear = new Date().getFullYear();
+    const usedLeaves = db.leaves
+      .filter(
+        (l) =>
+          l.staffId === req.params.id &&
+          l.leaveTypeId === leaveTypeId &&
+          l.status === "APPROVED" &&
+          new Date(l.startDate).getFullYear() === currentYear,
+      )
+      .reduce((sum, l) => sum + l.totalDays, 0);
+
+    const remainingDays = leaveType.allowedDays - usedLeaves;
+
+    const eligibility: LeaveEligibility = {
+      eligible: remainingDays > 0,
+      remainingDays,
+      reason: remainingDays <= 0 ? "No leave balance remaining" : undefined,
+      warnings:
+        remainingDays < 5 && remainingDays > 0 ? ["Low leave balance"] : [],
+    };
+
+    res.json(eligibility);
+  },
+);
+
+// Validate leave application
+server.post("/api/leaves/validate", (req: AuthRequest, res: Response): void => {
+  const db = getDb();
+  const { staffId, leaveTypeId, startDate, endDate } = req.body;
+
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const conflicts: string[] = [];
+
+  const staff = db.staff.find((s) => s.id === staffId);
+  if (!staff) {
+    errors.push("Staff not found");
+  }
+
+  const leaveType = db.leaveTypes.find((lt) => lt.id === leaveTypeId);
+  if (!leaveType) {
+    errors.push("Invalid leave type");
+  }
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (start > end) {
+    errors.push("End date must be after start date");
+  }
+
+  if (start < new Date()) {
+    errors.push("Cannot apply for past dates");
+  }
+
+  if (leaveType && staff) {
+    const totalDays =
+      Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    const currentYear = new Date().getFullYear();
+    const usedLeaves = db.leaves
+      .filter(
+        (l) =>
+          l.staffId === staffId &&
+          l.leaveTypeId === leaveTypeId &&
+          l.status === "APPROVED" &&
+          new Date(l.startDate).getFullYear() === currentYear,
+      )
+      .reduce((sum, l) => sum + l.totalDays, 0);
+
+    const remainingDays = leaveType.allowedDays - usedLeaves;
+
+    if (totalDays > remainingDays) {
+      errors.push(
+        `Insufficient balance. Available: ${remainingDays} days, Requested: ${totalDays} days`,
+      );
+    }
+
+    if (remainingDays < 5) {
+      warnings.push("Low leave balance");
+    }
+  }
+
+  if (staff) {
+    const overlapping = db.leaves.filter((l) => {
+      if (l.staffId !== staffId) return false;
+      if (l.status === "REJECTED" || l.status === "CANCELLED") return false;
+
+      const leaveStart = new Date(l.startDate);
+      const leaveEnd = new Date(l.endDate);
+
+      return leaveStart <= end && leaveEnd >= start;
+    });
+
+    if (overlapping.length > 0) {
+      errors.push("You already have leave during this period");
+    }
+  }
+
+  if (staff) {
+    const deptStaff = db.staff
+      .filter((s) => s.departmentId === staff.departmentId)
+      .map((s) => s.id);
+    const deptLeaves = db.leaves.filter((l) => {
+      if (!deptStaff.includes(l.staffId) || l.staffId === staffId) return false;
+      if (l.status !== "APPROVED" && l.status !== "PENDING") return false;
+
+      const leaveStart = new Date(l.startDate);
+      const leaveEnd = new Date(l.endDate);
+
+      return leaveStart <= end && leaveEnd >= start;
+    });
+
+    if (deptLeaves.length > 2) {
+      warnings.push(
+        `${deptLeaves.length} team members are on leave during this period`,
+      );
+    }
+  }
+
+  const validation: LeaveValidation = {
+    valid: errors.length === 0,
+    errors,
+    warnings,
+    conflicts,
+  };
+
+  res.json(validation);
+});
+
+// Leave trends chart
+server.get(
+  "/api/charts/leave-trends",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const { months } = req.query;
+    const monthCount = months ? parseInt(months as string) : 12;
+
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const currentDate = new Date();
+    const trends: LeaveTrend[] = [];
+
+    for (let i = monthCount - 1; i >= 0; i--) {
+      const date = new Date(currentDate);
+      date.setMonth(date.getMonth() - i);
+      const monthName = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+      const month = date.getMonth();
+
+      const monthLeaves = db.leaves.filter((l) => {
+        const leaveDate = new Date(l.appliedAt);
+        return (
+          leaveDate.getMonth() === month && leaveDate.getFullYear() === year
+        );
+      });
+
+      trends.push({
+        month: `${monthName} ${year}`,
+        applications: monthLeaves.length,
+        approvals: monthLeaves.filter((l) => l.status === "APPROVED").length,
+        rejections: monthLeaves.filter((l) => l.status === "REJECTED").length,
+        pending: monthLeaves.filter((l) => l.status === "PENDING").length,
+      });
+    }
+
+    res.json(trends);
+  },
+);
+
+// Leave utilization by department
+server.get(
+  "/api/charts/leave-utilization",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const { year } = req.query;
+    const targetYear = year
+      ? parseInt(year as string)
+      : new Date().getFullYear();
+
+    const utilization: LeaveUtilization[] = db.departments
+      .map((dept) => {
+        const deptStaff = db.staff.filter((s) => s.departmentId === dept.id);
+        const staffCount = deptStaff.length;
+        const totalAllowed = staffCount * 30;
+
+        const deptStaffIds = deptStaff.map((s) => s.id);
+        const utilized = db.leaves
+          .filter(
+            (l) =>
+              deptStaffIds.includes(l.staffId) &&
+              l.status === "APPROVED" &&
+              new Date(l.startDate).getFullYear() === targetYear,
+          )
+          .reduce((sum, l) => sum + l.totalDays, 0);
+
+        const remaining = totalAllowed - utilized;
+        const utilizationRate =
+          totalAllowed > 0
+            ? parseFloat(((utilized / totalAllowed) * 100).toFixed(1))
+            : 0;
+
+        return {
+          department:
+            dept.name.length > 40
+              ? dept.name.substring(0, 37) + "..."
+              : dept.name,
+          departmentId: dept.id,
+          totalAllowed,
+          utilized,
+          remaining,
+          utilizationRate,
+        };
+      })
+      .filter((u) => u.totalAllowed > 0)
+      .sort((a, b) => b.utilizationRate - a.utilizationRate)
+      .slice(0, 15);
+
+    res.json(utilization);
+  },
+);
+
 // Apply auth middleware to protected routes
 server.use("/api/*", authMiddleware);
 
@@ -684,6 +1262,21 @@ server.listen(PORT, () => {
   console.log("  GET    /api/charts/staff-per-department?limit=10");
   console.log("  GET    /api/charts/monthly-attendance-trend?months=6");
   console.log("  GET    /api/charts/leave-type-distribution?year=2025");
+  console.log("  GET    /api/charts/leave-trends?months=12");
+  console.log("  GET    /api/charts/leave-utilization?year=2025");
+  console.log("\n🏖️  Leave Management Endpoints:");
+  console.log("  POST   /api/leaves");
+  console.log("  PATCH  /api/leaves/:id/status");
+  console.log("  GET    /api/leaves/pending?departmentId=dept_1");
+  console.log("  GET    /api/staff/:id/leaves?year=2025&status=APPROVED");
+  console.log(
+    "  GET    /api/departments/:id/leaves/calendar?month=2&year=2025",
+  );
+  console.log(
+    "  GET    /api/leaves/conflicts?departmentId=dept_1&startDate=...&endDate=...",
+  );
+  console.log("  GET    /api/staff/:id/leave/eligibility?leaveTypeId=lt_1");
+  console.log("  POST   /api/leaves/validate");
   console.log("\n💡 Tip: Use ?_embed to include related resources");
   console.log("💡 Example: /api/staff?_expand=department");
 });

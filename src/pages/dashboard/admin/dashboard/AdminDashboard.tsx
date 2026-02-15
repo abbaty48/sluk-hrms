@@ -1,3 +1,4 @@
+import { AdminLeavePending } from "./AdminLeavePending/AdminLeavePending";
 import { AdminDashboardStats } from "./AdminDashboardStats/AdminDashboardStats";
 import { AdminLeaveDistributionChart } from "./AdminLeaveDistributionChart/AdminLeaveDistributionChart";
 import { AdminStaffPerDepartmentChart } from "./AdminStaffPerDepartmentChart/AdminStaffPerDepartmentChart";
@@ -21,6 +22,7 @@ export function AdminDashboardView() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <AdminLeaveDistributionChart />
+        <AdminLeavePending />
       </div>
     </article>
   );

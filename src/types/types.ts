@@ -223,12 +223,87 @@ export interface MonthlyAttendanceTrend {
   onLeave: number;
   attendanceRate: number;
 }
+export type LeavePending = Leave & {
+  staff: Partial<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  }>;
+  leaveType?: string;
+};
 
 export interface LeaveTypeDistribution {
   name: string;
   value: number;
   percentage: number;
   color: string;
+}
+
+export interface LeaveApplication {
+  staffId: string;
+  leaveTypeId: string;
+  startDate: string;
+  endDate: string;
+  reason: string;
+  attachment?: string;
+}
+
+export interface LeaveApproval {
+  status: LeaveStatus;
+  comments: string;
+  approverId: string;
+}
+
+export interface LeaveCalendarEntry {
+  date: string;
+  staffId: string;
+  staffName: string;
+  leaveType: string;
+  totalDays: number;
+  status: LeaveStatus;
+}
+
+export interface LeaveConflict {
+  conflictCount: number;
+  staffOnLeave: string[];
+  details: {
+    staffId: string;
+    name: string;
+    leaveType: string;
+    dates: string;
+  }[];
+}
+
+export interface LeaveTrend {
+  month: string;
+  applications: number;
+  approvals: number;
+  rejections: number;
+  pending: number;
+}
+
+export interface LeaveUtilization {
+  department: string;
+  departmentId: string;
+  totalAllowed: number;
+  utilized: number;
+  remaining: number;
+  utilizationRate: number;
+}
+
+export interface LeaveEligibility {
+  eligible: boolean;
+  remainingDays: number;
+  reason?: string;
+  warnings?: string[];
+}
+
+export interface LeaveValidation {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+  conflicts: string[];
 }
 
 export interface AttendanceSummary {
