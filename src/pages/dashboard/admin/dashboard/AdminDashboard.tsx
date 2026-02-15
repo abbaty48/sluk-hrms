@@ -1,4 +1,5 @@
 import { AdminDashboardStats } from "./AdminDashboardStats/AdminDashboardStats";
+import { AdminLeaveDistributionChart } from "./AdminLeaveDistributionChart/AdminLeaveDistributionChart";
 import { AdminStaffPerDepartmentChart } from "./AdminStaffPerDepartmentChart/AdminStaffPerDepartmentChart";
 import { AdminMonthlyAttendanceTrendChart } from "./AdminMonthlyAttendanceTrendChart/AdminMonthlyAttendanceTrendChart";
 
@@ -17,6 +18,9 @@ export function AdminDashboardView() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
         <AdminStaffPerDepartmentChart />
         <AdminMonthlyAttendanceTrendChart />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <AdminLeaveDistributionChart />
       </div>
     </article>
   );
