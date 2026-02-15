@@ -1,3 +1,5 @@
+import { AdminDashboardStats } from "./AdminDashboardStats/AdminDashboardStats";
+
 export function AdminDashboardView() {
   return (
     <article className="p-4 lg:p-6 overflow-auto w-full">
@@ -9,6 +11,7 @@ export function AdminDashboardView() {
           Welcome back, Admin. Here's your HR overview.
         </p>
       </div>
+      <AdminDashboardStats />
     </article>
   );
 }
