@@ -1,7 +1,7 @@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { UserContext } from "@sluk/src/states/contexts/UserContext";
-import { Bell, Search, Shield, User } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Bell, Shield, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { use } from "react";
 
@@ -25,14 +25,14 @@ function RoleSwitcher() {
           value={value}
           name="role_switch"
           data-role={value}
-          aria-label={`Switch to ${label} section.`}
+          aria-label={`Switchdark:bg-primary/20 to ${label} section.`}
           style={{
             border: "none",
             borderRadius: "100px",
           }}
           onClick={() => handleRoleChange(value)}
           className={`flex items-center gap-1.5 cursor-pointer
-            ${roleView === value ? "bg-blue-500! text-white!" : ""}
+            ${roleView === value ? "bg-primary! dark:bg-primary/20! text-white!" : ""}
              rounded-full px-3 py-1 text-xs font-medium transition-all text-primary shadow-sm`}
         >
           {icon}
@@ -45,18 +45,9 @@ function RoleSwitcher() {
 
 export function DashboardHeader() {
   return (
-    <header className="sticky top-0 z-30 flex flex-1  items-center justify-between gap-4 border-b pl-1 pr-4 py-3">
-      <SidebarTrigger />
-      <form className="flex-1 relative">
-        <Search className="absolute left-2 top-1/2 -translate-y-1/2 opacity-30" />
-        <input
-          type="text"
-          className="flex h-10 w-full rounded-md border-0 px-3 py-2 text-sm pl-9 bg-input placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          placeholder="Search staff, departments..."
-        />
-      </form>
-
-      <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-30 flex flex-1 items-center gap-4 border-b pl-1 pr-4 py-3 w-full bg-card">
+      <SidebarTrigger className="hover:bg-primary/50 hover:dark:bg-primary" />
+      <div className="flex items-center gap-3 mx-auto">
         {/*Role Switcher*/}
         <RoleSwitcher />
         {/*notifications*/}
@@ -64,10 +55,10 @@ export function DashboardHeader() {
           to="/notifications"
           className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-gray-100 hover:text-gray-900 h-10 w-10 relative"
         >
-          <Bell />
+          <Bell className="stroke-primary" />
           <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-600"></span>
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
           </span>
         </Link>
       </div>

@@ -47,14 +47,14 @@ import { UserProvider } from "@/states/providers/UserProvider";
 export function AdminSidebar() {
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-4 border-b">
+      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-4 border-b border-primary/50">
         <SidebarMenu>
           <SidebarMenuButton>
-            <div className="flex items-center justify-center rounded-lg bg-secondary">
+            <div className="flex items-center justify-center rounded-lg bg-primary p-1">
               <GraduationCap />
             </div>
             <hgroup className="flex flex-col">
-              <h1 className="text-sm font-bold text-foreground">SLU HRMS</h1>
+              <h1 className="text-sm font-bold text-gray-100">SLU HRMS</h1>
               <p className="text-xs text-gray-500">Admin Portal</p>
             </hgroup>
           </SidebarMenuButton>
@@ -129,7 +129,7 @@ export function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t">
+      <SidebarFooter className="border-t border-primary/50">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
@@ -149,7 +149,7 @@ export function AdminSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <div className="flex items-center gap-2 py-4 -m-1">
-                    <UserCircle className="rounded-full bg-secondary border" />
+                    <UserCircle className="rounded-full bg-primary/50 border-2" />
                     <p className="flex flex-col max-w-prose">
                       <span>John Doe</span>
                       <span>john.doe@example.com</span>
@@ -185,14 +185,14 @@ export function AdminSidebar() {
 export function EmployeeSidebar() {
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-4 border-b">
+      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-4 border-b border-primary/50">
         <SidebarMenu>
           <SidebarMenuButton>
-            <div className="flex items-center justify-center rounded-lg bg-secondary">
+            <div className="flex items-center justify-center rounded-lg bg-primary p-1">
               <GraduationCap />
             </div>
             <hgroup className="flex flex-col">
-              <h1 className="text-sm font-bold text-foreground">SLU HRMS</h1>
+              <h1 className="text-sm font-bold text-gray-100">SLU HRMS</h1>
               <p className="text-xs text-gray-500">Staff Portal</p>
             </hgroup>
           </SidebarMenuButton>
@@ -258,7 +258,7 @@ export function EmployeeSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t">
+      <SidebarFooter className="border-t border-primary/50">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
@@ -271,7 +271,7 @@ export function EmployeeSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <div className="flex items-center gap-2 py-4 -m-1">
-                    <UserCircle className="rounded-full bg-secondary border" />
+                    <UserCircle className="rounded-full bg-primary/50 border-2" />
                     <p className="flex flex-col max-w-prose">
                       <span>John Doe</span>
                       <span>john.doe@example.com</span>

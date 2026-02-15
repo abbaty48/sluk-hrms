@@ -5,6 +5,9 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+export async function sleep(duration = 1000) {
+  await new Promise((resolve) => setTimeout(resolve, duration));
+}
 
 export const queryClient = new QueryClient({
   defaultOptions: {
