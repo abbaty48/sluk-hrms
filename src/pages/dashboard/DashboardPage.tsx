@@ -67,7 +67,7 @@ export function AdminSidebar() {
             {/*Dashboard*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild isActive>
-                <Link to="/">
+                <Link to="/admin">
                   <LayoutDashboardIcon />
                   Dashboard
                 </Link>
@@ -76,7 +76,7 @@ export function AdminSidebar() {
             {/*Employees*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/employees">
+                <Link to="/admin/employees">
                   <Users />
                   Employees
                 </Link>

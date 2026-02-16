@@ -11,13 +11,25 @@ function App() {
       path: "/",
       element: <DashBoardPage />,
       children: [
-        { index: true, path: "/", element: <DashBoardMain /> },
-        // { path: "/attendance", lazy: () => import("@/pages/dashboard/") },
-        // { path: "/recruitment", lazy: () => import("@/pages/dashboard/") },
-        // { path: "/employees", lazy: () => import("@/pages/dashboard/") },
-        // { path: "/payroll", lazy: () => import("@/pages/dashboard/") },
-        // { path: "/reports", lazy: () => import("@/pages/dashboard/") },
-        // { path: "/settings", lazy: () => import("@/pages/dashboard/") },
+        {
+          path: "/",
+          element: <DashBoardMain />,
+          children: [
+            {
+              index: true,
+              path: "/admin",
+              lazy: () =>
+                import("./pages/dashboard/admin/dashboard/AdminDashboard"),
+            },
+            {
+              path: "/admin/employees",
+              lazy: () =>
+                import(
+                  "@sluk/src/pages/dashboard/admin/employees/AdminEmployeesPage"
+                ),
+            },
+          ],
+        },
       ],
     },
     // { path: '/auth', lazy: () => import('@/pages/auth/AuthPage') },

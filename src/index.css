@@ -161,6 +161,12 @@ body {
     body {
         @apply bg-background text-foreground;
     }
+    .page-title {
+        @apply text-2xl font-bold line-clamp-1 text-foreground;
+    }
+    .page-subtitle {
+        @apply text-sm font-medium text-muted-foreground;
+    }
 }
 
 .lucide {

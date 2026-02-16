@@ -338,6 +338,20 @@ server.get(
   },
 );
 
+// Department filter
+server.get("/api/departments", (_req: AuthRequest, res: Response): void => {
+  const db = getDb();
+
+  const departments = db.departments.map((dept) => {
+    return {
+      id: dept.id,
+      name: dept.name,
+    };
+  });
+
+  res.json(departments);
+});
+
 // Department summary
 server.get(
   "/api/departments/summary",
@@ -437,12 +451,13 @@ server.get("/api/staff/search", (req: AuthRequest, res: Response): void => {
   const db = getDb();
   const {
     q,
-    department,
+    sort,
     cadre,
-    status,
     state,
+    status,
     page = "1",
     limit = "20",
+    departmentId,
   } = req.query;
 
   let staff = db.staff;
@@ -458,8 +473,8 @@ server.get("/api/staff/search", (req: AuthRequest, res: Response): void => {
     );
   }
 
-  if (department) {
-    staff = staff.filter((s) => s.departmentId === department);
+  if (departmentId) {
+    staff = staff.filter((s) => s.departmentId === departmentId);
   }
 
   if (cadre) {
@@ -485,11 +500,27 @@ server.get("/api/staff/search", (req: AuthRequest, res: Response): void => {
   const departments = db.departments;
   const ranks = db.ranks;
 
-  const enrichedStaff: EnrichedStaff[] = paginatedStaff.map((s) => ({
-    ...s,
-    department: departments.find((d) => d.id === s.departmentId),
-    rankDetails: ranks.find((r) => r.id === s.rankId),
-  }));
+  const enrichedStaff: EnrichedStaff[] = paginatedStaff
+    .map((s) => ({
+      ...s,
+      department: departments.find((d) => d.id === s.departmentId),
+      rankDetails: ranks.find((r) => r.id === s.rankId),
+    }))
+    .sort((a, b) => {
+      if (sort === "name_asc") {
+        return a.name.localeCompare(b.name);
+      } else if (sort === "name_desc") {
+        return b.name.localeCompare(a.name);
+      } else if (sort === "created_asc") {
+        return a.createdAt.localeCompare(b.createdAt || "");
+      } else if (sort === "created_desc") {
+        return b.createdAt.localeCompare(a.createdAt || "");
+      } else if (sort === "department") {
+        return b.department?.name.localeCompare(a.department?.name || "") || 0;
+      } else {
+        return 0;
+      }
+    });
 
   res.json({
     data: enrichedStaff,
