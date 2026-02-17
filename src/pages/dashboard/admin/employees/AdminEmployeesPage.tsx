@@ -8,7 +8,7 @@ import { Paginator } from "@sluk/src/components/Paginator";
 import { SelectItem } from "@sluk/src/components/ui/select";
 import { useDebounce } from "@sluk/src/hooks/use-debounce";
 import { Button } from "@sluk/src/components/ui/button";
-import { Suspense, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import {
   LucidePlus,
   LucideMail,
@@ -17,6 +17,7 @@ import {
   LucideSearch,
   LucideEllipsis,
   LucideDownload,
+  FilterX,
 } from "lucide-react";
 
 type Props = {
@@ -166,6 +167,15 @@ export const Component = function AdminEmployeesPage() {
   const [cadre, setCadre] = useState<string>("");
   const [sort, setSort] = useState<string>("");
   const term = useDebounce(searchTerm, 500);
+
+  const resetFilter = () => {
+    setDepartmentId("");
+    setSearchTerm("");
+    setStatus("");
+    setCadre("");
+    setSort("");
+  };
+
   return (
     <div className="px-8 py-10 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -226,7 +236,7 @@ export const Component = function AdminEmployeesPage() {
                 placeholder="Filter by status."
                 onSelectedFilterChange={(value) => setStatus(value!)}
               >
-                <SelectItem value={""}>All Statuses</SelectItem>
+                <SelectItem value={"null"}>All Statuses</SelectItem>
                 <SelectItem value="On Leave">On Leave</SelectItem>
                 <SelectItem value="Employed">Employed</SelectItem>
                 <SelectItem value="Retired">Retired</SelectItem>
@@ -239,7 +249,7 @@ export const Component = function AdminEmployeesPage() {
                 placeholder="Filter by role."
                 onSelectedFilterChange={(value) => setCadre(value!)}
               >
-                <SelectItem value={""}>All Roles</SelectItem>
+                <SelectItem value={"null"}>All Roles</SelectItem>
                 <SelectItem value="Teaching">Teaching</SelectItem>
                 <SelectItem value="Non-Teaching">Non-Teaching</SelectItem>
                 <SelectItem value="Administrative">Administrative</SelectItem>
@@ -248,17 +258,22 @@ export const Component = function AdminEmployeesPage() {
               {/* */}
             </div>
             <div className="flex items-center justify-between">
+              {/*SORT*/}
               <SelectFilter
                 placeholder="Sort"
                 onSelectedFilterChange={(value) => setSort(value!)}
               >
-                <SelectItem value={""}>All Names</SelectItem>
+                <SelectItem value={"null"}>All Names</SelectItem>
                 <SelectItem value="name_asc">Name A-Z</SelectItem>
                 <SelectItem value="name_desc">Name Z-A</SelectItem>
                 <SelectItem value="created_asc">Join Date (Newest)</SelectItem>
                 <SelectItem value="created_desc">Join Date (Oldest)</SelectItem>
                 <SelectItem value="department">Department</SelectItem>
               </SelectFilter>
+              {/*Reset Filter*/}
+              <Button variant={"outline"} onClick={resetFilter}>
+                <FilterX /> Reset Filter
+              </Button>
             </div>
           </div>
         </CardContent>

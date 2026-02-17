@@ -10,7 +10,7 @@ import { Loader } from "lucide-react";
 import { QueryErrorBoundary } from "@sluk/src/components/ErrorBoundary";
 
 type FilterProps = {
-  placeholder: string;
+  placeholder?: string;
   children: React.ReactNode;
   defaultValue?: string | undefined;
   onSelectedFilterChange: (value?: string) => void;

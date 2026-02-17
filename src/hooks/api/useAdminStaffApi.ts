@@ -40,8 +40,9 @@ export function useStaffAPI(searchCriterias?: SearchStaffCriteria) {
           if (
             key !== "limit" &&
             key !== "q" &&
-            value !== undefined &&
-            value !== null
+            value !== null &&
+            value !== "null" &&
+            value !== undefined
           ) {
             params.set(key, value.toString());
           }
