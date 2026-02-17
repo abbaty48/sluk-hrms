@@ -25,7 +25,7 @@ function App() {
               path: "/admin/employees",
               lazy: () =>
                 import(
-                  "@sluk/src/pages/dashboard/admin/employees/AdminEmployeesPage"
+                  "@sluk/src/pages/dashboard/admin/employees/AdminEmployeesPageIndex"
                 ),
             },
           ],
