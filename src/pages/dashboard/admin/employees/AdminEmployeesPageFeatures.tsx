@@ -1,6 +1,8 @@
-import { cn } from "@sluk/src/lib/utils";
-import { Button } from "@sluk/src/components/ui/button";
 import { LucideDownload, LucideImport, LucidePlus } from "lucide-react";
+import { Button } from "@sluk/src/components/ui/button";
+import { cn } from "@sluk/src/lib/utils";
+import { AdminEmployeePageAddStaff } from "./AddStaff/AdminEmployeePageAddStaff";
+import { toast } from "sonner";
 
 type Align = "right" | "left" | "center";
 
@@ -38,13 +40,17 @@ export function AdminEmployeesPageFeatures({
         Export
       </Button>
 
-      <Button
-        variant={"outline"}
-        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground dark:text-inherit hover:bg-primary/90 h-9 rounded-md px-3"
-      >
-        <LucidePlus />
-        Add Staff
-      </Button>
+      <AdminEmployeePageAddStaff
+        triggerButton={
+          <Button
+            variant={"outline"}
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground dark:text-inherit hover:bg-primary/90 h-9 rounded-md px-3"
+          >
+            <LucidePlus />
+            Add Staff
+          </Button>
+        }
+      />
     </menu>
   );
 }

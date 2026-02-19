@@ -263,6 +263,36 @@ server.get(
   },
 );
 
+// Get all ranks with optional filtering
+server.get("/api/ranks", (req: AuthRequest, res: Response): void => {
+  const db = getDb();
+  const { level, search } = req.query;
+
+  let ranks = db.ranks;
+
+  // Filter by level
+  if (level) {
+    ranks = ranks.filter((r) => r.level === parseInt(level as string));
+  }
+
+  // Search by title
+  if (search) {
+    const searchTerm = (search as string).toLowerCase();
+    ranks = ranks.filter(
+      (r) =>
+        r.title.toLowerCase().includes(searchTerm) ||
+        (r.description && r.description.toLowerCase().includes(searchTerm)),
+    );
+  }
+
+  // Sort by level (ascending)
+  ranks = ranks.sort((a, b) => a.level - b.level);
+
+  res.json({
+    data: ranks,
+  });
+});
+
 // Attendance summary for a staff member
 server.get(
   "/api/staff/:id/attendance/summary",
@@ -585,6 +615,8 @@ server.get(
   },
 );
 
+// Add staff
+
 // Monthly attendance trend (for line/area chart)
 server.get(
   "/api/charts/monthly-attendance-trend",
@@ -644,6 +676,122 @@ server.get(
     res.json(trendData);
   },
 );
+
+// Create new staff
+server.post("/api/staff", (req: AuthRequest, res: Response): void => {
+  const db = getDb();
+  const {
+    staffNo,
+    name,
+    email,
+    phone,
+    dateOfBirth,
+    gender,
+    address,
+    city,
+    state,
+    lga,
+    departmentId,
+    rankId,
+    rank,
+    cadre,
+    staffCategory,
+    natureOfAppointment,
+    conuassContiss,
+    dateOfFirstAppointment,
+    dateOfLastPromotion,
+    status = "Employed",
+  } = req.body;
+
+  // Validate required fields
+  if (!staffNo || !name || !email || !departmentId || !rankId) {
+    res.status(400).json({
+      error: "Missing required fields",
+      required: ["staffNo", "name", "email", "departmentId", "rankId"],
+    });
+    return;
+  }
+
+  // Check if staff number already exists
+  const existingStaff = db.staff.find((s) => s.staffNo === staffNo);
+  if (existingStaff) {
+    res.status(400).json({ error: "Staff number already exists" });
+    return;
+  }
+
+  // Check if email already exists
+  const existingEmail = db.staff.find((s) => s.email === email);
+  if (existingEmail) {
+    res.status(400).json({ error: "Email already exists" });
+    return;
+  }
+
+  // Verify department exists
+  const department = db.departments.find((d) => d.id === departmentId);
+  if (!department) {
+    res.status(400).json({ error: "Invalid department ID" });
+    return;
+  }
+
+  // Verify rank exists
+  const rankDetails = db.ranks.find((r) => r.id === rankId);
+  if (!rankDetails) {
+    res.status(400).json({ error: "Invalid rank ID" });
+    return;
+  }
+
+  // Create new staff
+  const newStaff = {
+    id: `staff_${Date.now()}`,
+    staffNo,
+    name,
+    email,
+    phone: phone || null,
+    dateOfBirth: dateOfBirth || null,
+    gender: gender || "Male",
+    address: address || null,
+    city: city || null,
+    state: state || null,
+    lga: lga || null,
+    departmentId,
+    rankId,
+    rank: rank || rankDetails.title,
+    cadre: cadre || "Non-Teaching",
+    staffCategory: staffCategory || "Junior",
+    natureOfAppointment: natureOfAppointment || "Permanent",
+    conuassContiss: conuassContiss || null,
+    dateOfFirstAppointment:
+      dateOfFirstAppointment || new Date().toISOString().split("T")[0],
+    dateOfLastPromotion: dateOfLastPromotion || null,
+    status,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  db.staff.push(newStaff);
+
+  // Create user account for the staff
+  const newUser = {
+    id: `user_${Date.now()}`,
+    email,
+    passwordHash: "$2a$10$XQa9Z9Z9Z9Z9Z9Z9Z9Z9Z9",
+    role: "EMPLOYEE" as const,
+    staffId: newStaff.id,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  db.users.push(newUser);
+
+  res.status(201).json({
+    staff: newStaff,
+    user: {
+      id: newUser.id,
+      email: newUser.email,
+      role: newUser.role,
+    },
+  });
+});
 
 // Leave type distribution (for pie chart)
 server.get(
@@ -1274,15 +1422,18 @@ server.listen(PORT, () => {
   console.log("  POST   /api/auth/register");
   console.log("  GET    /api/dashboard/stats");
   console.log("  GET    /api/staff");
+  console.log("  POST   /api/staff");
   console.log("  GET    /api/staff/:id");
   console.log("  GET    /api/staff/:id/details");
   console.log("  GET    /api/staff/:id/attendance/summary");
   console.log("  GET    /api/staff/:id/leave/balance");
-  console.log("  GET    /api/staff/search?q=name&department=dept_1");
+  console.log(
+    "  GET    /api/staff/search?q=name&department=dept_1&page=1&limit=20",
+  );
   console.log("  GET    /api/staff/statistics");
   console.log("  GET    /api/departments");
   console.log("  GET    /api/departments/summary");
-  console.log("  GET    /api/ranks");
+  console.log("  GET    /api/ranks?level=5&search=professor&page=1&limit=50");
   console.log("  GET    /api/attendance");
   console.log("  GET    /api/leaves");
   console.log("  GET    /api/leaveTypes");

@@ -397,3 +397,36 @@ export interface StaffStatistics {
     count: number;
   }[];
 }
+
+/* STAFF FORM DATA */
+export type StaffFormData = {
+  // Personal Details
+  personalStaffNumber: string; //staffNo
+  personalStaffName: string; //name
+  personalStaffCategory: string; //staffCategory
+  personalGender: string; //gender
+  personalMaritalStatus: string; // -- MISSING
+  personalDateOfBirth: string; //dateOfBirth
+  personalPhone: string; //phone
+  personalEmail: string; //email
+  personalPlaceOfBirth: string; //address
+  personalNationality: string; // -- MISSING
+  personalState: string; //state
+  personalLocalGovernment: string; //lga
+  personalReligion: string; // -- MISSING
+
+  // Appointment Details
+  appointmentCadre: string; //cadre
+  appointmentRank: string; //rank
+  appointmentNature: string; //natureOfAppointment
+  appointmentDateFirst: string; //dateOfFirstAppointment
+  appointmentDatePresent: string; // dateOfLastPromotion
+  appointmentUnitDepartment: string; //departmentId
+
+  // Location Details
+  locationTown: string; // -- MISSING
+  locationCountry: string; // -- MISSING
+  locationStaffStatus: string; //status
+  locationStaffStatusComment?: string; // -- MISSING
+  locationPermanentAddress: string; // -- MISSING
+};

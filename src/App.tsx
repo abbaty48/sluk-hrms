@@ -4,6 +4,7 @@ import { DashBoardPage } from "@/pages/dashboard/DashboardPage";
 import { DashBoardMain } from "@/pages/dashboard/Dashboard";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/utils";
+import { Toaster } from "sonner";
 
 function App() {
   const routers = createBrowserRouter([
@@ -39,6 +40,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <RouterProvider router={routers} />
+        <Toaster />
       </ThemeProvider>
     </QueryClientProvider>
   );

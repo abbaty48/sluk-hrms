@@ -1,5 +1,5 @@
 import type { Department, Staff } from "@sluk/src/types/types";
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseInfiniteQuery } from "@tanstack/react-query";
 
 type SearchStaffCriteria = Partial<{
   q: string;
@@ -78,4 +78,28 @@ export function useStaffAPI(searchCriterias?: SearchStaffCriteria) {
       department: Department;
     })[],
   };
+}
+
+/**
+ *
+ */
+export function useAddStaffAPI() {
+  return useMutation({
+    mutationFn: async (data: any) => {
+      // Replace with your actual API endpoint
+      const response = await fetch("/api/staff", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add staff");
+      }
+
+      return response.json();
+    },
+  });
 }
