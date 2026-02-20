@@ -1,5 +1,4 @@
 import type { Request } from "express";
-
 // Enums
 export type UserRole = "ADMIN" | "MANAGER" | "EMPLOYEE";
 export type Gender = "Male" | "Female";
@@ -61,6 +60,8 @@ export interface Staff {
   createdAt: string;
   updatedAt: string;
 }
+
+export type TStaffWithDepartmentName = Staff & { department: { name: string } };
 
 export interface Department {
   id: string;

@@ -1,8 +1,10 @@
-import { LucideDownload, LucideImport, LucidePlus } from "lucide-react";
-import { Button } from "@sluk/src/components/ui/button";
 import { cn } from "@sluk/src/lib/utils";
+import { LucidePlus } from "lucide-react";
+import { Button } from "@sluk/src/components/ui/button";
+import { ExportEmployees } from "./AdminEmployeesExport";
+import { ImportEmployees } from "./AdminEmployeesImport";
+import type { TStaffWithDepartmentName } from "@sluk/src/types/types";
 import { AdminEmployeePageAddStaff } from "./AddStaff/AdminEmployeePageAddStaff";
-import { toast } from "sonner";
 
 type Align = "right" | "left" | "center";
 
@@ -17,28 +19,24 @@ function placement(align: Align) {
   }
 }
 
+interface AdminEmployeesPageFeaturesProps<T> {
+  align: "right" | "left" | "center";
+  currentPageData: T[];
+  allPages?: { data: T[] }[];
+  onImportComplete?: () => void;
+}
+
 export function AdminEmployeesPageFeatures({
   align,
-}: {
-  align: "right" | "left" | "center";
-}) {
+  allPages,
+  currentPageData,
+  onImportComplete,
+}: AdminEmployeesPageFeaturesProps<TStaffWithDepartmentName>) {
   return (
     <menu className={cn("flex items-center gap-2 list-none", placement(align))}>
-      <Button
-        variant={"outline"}
-        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3"
-      >
-        <LucideImport />
-        Import CSV
-      </Button>
+      <ImportEmployees onImportComplete={onImportComplete} />
 
-      <Button
-        variant={"outline"}
-        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3"
-      >
-        <LucideDownload />
-        Export
-      </Button>
+      <ExportEmployees currentPageData={currentPageData} allPages={allPages} />
 
       <AdminEmployeePageAddStaff
         triggerButton={

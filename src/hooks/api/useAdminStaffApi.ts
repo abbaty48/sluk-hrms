@@ -14,6 +14,7 @@ type SearchStaffCriteria = Partial<{
 export function useStaffAPI(searchCriterias?: SearchStaffCriteria) {
   const {
     data,
+    refetch,
     isFetching,
     hasNextPage,
     fetchNextPage,
@@ -67,6 +68,7 @@ export function useStaffAPI(searchCriterias?: SearchStaffCriteria) {
   const currentPage = data.pages[data.pages.length - 1];
 
   return {
+    refetch,
     isFetching,
     hasNextPage,
     fetchNextPage,
