@@ -4,33 +4,36 @@ import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
 import type {
+  User,
   Database,
   AuthRequest,
-  User,
-  DashboardStats,
-  AttendanceSummary,
-  LeaveBalance,
-  DepartmentSummary,
   StaffDetails,
-  EnrichedStaff,
   LoginRequest,
   LoginResponse,
+  EnrichedStaff,
+  DashboardStats,
   RegisterRequest,
-  RegisterResponse,
   StaffStatistics,
+  RegisterResponse,
+  DepartmentSummary,
+  AttendanceSummary,
   StaffPerDepartment,
   MonthlyAttendanceTrend,
+} from "../types/types";
+import type {
   LeaveTypeDistribution,
-  LeaveApplication,
-  LeaveApproval,
   LeaveCalendarEntry,
-  LeaveConflict,
-  LeaveTrend,
   LeaveUtilization,
   LeaveEligibility,
+  LeaveApplication,
   LeaveValidation,
+  LeaveApproval,
+  LeaveConflict,
+  LeaveTrend,
   LeaveStatus,
-} from "../types/types";
+  LeaveBalance,
+  LeaveRequest,
+} from '../types/leave-management.types'
 
 // Get current directory
 const filename =
@@ -323,11 +326,11 @@ server.get(
       avgWorkHours:
         attendanceRecords.length > 0
           ? (
-              attendanceRecords.reduce(
-                (sum, a) => sum + (a.workHours || 0),
-                0,
-              ) / attendanceRecords.length
-            ).toFixed(2)
+            attendanceRecords.reduce(
+              (sum, a) => sum + (a.workHours || 0),
+              0,
+            ) / attendanceRecords.length
+          ).toFixed(2)
           : "0",
     };
 
@@ -335,38 +338,6 @@ server.get(
   },
 );
 
-// Leave balance for a staff member
-server.get(
-  "/api/staff/:id/leave/balance",
-  (req: AuthRequest, res: Response): void => {
-    const db = getDb();
-    const { year } = req.query;
-    const currentYear = parseInt(year as string) || new Date().getFullYear();
-
-    const leaveTypes = db.leaveTypes;
-    const staffLeaves = db.leaves.filter(
-      (leave) =>
-        leave.staffId === req.params.id &&
-        leave.status === "APPROVED" &&
-        new Date(leave.startDate).getFullYear() === currentYear,
-    );
-
-    const balance: LeaveBalance[] = leaveTypes.map((type) => {
-      const usedDays = staffLeaves
-        .filter((leave) => leave.leaveTypeId === type.id)
-        .reduce((sum, leave) => sum + leave.totalDays, 0);
-
-      return {
-        leaveType: type.name,
-        allowed: type.allowedDays,
-        used: usedDays,
-        remaining: type.allowedDays - usedDays,
-      };
-    });
-
-    res.json(balance);
-  },
-);
 
 // Department filter
 server.get("/api/departments", (_req: AuthRequest, res: Response): void => {
@@ -793,6 +764,10 @@ server.post("/api/staff", (req: AuthRequest, res: Response): void => {
   });
 });
 
+// ============================================
+// LEAVE MANAGEMENT ENDPOINTS
+// ============================================
+
 // Leave type distribution (for pie chart)
 server.get(
   "/api/charts/leave-type-distribution",
@@ -862,10 +837,6 @@ server.get(
   },
 );
 
-// ============================================
-// LEAVE MANAGEMENT ENDPOINTS
-// ============================================
-
 // Apply for leave
 server.post("/api/leaves", (req: AuthRequest, res: Response): void => {
   const db = getDb();
@@ -911,11 +882,11 @@ server.post("/api/leaves", (req: AuthRequest, res: Response): void => {
     endDate,
     totalDays,
     reason,
-    status: "PENDING" as LeaveStatus,
     approverId: null,
-    approverComments: null,
-    appliedAt: new Date().toISOString(),
     respondedAt: null,
+    approverComments: null,
+    status: "PENDING" as LeaveStatus,
+    appliedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -952,7 +923,89 @@ server.patch(
   },
 );
 
-// Get pending leave approvals with pagination
+// Get leaves with pagination
+server.get("/api/leaves", (req: AuthRequest, res: Response): void => {
+  const { leaves, leaveTypes, departments, staff: staffs } = getDb();
+  const { search, type, status, fromDate, toDate, page = "1", limit = "5" } = req.query;
+
+  let enrichedLeaves: LeaveRequest[] = leaves;
+
+  if (search) {
+    const searchTerm = (search as string).toLowerCase();
+    const _staffs = staffs.filter(staff => staff.name.toLowerCase().includes(searchTerm))
+    if (_staffs.length < 0) {
+      res.status(404).send({ data: [] })
+    }
+    enrichedLeaves.filter(l => _staffs.some(s => s.id === l.staffId))
+  }
+
+
+  if (type) {
+    enrichedLeaves = enrichedLeaves.filter(l => l.leaveTypeId === type)
+  }
+
+  if (status) {
+    enrichedLeaves = enrichedLeaves.filter((l) => l.status.toLowerCase() === status.toString().toLocaleLowerCase());
+  }
+
+  if (fromDate && toDate) {
+    enrichedLeaves = enrichedLeaves.filter(l => l.startDate === new Date(String(fromDate)).toLocaleDateString("en-CA") && l.endDate === new Date(String(toDate)).toLocaleDateString("en-CA"))
+  }
+
+  if (fromDate) {
+    enrichedLeaves = enrichedLeaves.filter((l) => l.startDate === new Date(String(fromDate)).toLocaleDateString("en-CA"));
+  }
+
+  if (toDate) {
+    enrichedLeaves = enrichedLeaves.filter((l) => l.endDate === new Date(String(toDate)).toLocaleDateString("en-CA"));
+  }
+
+  // Pagination
+  const pageNum = parseInt(page as string);
+  const limitNum = parseInt(limit as string);
+  const startIndex = (pageNum - 1) * limitNum;
+  const endIndex = startIndex + limitNum;
+  const total = enrichedLeaves.length;
+  const paginatedLeaves = enrichedLeaves.slice(startIndex, endIndex);
+
+  const enrichedLeavesResponse = paginatedLeaves.map((leave) => {
+    const staff = staffs.find((s) => s.id === leave.staffId);
+    const leaveType = leaveTypes.find((lt) => lt.id === leave.leaveTypeId);
+    const department = departments.find((d) => d.id === staff?.departmentId);
+
+    return {
+      id: leave.id,
+      staff: {
+        id: staff?.id ?? 'NOT AVAILABLE',
+        name: staff?.name ?? 'NOT AVAILABLE',
+        staffNo: staff?.staffNo ?? 'NOT AVAILABLE',
+        department: department?.name ?? 'NOT AVAILABLE',
+      },
+      status: leave.status,
+      reason: leave.reason,
+      endDate: leave.endDate,
+      startDate: leave.startDate,
+      allowedDays: leave.totalDays,
+      leaveType: leaveType?.name || 'UNKNOWN',
+      duration: `${leave.startDate} ${leave.endDate}`,
+    };
+  });
+
+  const result = {
+    data: enrichedLeavesResponse,
+    pagination: {
+      total,
+      page: pageNum,
+      limit: limitNum,
+      hasPrevPage: pageNum > 1,
+      hasNextPage: endIndex < total,
+      totalPages: Math.ceil(total / limitNum),
+    },
+  };
+  res.json(result);
+});
+
+// Leave Pending
 server.get("/api/leaves/pending", (req: AuthRequest, res: Response): void => {
   const db = getDb();
   const { departmentId, page = "1", limit = "5" } = req.query;
@@ -980,14 +1033,20 @@ server.get("/api/leaves/pending", (req: AuthRequest, res: Response): void => {
     const department = db.departments.find((d) => d.id === staff?.departmentId);
 
     return {
-      ...leave,
+      id: leave.id,
       staff: {
-        id: staff?.id,
-        name: staff?.name,
-        staffNo: staff?.staffNo,
-        department: department?.name,
+        id: staff?.id ?? 'NOT AVAILABLE',
+        name: staff?.name ?? 'NOT AVAILABLE',
+        staffNo: staff?.staffNo ?? 'NOT AVAILABLE',
+        department: department?.name ?? 'NOT AVAILABLE',
       },
-      leaveType: leaveType?.name,
+      status: leave.status,
+      reason: leave.reason,
+      endDate: leave.endDate,
+      startDate: leave.startDate,
+      allowedDays: leave.totalDays,
+      leaveType: leaveType?.name || 'UNKNOWN',
+      duration: `${leave.startDate} ${leave.endDate}`,
     };
   });
 
@@ -1055,6 +1114,39 @@ server.get("/api/staff/:id/leaves", (req: AuthRequest, res: Response): void => {
     },
   });
 });
+
+// Leave balance for a staff member
+server.get(
+  "/api/staff/:id/leave/balance",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const { year } = req.query;
+    const currentYear = parseInt(year as string) || new Date().getFullYear();
+
+    const leaveTypes = db.leaveTypes;
+    const staffLeaves = db.leaves.filter(
+      (leave) =>
+        leave.staffId === req.params.id &&
+        leave.status === "APPROVED" &&
+        new Date(leave.startDate).getFullYear() === currentYear,
+    );
+
+    const balance: LeaveBalance[] = leaveTypes.map((type) => {
+      const usedDays = staffLeaves
+        .filter((leave) => leave.leaveTypeId === type.id)
+        .reduce((sum, leave) => sum + leave.totalDays, 0);
+
+      return {
+        leaveType: type.name,
+        allowed: type.allowedDays,
+        used: usedDays,
+        remaining: type.allowedDays - usedDays,
+      };
+    });
+
+    res.json(balance);
+  },
+);
 
 // Team leave calendar
 server.get(
@@ -1196,6 +1288,109 @@ server.get(
     res.json(eligibility);
   },
 );
+
+// Leave Types
+server.get('/api/leaves/types', (_req: AuthRequest, res: Response) => {
+  const leavesTypes = getDb().leaveTypes || [];
+  res.json(leavesTypes)
+})
+// Leave Types POST
+server.post('/api/leaves/types', (req: AuthRequest, res: Response) => {
+  const leavesTypes = getDb().leaveTypes;
+  const { name, allowedDays, carryForward = false, maxCarryForward = 0 } = req.body;
+
+  if (!name || name === '' || name?.trim() === '') {
+    res.status(400).send('Leave type name is required.');
+    return;
+  }
+
+  if (!allowedDays || allowedDays < 0) {
+    res.status(400).send('Leave type allowed day is required and must be greater than zero.');
+    return;
+  }
+
+  if (leavesTypes.some(l => l.name === name)) {
+    res.status(400).send(`Leave with '${name}' already exist.`);
+    return;
+  }
+
+  leavesTypes.push({
+    id: 'lt_' + Date.now(),
+    name,
+    allowedDays,
+    carryForward,
+    maxCarryForward,
+    paidLeave: false
+  });
+  res.status(204).send('A new leave type has successfully been added.');
+})
+// Leave Types PATCH
+server.put('/api/leaves/types/:id', (req: AuthRequest, res: Response) => {
+  let leavesTypes = getDb().leaveTypes;
+  const { id } = req.params
+  const { name, allowedDays, carryForward = false, maxCarryForward = 0 } = req.body;
+
+  if (!name || name === '' || name?.trim() === '') {
+    res.status(400).send('Leave type name is required.');
+    return;
+  }
+
+  if (!allowedDays || allowedDays < 0) {
+    res.status(400).send('Leave type allowed day is required and must be greater than zero.');
+    return;
+  }
+
+
+  const targetLeave = leavesTypes.find(l => l.id === id);
+
+  if (!targetLeave) {
+    res.status(404).send('Leave does not exist.');
+    return;
+  }
+
+  if (leavesTypes.some(l => l.name === name)) {
+    res.status(400).send(`Leave with '${name}' already exist.`);
+    return;
+  }
+
+  leavesTypes = leavesTypes.map(l => l.id === id ? {
+    id,
+    name,
+    allowedDays,
+    carryForward,
+    maxCarryForward,
+    paidLeave: false
+  } : l);
+
+  res.status(204).send('A leave type is updated successfully.');
+})
+// LEAVE TYPES DELETE
+server.delete('/api/leaves/types/:id', (req: AuthRequest, res: Response) => {
+  getDb().leaveTypes = getDb().leaveTypes.filter(leave => leave.id !== req.params.id);
+  res.status(204).send('Deleted')
+})
+// LEAVE STATS
+server.get('/api/leaves/stats', (_, res: Response) => {
+  let total = 0, approved = 0, rejected = 0, pending = 0;
+
+  const stats = getDb().leaves.reduceRight((_, leave) => {
+
+    if (leave.status === 'APPROVED') ++approved;
+    if (leave.status === 'REJECTED') ++rejected;
+    if (leave.status === 'PENDING') ++pending;
+    total++;
+
+    return { total, approved, rejected, pending }
+  }, {});
+
+  res.json(stats)
+})
+
+// DELETE A LEAVE
+server.delete('/api/leaves', (req: AuthRequest, res: Response) => {
+  getDb().leaveTypes = getDb().leaveTypes.filter(leave => leave.id !== req.params.id);
+  res.status(204)
+})
 
 // Validate leave application
 server.post("/api/leaves/validate", (req: AuthRequest, res: Response): void => {

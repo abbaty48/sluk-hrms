@@ -11,7 +11,7 @@ type SearchStaffCriteria = Partial<{
   departmentId: string;
 }>;
 
-export function useStaffAPI(searchCriterias?: SearchStaffCriteria) {
+export function useStaffAPI(searchCriteria?: SearchStaffCriteria) {
   const {
     data,
     refetch,
@@ -21,23 +21,23 @@ export function useStaffAPI(searchCriterias?: SearchStaffCriteria) {
     hasPreviousPage,
     fetchPreviousPage,
   } = useSuspenseInfiniteQuery({
-    maxPages: 5,
     initialPageParam: 1,
-    queryKey: ["admin", "staffs", { ...searchCriterias }],
+    maxPages: searchCriteria?.limit ? +searchCriteria.limit : 5,
+    queryKey: ["admin", "staffs", { ...searchCriteria }],
     queryFn: async ({ pageParam = 1 }) => {
       const params = new URLSearchParams();
 
       // Add parameters properly
       params.set("page", pageParam.toString());
-      params.set("limit", searchCriterias?.limit?.toString() || "5");
+      params.set("limit", searchCriteria?.limit?.toString() || "5");
 
-      if (searchCriterias?.q) {
-        params.set("q", searchCriterias.q);
+      if (searchCriteria?.q) {
+        params.set("q", searchCriteria.q);
       }
 
       // Add other search criteria (avoid duplicating limit and q)
-      if (searchCriterias) {
-        Object.entries(searchCriterias).forEach(([key, value]) => {
+      if (searchCriteria) {
+        Object.entries(searchCriteria).forEach(([key, value]) => {
           if (
             key !== "limit" &&
             key !== "q" &&

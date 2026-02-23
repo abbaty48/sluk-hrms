@@ -85,7 +85,7 @@ export function AdminSidebar() {
             {/*Leave Management*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/calendar">
+                <Link to="/admin/leave">
                   <Calendar />
                   Leave Management
                 </Link>

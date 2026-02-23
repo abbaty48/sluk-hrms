@@ -1,13 +1,9 @@
-import {
-  useRejectLeave,
-  useApproveLeave,
-  useInfinitePendingLeaves,
-} from "@sluk/src/hooks/api/useAdminApi";
+import { useLeavePending, useLeaveApproval, useLeaveRejection } from "@sluk/src/hooks/api/useAdminLeave";
 import { useOptimistic, useTransition } from "react";
 
 export const useAdminLeavePendingHook = (departmentId?: string) => {
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useInfinitePendingLeaves(departmentId, 5);
+    useLeavePending(departmentId, 5);
 
   const [optimisticData, setOptimisticData] = useOptimistic(
     data,
@@ -18,8 +14,8 @@ export const useAdminLeavePendingHook = (departmentId?: string) => {
     },
   );
   const [isPending, startTransition] = useTransition();
-  const { mutateAsync: rejectLeave } = useRejectLeave();
-  const { mutateAsync: approveLeave } = useApproveLeave();
+  const { mutateAsync: rejectLeave } = useLeaveRejection();
+  const { mutateAsync: approveLeave } = useLeaveApproval();
 
   const handleReject = (id: string) => {
     startTransition(async () => {
@@ -36,12 +32,12 @@ export const useAdminLeavePendingHook = (departmentId?: string) => {
   };
 
   return {
-    optimisticData,
     isPending,
     hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
     handleReject,
+    fetchNextPage,
     handleApprove,
+    optimisticData,
+    isFetchingNextPage,
   };
 };

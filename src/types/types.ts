@@ -1,3 +1,4 @@
+import type { LeaveRequest, LeaveType } from "./leave-management.types";
 import type { Request } from "express";
 // Enums
 export type UserRole = "ADMIN" | "MANAGER" | "EMPLOYEE";
@@ -22,7 +23,6 @@ export type AttendanceStatus =
   | "ON_LEAVE"
   | "WEEKEND"
   | "HOLIDAY";
-export type LeaveStatus = "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
 
 // Entity Interfaces
 export interface User {
@@ -95,33 +95,7 @@ export interface Attendance {
   updatedAt: string;
 }
 
-export interface LeaveType {
-  id: string;
-  name: string;
-  allowedDays: number;
-  carryForward: boolean;
-  maxCarryForward: number;
-  paidLeave: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
 
-export interface Leave {
-  id: string;
-  staffId: string;
-  leaveTypeId: string;
-  startDate: string;
-  endDate: string;
-  totalDays: number;
-  reason: string;
-  status: LeaveStatus;
-  approverId: string | null;
-  approverComments: string | null;
-  appliedAt: string;
-  respondedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export interface Payroll {
   id: string;
@@ -173,7 +147,7 @@ export interface Database {
   departments: Department[];
   ranks: Rank[];
   attendance: Attendance[];
-  leaves: Leave[];
+  leaves: LeaveRequest[];
   leaveTypes: LeaveType[];
   payrolls: Payroll[];
   documents: Document[];
@@ -224,88 +198,6 @@ export interface MonthlyAttendanceTrend {
   onLeave: number;
   attendanceRate: number;
 }
-export type LeavePending = Leave & {
-  staff: Partial<{
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-  }>;
-  leaveType?: string;
-};
-
-export interface LeaveTypeDistribution {
-  name: string;
-  value: number;
-  percentage: number;
-  color: string;
-}
-
-export interface LeaveApplication {
-  staffId: string;
-  leaveTypeId: string;
-  startDate: string;
-  endDate: string;
-  reason: string;
-  attachment?: string;
-}
-
-export interface LeaveApproval {
-  status: LeaveStatus;
-  comments: string;
-  approverId: string;
-}
-
-export interface LeaveCalendarEntry {
-  date: string;
-  staffId: string;
-  staffName: string;
-  leaveType: string;
-  totalDays: number;
-  status: LeaveStatus;
-}
-
-export interface LeaveConflict {
-  conflictCount: number;
-  staffOnLeave: string[];
-  details: {
-    staffId: string;
-    name: string;
-    leaveType: string;
-    dates: string;
-  }[];
-}
-
-export interface LeaveTrend {
-  month: string;
-  applications: number;
-  approvals: number;
-  rejections: number;
-  pending: number;
-}
-
-export interface LeaveUtilization {
-  department: string;
-  departmentId: string;
-  totalAllowed: number;
-  utilized: number;
-  remaining: number;
-  utilizationRate: number;
-}
-
-export interface LeaveEligibility {
-  eligible: boolean;
-  remainingDays: number;
-  reason?: string;
-  warnings?: string[];
-}
-
-export interface LeaveValidation {
-  valid: boolean;
-  errors: string[];
-  warnings: string[];
-  conflicts: string[];
-}
 
 export interface AttendanceSummary {
   totalDays: number;
@@ -316,12 +208,7 @@ export interface AttendanceSummary {
   avgWorkHours: string;
 }
 
-export interface LeaveBalance {
-  leaveType: string;
-  allowed: number;
-  used: number;
-  remaining: number;
-}
+
 
 export interface DepartmentSummary {
   departmentId: string;
@@ -431,3 +318,13 @@ export type StaffFormData = {
   locationStaffStatusComment?: string; // -- MISSING
   locationPermanentAddress: string; // -- MISSING
 };
+
+
+export type TPagination = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasPrevPage: boolean;
+  hasNextPage: boolean;
+}

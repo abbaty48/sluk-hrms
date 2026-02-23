@@ -29,6 +29,14 @@ function App() {
                   "@sluk/src/pages/dashboard/admin/employees/AdminEmployeesPageIndex"
                 ),
             },
+            {
+              path: "/admin/leave",
+              lazy: () =>
+                import(
+                  "@sluk/src/pages/dashboard/admin/leave/AdminLeavePageIndex"
+                ),
+            },
+
           ],
         },
       ],
