@@ -36,6 +36,7 @@ export interface User {
   updatedAt: string;
 }
 
+
 export interface Staff {
   id: string;
   staffNo: string;
@@ -60,6 +61,60 @@ export interface Staff {
   status: StaffStatus;
   createdAt: string;
   updatedAt: string;
+}
+export interface Qualification {
+  id: string;
+  staffId: string;
+  degree: string;
+  institution: string;
+  year: string;
+  level: string;
+  isHighest: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}[];
+
+export interface EmploymentHistory {
+  id: string;
+  staffId: string;
+  position: string;
+  department: string;
+  subject: string | null;
+  startDate: string;
+  endDate: string; // "Present" or "MMM YYYY"
+  isCurrent: boolean;
+}
+
+
+
+export interface Leave {
+  id: string;
+  staffId: string;
+  leaveTypeId: string;
+  startDate: string;
+  endDate: string;
+  totalDays: number;
+  reason: string;
+  status: LeaveStatus;
+  approverId: string | null;
+  appliedAt: string;
+}
+
+export interface LeaveType {
+  id: string;
+  name: string;
+  allowedDays: number;
+  carryForward: boolean;
+  maxCarryForward: number;
+  paidLeave: boolean;
+}
+
+export interface LeaveBalance {
+  leaveTypeId: string;
+  name: string;
+  allowed: number;
+  used: number;
+  remaining: number;
 }
 
 export interface Department {
@@ -174,9 +229,13 @@ export interface Database {
   attendance: Attendance[];
   leaves: Leave[];
   leaveTypes: LeaveType[];
+  balance: LeaveBalance[];
   payrolls: Payroll[];
   documents: Document[];
   announcements: Announcement[];
+  qualifications: Qualification[];  
+  employmentHistory: EmploymentHistory[];
+  
 }
 
 // Request Interfaces
@@ -246,7 +305,7 @@ export interface LeaveApplication {
   startDate: string;
   endDate: string;
   reason: string;
-  attachment?: string;
+  attachment?: string | null;
 }
 
 export interface LeaveApproval {

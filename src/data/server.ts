@@ -262,50 +262,412 @@ server.get(
     res.json(details);
   },
 );
+// ─────────────────────────────────────────────
+//  QUALIFICATION ENDPOINTS
+// ─────────────────────────────────────────────
 
-// Attendance summary for a staff member
+// GET /api/staff/:id/qualifications
 server.get(
-  "/api/staff/:id/attendance/summary",
+  "/api/staff/:id/qualifications",
   (req: AuthRequest, res: Response): void => {
     const db = getDb();
-    const { month, year } = req.query;
+    const staffId = req.params.id;
 
-    let attendanceRecords = db.attendance.filter(
-      (a) => a.staffId === req.params.id,
-    );
-
-    if (month && year) {
-      attendanceRecords = attendanceRecords.filter((a) => {
-        const date = new Date(a.date);
-        return (
-          date.getMonth() + 1 === parseInt(month as string) &&
-          date.getFullYear() === parseInt(year as string)
-        );
-      });
+    const staff = db.staff.find((s) => s.id === staffId);
+    if (!staff) {
+      res.status(404).json({ error: "Staff not found" });
+      return;
     }
 
-    const summary: AttendanceSummary = {
-      totalDays: attendanceRecords.length,
-      present: attendanceRecords.filter((a) => a.status === "PRESENT").length,
-      absent: attendanceRecords.filter((a) => a.status === "ABSENT").length,
-      late: attendanceRecords.filter((a) => a.status === "LATE").length,
-      onLeave: attendanceRecords.filter((a) => a.status === "ON_LEAVE").length,
-      avgWorkHours:
-        attendanceRecords.length > 0
-          ? (
-              attendanceRecords.reduce(
-                (sum, a) => sum + (a.workHours || 0),
-                0,
-              ) / attendanceRecords.length
-            ).toFixed(2)
-          : "0",
-    };
+    const qualifications = (db.qualifications || []).filter(
+      (q) => q.staffId === staffId,
+    );
 
-    res.json(summary);
+    res.json(qualifications);
   },
 );
 
+// GET /api/staff/:id/qualifications/highest
+server.get(
+  "/api/staff/:id/qualifications/highest",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const staffId = req.params.id;
+
+    const staff = db.staff.find((s) => s.id === staffId);
+    if (!staff) {
+      res.status(404).json({ error: "Staff not found" });
+      return;
+    }
+
+    const qualifications = (db.qualifications || []).filter(
+      (q) => q.staffId === staffId,
+    );
+
+    const highest = qualifications.find((q) => q.isHighest === true) || null;
+    res.json(highest);
+  },
+);
+
+// GET /api/qualifications?staffId=&level=&year=&page=&limit=
+server.get(
+  "/api/qualifications",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const { staffId, level, year, page = "1", limit = "20" } = req.query;
+
+    let qualifications = db.qualifications || [];
+
+    if (staffId) {
+      qualifications = qualifications.filter(
+        (q) => q.staffId === (staffId as string),
+      );
+    }
+
+    if (level) {
+      qualifications = qualifications.filter(
+        (q) => q.level?.toLowerCase() === (level as string).toLowerCase(),
+      );
+    }
+
+    if (year) {
+      qualifications = qualifications.filter(
+        (q) => q.year === (year as string),
+      );
+    }
+
+    const pageNum = parseInt(page as string);
+    const limitNum = parseInt(limit as string);
+    const startIndex = (pageNum - 1) * limitNum;
+    const endIndex = startIndex + limitNum;
+    const total = qualifications.length;
+    const paginated = qualifications.slice(startIndex, endIndex);
+
+    res.json({
+      data: paginated,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+        hasNextPage: endIndex < total,
+        hasPrevPage: pageNum > 1,
+      },
+    });
+  },
+);
+
+// GET /api/qualifications/:id
+server.get(
+  "/api/qualifications/:id",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const qualification = (db.qualifications || []).find(
+      (q) => q.id === req.params.id,
+    );
+
+    if (!qualification) {
+      res.status(404).json({ error: "Qualification not found" });
+      return;
+    }
+
+    res.json(qualification);
+  },
+);
+
+// POST /api/staff/:id/qualifications
+server.post(
+  "/api/staff/:id/qualifications",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const staffId = req.params.id;
+
+    const staff = db.staff.find((s) => s.id === staffId);
+    if (!staff) {
+      res.status(404).json({ error: "Staff not found" });
+      return;
+    }
+
+    const { degree, institution, year, level, isHighest } = req.body;
+
+    if (!degree || !institution || !year || !level) {
+      res
+        .status(400)
+        .json({ error: "degree, institution, year, and level are required" });
+      return;
+    }
+
+    if (isHighest) {
+      (db.qualifications || []).forEach((q) => {
+        if (q.staffId === staffId) q.isHighest = false;
+      });
+    }
+
+    const existing = db.qualifications || [];
+    const newQual = {
+      id: `qual_${Date.now()}`,
+      staffId,
+      degree,
+      institution,
+      year,
+      level,
+      isHighest: isHighest === true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    existing.push(newQual);
+    db.qualifications = existing;
+
+    res.status(201).json(newQual);
+  },
+);
+
+// PUT /api/qualifications/:id
+server.put(
+  "/api/qualifications/:id",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const qualifications = db.qualifications || [];
+    const index = qualifications.findIndex((q) => q.id === req.params.id);
+
+    if (index === -1) {
+      res.status(404).json({ error: "Qualification not found" });
+      return;
+    }
+
+    const existing = qualifications[index];
+    const { degree, institution, year, level, isHighest } = req.body;
+
+    if (isHighest === true) {
+      qualifications.forEach((q) => {
+        if (q.staffId === existing.staffId) q.isHighest = false;
+      });
+    }
+
+    const updated = {
+      ...existing,
+      degree: degree ?? existing.degree,
+      institution: institution ?? existing.institution,
+      year: year ?? existing.year,
+      level: level ?? existing.level,
+      isHighest: isHighest !== undefined ? isHighest : existing.isHighest,
+      updatedAt: new Date().toISOString(),
+    };
+
+    qualifications[index] = updated;
+    db.qualifications = qualifications;
+
+    res.json(updated);
+  },
+);
+
+// PATCH /api/qualifications/:id
+server.patch(
+  "/api/qualifications/:id",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const qualifications = db.qualifications || [];
+    const index = qualifications.findIndex((q) => q.id === req.params.id);
+
+    if (index === -1) {
+      res.status(404).json({ error: "Qualification not found" });
+      return;
+    }
+
+    const existing = qualifications[index];
+
+    if (req.body.isHighest === true) {
+      qualifications.forEach((q) => {
+        if (q.staffId === existing.staffId) q.isHighest = false;
+      });
+    }
+
+    const updated = {
+      ...existing,
+      ...req.body,
+      id: existing.id,
+      staffId: existing.staffId,
+      updatedAt: new Date().toISOString(),
+    };
+
+    qualifications[index] = updated;
+    db.qualifications = qualifications;
+
+    res.json(updated);
+  },
+);
+
+// DELETE /api/qualifications/:id
+server.delete(
+  "/api/qualifications/:id",
+  (req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const qualifications = db.qualifications || [];
+    const index = qualifications.findIndex((q) => q.id === req.params.id);
+
+    if (index === -1) {
+      res.status(404).json({ error: "Qualification not found" });
+      return;
+    }
+
+    const deleted = qualifications.splice(index, 1)[0];
+    db.qualifications = qualifications;
+
+    res.json({ message: "Qualification deleted successfully", id: deleted.id });
+  },
+);
+
+// GET /api/qualifications/stats/by-level
+server.get(
+  "/api/qualifications/stats/by-level",
+  (_req: AuthRequest, res: Response): void => {
+    const db = getDb();
+    const qualifications = db.qualifications || [];
+
+    const levelCounts = new Map<string, number>();
+    qualifications.forEach((q) => {
+      if (q.isHighest) {
+        levelCounts.set(q.level, (levelCounts.get(q.level) || 0) + 1);
+      }
+    });
+
+    const result = Array.from(levelCounts.entries())
+      .map(([level, count]) => ({ level, count }))
+      .sort((a, b) => b.count - a.count);
+
+    res.json(result);
+  },
+);
+
+
+server.get("/api/staff/:id/employment", (req, res) => {
+  const db = getDb();
+  const staffId = req.params.id;
+
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 3;
+
+  const all = (db.employmentHistory || []).filter(
+    h => h.staffId === staffId
+  );
+
+  const start = (page - 1) * limit;
+  const paginated = all.slice(start, start + limit);
+
+  res.json({
+    data: paginated,
+    nextPage: start + limit < all.length ? page + 1 : null
+  });
+});
+
+// trying to get leave balance for a staff member
+
+server.get("/api/staff/:id/leave-balances", (req, res) => {
+  const db = getDb();
+  const staffId = req.params.id;
+
+  const leaves = db.leaves.filter(l => l.staffId === staffId);
+  const types = db.leaveTypes;
+
+  const balances = types.map(type => {
+    const used = leaves
+      .filter(l => l.leaveTypeId === type.id && l.status === "APPROVED")
+      .reduce((sum, l) => sum + l.totalDays, 0);
+
+    return {
+      leaveTypeId: type.id,
+      name: type.name,
+      allowed: type.allowedDays,
+      used,
+      remaining: type.allowedDays - used
+    };
+  });
+
+  res.json(balances);
+});
+
+// leaves history for a staff paginated
+
+server.get("/api/staff/:id/leaves", (req, res) => {
+  const db = getDb();
+  const staffId = req.params.id;
+
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 3;
+
+  const staffLeaves = db.leaves
+    .filter(l => l.staffId === staffId)
+    .sort((a,b)=> new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+  const start = (page - 1) * limit;
+  const paginated = staffLeaves.slice(start, start + limit);
+
+  res.json({
+    data: paginated,
+    nextPage: start + limit < staffLeaves.length ? page + 1 : null
+  });
+});
+
+
+// Attendance summary for a staff member
+
+server.get("/api/staff/:id/attendance/summary", (req, res) => {
+  const db = getDb();
+  const { month, year, page = "1", limit = "5" } = req.query;
+
+  let attendanceRecords = db.attendance.filter(
+    a => a.staffId === req.params.id
+  );
+
+  if (month && year) {
+    attendanceRecords = attendanceRecords.filter(a => {
+      const date = new Date(a.date);
+      return (
+        date.getMonth() + 1 === parseInt(month as string) &&
+        date.getFullYear() === parseInt(year as string)
+      );
+    });
+  }
+
+  // ---------- SUMMARY ----------
+  const summary = {
+    totalDays: attendanceRecords.length,
+    present: attendanceRecords.filter(a => a.status === "PRESENT").length,
+    absent: attendanceRecords.filter(a => a.status === "ABSENT").length,
+    late: attendanceRecords.filter(a => a.status === "LATE").length,
+    onLeave: attendanceRecords.filter(a => a.status === "ON_LEAVE").length,
+    avgWorkHours:
+      attendanceRecords.length > 0
+        ? (
+            attendanceRecords.reduce(
+              (sum, a) => sum + (a.workHours || 0),
+              0
+            ) / attendanceRecords.length
+          ).toFixed(2)
+        : "0"
+  };
+
+  // ---------- PAGINATION ----------
+  const pageNum = parseInt(page as string);
+  const limitNum = parseInt(limit as string);
+  const start = (pageNum - 1) * limitNum;
+  const paginated = attendanceRecords.slice(start, start + limitNum);
+
+  res.json({
+    summary,
+    logs: paginated,
+    nextPage:
+      start + limitNum < attendanceRecords.length
+        ? pageNum + 1
+        : null
+  })
+}) 
+
+
+
 // Leave balance for a staff member
+
 server.get(
   "/api/staff/:id/leave/balance",
   (req: AuthRequest, res: Response): void => {

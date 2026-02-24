@@ -214,7 +214,7 @@ export function EmployeeSidebar() {
             {/*My Profile*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/:userid/profile">
+                <Link to={`/employee/profile`}>
                   <User />
                   My Profile
                 </Link>
@@ -223,7 +223,7 @@ export function EmployeeSidebar() {
             {/*Apply Leave*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/:userid/leave">
+                <Link to='/employee/leave'>
                   <Calendar />
                   Apply Leave
                 </Link>
@@ -232,7 +232,7 @@ export function EmployeeSidebar() {
             {/*My Attendance*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/:userid/attendance">
+                <Link to="/employee/attendance">
                   <Clock />
                   My Attendance
                 </Link>
