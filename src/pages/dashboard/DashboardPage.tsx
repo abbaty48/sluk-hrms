@@ -94,7 +94,7 @@ export function AdminSidebar() {
             {/*Attendance*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/attendance">
+                <Link to="/admin/attendance">
                   <Clock />
                   Attendance
                 </Link>

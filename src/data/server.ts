@@ -34,6 +34,7 @@ import type {
   LeaveBalance,
   LeaveRequest,
 } from '../types/leave-management.types'
+import { hrmsATTENDANCE_ENDPOINTS } from "./attendance-api-endpoints.ts";
 
 // Get current directory
 const filename =
@@ -1600,6 +1601,8 @@ server.get(
   },
 );
 
+// ATTENDANCE ENDPOINTS
+hrmsATTENDANCE_ENDPOINTS(server, getDb)
 // Apply auth middleware to protected routes
 server.use("/api/*", authMiddleware);
 

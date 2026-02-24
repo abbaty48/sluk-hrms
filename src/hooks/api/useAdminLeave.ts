@@ -1,7 +1,7 @@
-import { queryClient, sleep } from "@sluk/src/lib/utils";
-import type { TPagination } from "@sluk/src/types/types";
+import { queryClient, sleep } from "@/lib/utils";
+import type { TPagination } from "@/types/types";
 import { useMutation, useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
-import type { LeaveType, LeaveStats, LeaveTypeDistribution, LeaveFilters, LeaveResponse } from "@sluk/src/types/leave-management.types";
+import type { LeaveType, LeaveStats, LeaveTypeDistribution, LeaveFilters, LeaveResponse } from "@/types/leave-management.types";
 
 
 /**
@@ -46,7 +46,7 @@ export function useLeavesAPI(searchCriteria?: SearchCriteria) {
         getNextPageParam: (lastPage) => lastPage?.pagination.hasNextPage ?
             lastPage.pagination.page + 1 : undefined
         ,
-        getPreviousPageParam: (firstPage) => firstPage?.pagination.hasPreviousPage ?
+        getPreviousPageParam: (firstPage) => firstPage?.pagination.hasPrevPage ?
             firstPage.pagination.page - 1 : undefined,
     })
 

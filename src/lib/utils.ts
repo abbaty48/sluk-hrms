@@ -12,7 +12,7 @@ export async function sleep(duration = 1000) {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 30000, // 30 seconds
       retry: (failureCount, error) => {
         // Don't retry for 4xx errors
         if (
@@ -28,7 +28,7 @@ export const queryClient = new QueryClient({
         // Retry up to 3 times for other errors
         return failureCount < 3;
       },
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
     },
     mutations: {
       retry: 1,

@@ -40853,7 +40853,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "LATE",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -40937,7 +40937,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "LATE",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -40949,7 +40949,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "ABSENT",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41129,7 +41129,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "ON_LEAVE",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41177,7 +41177,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "LATE",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41201,7 +41201,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "ABSENT",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41225,7 +41225,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "ON_LEAVE",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41261,7 +41261,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "ON_LEAVE",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41273,7 +41273,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "ABSENT",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41357,7 +41357,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "ABSENT",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41393,7 +41393,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "LATE",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41405,7 +41405,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "LATE",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41417,7 +41417,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "ABSENT",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41429,7 +41429,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "ON_LEAVE",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"
@@ -41441,7 +41441,7 @@
       "checkIn": "2025-02-13T08:00:00.000Z",
       "checkOut": "2025-02-13T17:00:00.000Z",
       "workHours": 8.0,
-      "status": "PRESENT",
+      "status": "ABSENT",
       "remarks": null,
       "createdAt": "2025-02-13T08:00:00.000Z",
       "updatedAt": "2025-02-13T17:00:00.000Z"

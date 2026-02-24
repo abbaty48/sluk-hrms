@@ -1,4 +1,5 @@
 import type { LeaveRequest, LeaveType } from "./leave-management.types";
+import type { Attendance } from "./attendance.types";
 import type { Request } from "express";
 // Enums
 export type UserRole = "ADMIN" | "MANAGER" | "EMPLOYEE";
@@ -82,18 +83,6 @@ export interface Rank {
   updatedAt: string;
 }
 
-export interface Attendance {
-  id: string;
-  staffId: string;
-  date: string;
-  checkIn: string | null;
-  checkOut: string | null;
-  workHours: number | null;
-  status: AttendanceStatus;
-  remarks: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
 
 
 
@@ -143,14 +132,14 @@ export interface Announcement {
 // Database Interface
 export interface Database {
   users: User[];
-  staff: Staff[];
-  departments: Department[];
   ranks: Rank[];
-  attendance: Attendance[];
-  leaves: LeaveRequest[];
-  leaveTypes: LeaveType[];
+  staff: Staff[];
   payrolls: Payroll[];
   documents: Document[];
+  leaves: LeaveRequest[];
+  leaveTypes: LeaveType[];
+  attendance: Attendance[];
+  departments: Department[];
   announcements: Announcement[];
 }
 

@@ -20,23 +20,29 @@ function App() {
               index: true,
               path: "/admin",
               lazy: () =>
-                import("./pages/dashboard/admin/dashboard/AdminDashboard"),
+                import("@/pages/dashboard/admin/dashboard/AdminDashboard"),
             },
             {
               path: "/admin/employees",
               lazy: () =>
                 import(
-                  "@sluk/src/pages/dashboard/admin/employees/AdminEmployeesPageIndex"
+                  "@/pages/dashboard/admin/employees/AdminEmployeesPageIndex"
                 ),
             },
             {
               path: "/admin/leave",
               lazy: () =>
                 import(
-                  "@sluk/src/pages/dashboard/admin/leave/AdminLeavePageIndex"
+                  "@/pages/dashboard/admin/leave/AdminLeavePageIndex"
                 ),
             },
-
+            {
+              path: "/admin/attendance",
+              lazy: () =>
+                import(
+                  "@/pages/dashboard/admin/attendance/AdminAttendancePage"
+                ),
+            },
           ],
         },
       ],
