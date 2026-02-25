@@ -34,7 +34,8 @@ export default function Appointment() {
     return <AppointmentSkeleton />
   }
 
-  if (!staff) return null
+  if (!staff)
+     return null
 
   return (
     <div className="m-4 grid md:grid-cols-2 gap-6">
@@ -61,5 +62,5 @@ export default function Appointment() {
       </div>
 
     </div>
-  );
+  )
 }
