@@ -29,7 +29,6 @@ import {
   ChartBar,
   Calendar,
   UserCircle,
-  DollarSign,
   LogOutIcon,
   GraduationCap,
   ChevronsUpDown,
@@ -100,19 +99,10 @@ export function AdminSidebar() {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            {/*Payroll*/}
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link to="/payroll">
-                  <DollarSign />
-                  Payroll
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
             {/*Reports*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/reports">
+                <Link to="admin/reports">
                   <ChartBar />
                   Reports
                 </Link>

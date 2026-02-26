@@ -35,6 +35,7 @@ import type {
   LeaveRequest,
 } from '../types/leave-management.types'
 import { hrmsATTENDANCE_ENDPOINTS } from "./attendance-api-endpoints.ts";
+import { hrmsANALYTICS_ENDPOINTS } from "./analytic-api-endpoints.ts";
 
 // Get current directory
 const filename =
@@ -587,7 +588,6 @@ server.get(
   },
 );
 
-// Add staff
 
 // Monthly attendance trend (for line/area chart)
 server.get(
@@ -1602,7 +1602,8 @@ server.get(
 );
 
 // ATTENDANCE ENDPOINTS
-hrmsATTENDANCE_ENDPOINTS(server, getDb)
+hrmsATTENDANCE_ENDPOINTS(server, getDb);
+hrmsANALYTICS_ENDPOINTS(server, getDb);
 // Apply auth middleware to protected routes
 server.use("/api/*", authMiddleware);
 
@@ -1625,9 +1626,7 @@ server.listen(PORT, () => {
   console.log("  GET    /api/staff/:id/details");
   console.log("  GET    /api/staff/:id/attendance/summary");
   console.log("  GET    /api/staff/:id/leave/balance");
-  console.log(
-    "  GET    /api/staff/search?q=name&department=dept_1&page=1&limit=20",
-  );
+  console.log("  GET    /api/staff/search?q=name&department=dept_1&page=1&limit=20");
   console.log("  GET    /api/staff/statistics");
   console.log("  GET    /api/departments");
   console.log("  GET    /api/departments/summary");
@@ -1649,14 +1648,17 @@ server.listen(PORT, () => {
   console.log("  PATCH  /api/leaves/:id/status");
   console.log("  GET    /api/leaves/pending?departmentId=dept_1");
   console.log("  GET    /api/staff/:id/leaves?year=2025&status=APPROVED");
-  console.log(
-    "  GET    /api/departments/:id/leaves/calendar?month=2&year=2025",
-  );
-  console.log(
-    "  GET    /api/leaves/conflicts?departmentId=dept_1&startDate=...&endDate=...",
-  );
+  console.log("  GET    /api/departments/:id/leaves/calendar?month=2&year=2025");
+  console.log("  GET    /api/leaves/conflicts?departmentId=dept_1&startDate=...&endDate=...");
   console.log("  GET    /api/staff/:id/leave/eligibility?leaveTypeId=lt_1");
   console.log("  POST   /api/leaves/validate");
+  console.log("\n🏖️  Report Analytic Endpoints:");
+  console.log("  GET    /api/analytics/staff-strength-years");
+  console.log("  GET    /api/analytics/staff-by-category");
+  console.log("  GET    /api/analytics/staff-by-department");
+  console.log("  GET    /api/analytics/monthly-leave-usage");
+  console.log("  GET    /api/analytics/payroll-breakdown");
+  console.log("  GET    /api/analytics/summary");
   console.log("\n💡 Tip: Use ?_embed to include related resources");
   console.log("💡 Example: /api/staff?_expand=department");
 });

@@ -43,6 +43,13 @@ function App() {
                   "@/pages/dashboard/admin/attendance/AdminAttendancePage"
                 ),
             },
+            {
+              path: "/admin/reports",
+              lazy: () =>
+                import(
+                  "@/pages/dashboard/admin/reports/AdminReportAnalyticPage"
+                ),
+            },
           ],
         },
       ],

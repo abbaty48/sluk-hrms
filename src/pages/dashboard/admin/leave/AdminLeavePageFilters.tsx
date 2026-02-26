@@ -84,7 +84,6 @@ export function AdminLeavePageFilters() {
             </Card>
 
             {/* Dialogs */}
-
             <DatePickerDialog
                 date={fromDate}
                 open={isFromDateOpen}

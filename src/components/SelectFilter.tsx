@@ -4,13 +4,14 @@ import {
   SelectValue,
   SelectContent,
   SelectTrigger,
-} from "@sluk/src/components/ui/select";
-import { Suspense } from "react";
+} from "@/components/ui/select";
 import { Loader } from "lucide-react";
-import { QueryErrorBoundary } from "@sluk/src/components/ErrorBoundary";
+import { Suspense, type ReactNode } from "react";
+import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 
 type FilterProps = {
-  placeholder?: string;
+  value?: string | undefined;
+  placeholder?: ReactNode;
   children: React.ReactNode;
   defaultValue?: string | undefined;
   onValueChange: (value?: string) => void;
@@ -18,6 +19,7 @@ type FilterProps = {
 
 export function SelectFilter({
   children,
+  value,
   placeholder,
   defaultValue,
   onValueChange,
@@ -25,11 +27,12 @@ export function SelectFilter({
 }: FilterProps) {
   return (
     <Select
+      value={value}
       defaultValue={defaultValue}
       onValueChange={onValueChange}
       {...props}
     >
-      <SelectTrigger className="w-full max-w-48">
+      <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
