@@ -183,8 +183,11 @@ export interface Payroll {
   month: number;
   year: number;
   basicSalary: number;
+  totalAllowances: number;
+  paymentDate: string | null;
   allowances: Record<string, number>;
   deductions: Record<string, number>;
+  totalDeductions: number;
   grossSalary: number;
   netSalary: number;
   status: string;
@@ -193,6 +196,7 @@ export interface Payroll {
   paidAt: string | null;
   createdAt: string;
   updatedAt: string;
+
 }
 
 export interface Document {
