@@ -182,7 +182,7 @@ server.post("/api/auth/register", (req: AuthRequest, res: Response): void => {
   };
 
   res.status(201).json(response);
-});
+})
 
 // Dashboard stats endpoint with month-over-month comparisons
 server.get("/api/dashboard/stats", (_req: AuthRequest, res: Response): void => {
@@ -234,6 +234,174 @@ server.get("/api/dashboard/stats", (_req: AuthRequest, res: Response): void => {
   };
 
   res.json(stats);
+});
+
+// employee dashboard endpoint
+
+server.get("/api/staff/:id/dashboard", (req: Request, res: Response): void => {
+  const db = getDb();
+
+  // ✅ Get staffId from URL
+  const staffId = req.params.id;
+
+  if (!staffId) {
+    res.status(400).json({ message: "Staff ID is required" });
+    return;
+  }
+
+  // ── STAFF ─────────────────────────────────────────
+  const staff = db.staff.find((s) => s.id === staffId);
+
+  if (!staff) {
+    res.status(404).json({ message: "Staff not found" });
+    return;
+  }
+
+  const department = db.departments.find(
+    (d) => d.id === staff.departmentId
+  );
+
+  const rank = db.ranks.find(
+    (r) => r.id === staff.rankId
+  );
+
+  // ── LEAVE BALANCES ────────────────────────────────
+  const staffLeaves = db.leaves.filter(
+    (l) => l.staffId === staffId
+  );
+
+  const leaveBalances = db.leaveTypes.map((type) => {
+    const used = staffLeaves
+      .filter(
+        (l) =>
+          l.leaveTypeId === type.id &&
+          l.status === "APPROVED"
+      )
+      .reduce((sum, l) => sum + l.totalDays, 0);
+
+    return {
+      leaveTypeId: type.id,
+      name: type.name,
+      allowed: type.allowedDays,
+      used,
+      remaining: type.allowedDays - used,
+      paidLeave: type.paidLeave,
+      carryForward: type.carryForward,
+    };
+  });
+
+  const totalLeaveBalance = {
+    totalAllowed: leaveBalances.reduce((sum, b) => sum + b.allowed, 0),
+    totalUsed: leaveBalances.reduce((sum, b) => sum + b.used, 0),
+    totalRemaining: leaveBalances.reduce((sum, b) => sum + b.remaining, 0),
+    breakdown: leaveBalances,
+  };
+
+  // ── ATTENDANCE (CURRENT MONTH) ────────────────────
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+
+  const monthAttendance = db.attendance.filter((a) => {
+    if (a.staffId !== staffId) return false;
+
+    const d = new Date(a.date);
+
+    return (
+      d.getMonth() + 1 === currentMonth &&
+      d.getFullYear() === currentYear
+    );
+  });
+
+  const presentDays = monthAttendance.filter(
+    (a) =>
+      a.status === "PRESENT" ||
+      a.status === "LATE"
+  ).length;
+
+  const attendanceRate =
+    monthAttendance.length > 0
+      ? Number(
+          (
+            (presentDays / monthAttendance.length) *
+            100
+          ).toFixed(1)
+        )
+      : 0;
+
+  const attendance = {
+    totalDays: monthAttendance.length,
+    present: monthAttendance.filter((a) => a.status === "PRESENT").length,
+    absent: monthAttendance.filter((a) => a.status === "ABSENT").length,
+    late: monthAttendance.filter((a) => a.status === "LATE").length,
+    onLeave: monthAttendance.filter((a) => a.status === "ON_LEAVE").length,
+    attendanceRate: `${attendanceRate}%`,
+    avgWorkHours:
+      monthAttendance.length > 0
+        ? Number(
+            (
+              monthAttendance.reduce(
+                (sum, a) => sum + (a.workHours || 0),
+                0
+              ) / monthAttendance.length
+            ).toFixed(2)
+          )
+        : 0,
+  };
+
+  // ── SALARY ────────────────────────────────────────
+  const latestPayroll =
+    db.payrolls
+      .filter((p) => p.staffId === staffId)
+      .sort(
+        (a, b) =>
+          new Date(b.month).getTime() -
+          new Date(a.month).getTime()
+      )[0] ?? null;
+
+  const salary = latestPayroll
+    ? {
+        netSalary: latestPayroll.netSalary,
+        month: latestPayroll.month,
+        status: latestPayroll.status,
+      }
+    : null;
+
+  // ── RECENT LEAVES ─────────────────────────────────
+  const recentLeaves = staffLeaves
+    .sort(
+      (a, b) =>
+        new Date(b.startDate).getTime() -
+        new Date(a.startDate).getTime()
+    )
+    .slice(0, 5)
+    .map((l) => {
+      const type = db.leaveTypes.find(
+        (t) => t.id === l.leaveTypeId
+      );
+
+      return {
+        id: l.id,
+        leaveType: type?.name ?? "Unknown",
+        startDate: l.startDate,
+        endDate: l.endDate,
+        totalDays: l.totalDays,
+        status: l.status,
+        reason: l.reason,
+      };
+    });
+
+  // ── RESPONSE ──────────────────────────────────────
+  res.json({
+    staffId,
+    name: staff.name,
+    department: department?.name ?? null,
+    rank: rank?.title ?? staff.rank,
+    leaveBalance: totalLeaveBalance,
+    attendance,
+    salary,
+    recentLeaves,
+  });
 });
 
 // Staff with department and rank details
