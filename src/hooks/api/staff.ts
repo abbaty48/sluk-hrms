@@ -1,5 +1,5 @@
 import { useQuery,useInfiniteQuery } from "@tanstack/react-query"
-import type { Qualification, Staff,EmploymentHistory} from "@/types/types"
+import type { Qualification, Staff,EmploymentHistory,EmploymentHistoryResponse} from "@/types/types"
 import { sleep } from "@sluk/src/lib/utils"
 
 
@@ -35,10 +35,7 @@ export function useStaffQualificationsAPI(staffId: string) {
 }
 
 
-interface EmploymentHistoryResponse {
-  data: EmploymentHistory[]
-  nextPage: number | null
-}
+
 
 const fetchEmploymentHistory = async (
   staffId: string,
