@@ -43,12 +43,18 @@ function App() {
               lazy: () =>
                 import(
                   "@/pages/dashboard/employee/EmployeeAttendance"
-                ),}
+                ),},
+            {path: "/employee-dashboard",
+              lazy: () =>
+                import(
+                  "@/pages/dashboard/employee/EmployeeDashboard"
+                ),},
           ],
         },
       ],
     },
         // { path: '/auth', lazy: () => import('@/pages/auth/AuthPage') },
+          {path :'*', element : <h1>404 Not Found</h1>}
   ]);
 
   return (
