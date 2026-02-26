@@ -205,7 +205,7 @@ export function EmployeeSidebar() {
             {/*Dashboard*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild isActive>
-                <Link to="/">
+                <Link to="/employee-dashboard">
                   <LayoutDashboardIcon />
                   Dashboard
                 </Link>
