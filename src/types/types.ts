@@ -239,6 +239,7 @@ export interface Database {
   announcements: Announcement[];
   qualifications: Qualification[];  
   employmentHistory: EmploymentHistory[];
+  EmploymentHistoryResponse: EmploymentHistoryResponse[];
   
 }
 
@@ -404,6 +405,10 @@ export interface StaffDetails extends Staff {
 export interface EnrichedStaff extends Staff {
   department?: Department;
   rankDetails?: Rank;
+}
+export interface EmploymentHistoryResponse {
+  data: EmploymentHistory[]
+  nextPage: number | null
 }
 
 // Auth DTOs
