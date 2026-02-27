@@ -1,11 +1,14 @@
-import type { Department } from "@sluk/src/types/types";
+import type { Department, Rank } from "@sluk/src/types/types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
+/**
+ *
+ * @returns Department[]
+ */
 export const useAdminDepartment = () => {
   const { data } = useSuspenseQuery<Department[]>({
     queryKey: ["departments"],
     queryFn: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
       return fetch("/api/departments")
         .then((res) => res.json())
         .catch((error) => {
@@ -15,4 +18,23 @@ export const useAdminDepartment = () => {
   });
 
   return { data };
+};
+
+/**
+ *
+ * @returns Rank[]
+ */
+export const useAdminRank = () => {
+  const { data } = useSuspenseQuery<{ data: Rank[] }>({
+    queryKey: ["ranks"],
+    queryFn: async () => {
+      return fetch("/api/ranks")
+        .then((res) => res.json())
+        .catch((error) => {
+          throw error;
+        });
+    },
+  });
+
+  return { ranks: data.data };
 };

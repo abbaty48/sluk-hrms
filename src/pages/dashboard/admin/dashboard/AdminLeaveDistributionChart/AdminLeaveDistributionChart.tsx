@@ -10,7 +10,7 @@ import { Suspense } from "react";
 import { FileBox } from "lucide-react";
 import { QueryErrorBoundary } from "@sluk/src/components/ErrorBoundary";
 import { Card, CardContent, CardHeader } from "@sluk/src/components/ui/card";
-import { useLeaveTypeDistributionAPI } from "@sluk/src/hooks/api/useAdminApi";
+import { useLeaveTypeDistributionAPI } from "@sluk/src/hooks/api/useAdminLeave";
 
 export function AdminLeaveDistributionChart() {
   return (

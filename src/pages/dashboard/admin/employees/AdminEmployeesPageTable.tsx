@@ -1,4 +1,5 @@
 import { AdminEmployeeTableSkeleton } from "./AdminEmployeeTableSkeleton";
+import { AdminEmployeesPageFeatures } from "./AdminEmployeesPageFeatures";
 import { QueryErrorBoundary } from "@sluk/src/components/ErrorBoundary";
 import { LucideMail, LucidePhone, LucideEllipsis } from "lucide-react";
 import { useAdminEmployeesPageHook } from "./AdminEmployeesPageHook";
@@ -24,11 +25,26 @@ function EmployeeTable({
   departmentId,
 }: EmployeeTable) {
   const [rowsPerPage, setRowsPerPage] = useState("5");
-  const { data, isFetching, pagination, fetchNextPage, fetchPreviousPage } =
-    useStaffAPI({ limit: rowsPerPage, q, status, cadre, sort, departmentId });
+  const {
+    data,
+    refetch,
+    isFetching,
+    pagination,
+    fetchNextPage,
+    fetchPreviousPage,
+  } = useStaffAPI({ limit: rowsPerPage, q, status, cadre, sort, departmentId });
 
   return (
     <>
+      {/* Features bar with import/export */}
+      <div className="p-4 border-b border-border">
+        <AdminEmployeesPageFeatures
+          align="right"
+          currentPageData={data}
+          onImportComplete={() => refetch()}
+        />
+      </div>
+
       {isFetching ? (
         <AdminEmployeeTableSkeleton rows={pagination.limit} />
       ) : (

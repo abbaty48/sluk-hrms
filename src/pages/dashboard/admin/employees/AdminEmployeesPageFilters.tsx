@@ -1,4 +1,4 @@
-import { useAdminDepartment } from "@sluk/src/hooks/api/useAdminDepartment";
+import { DepartmentSelectItems } from "@sluk/src/components/DeparmentSelectItems";
 import { useAdminEmployeesPageHook } from "./AdminEmployeesPageHook";
 import { Card, CardContent } from "@sluk/src/components/ui/card";
 import { SelectFilter } from "@sluk/src/components/SelectFilter";
@@ -27,24 +27,14 @@ function AdminEmployeesPageSearchFilter() {
 function AdminEmployeesPageDepartmentFilter() {
   const { dispatch } = useAdminEmployeesPageHook();
 
-  function DepartmentFilter() {
-    const { data } = useAdminDepartment();
-
-    return data.map((department) => (
-      <SelectItem key={department.id} value={department.id}>
-        {department.name}
-      </SelectItem>
-    ));
-  }
-
   return (
     <SelectFilter
       placeholder={"Filter by department."}
-      onSelectedFilterChange={(value) =>
+      onValueChange={(value) =>
         dispatch({ type: "SET_DEPARTMENT_ID", value: value! })
       }
     >
-      <DepartmentFilter />
+      <DepartmentSelectItems />
     </SelectFilter>
   );
 }
@@ -54,7 +44,7 @@ function AdminEmployeesPageStatusFilter() {
   return (
     <SelectFilter
       placeholder={"Filter by status."}
-      onSelectedFilterChange={(value) =>
+      onValueChange={(value) =>
         dispatch({ type: "SET_STATUS", value: value! })
       }
     >
@@ -73,9 +63,7 @@ function AdminEmployeesPageRoleFilter() {
   return (
     <SelectFilter
       placeholder={"Filter by role."}
-      onSelectedFilterChange={(value) =>
-        dispatch({ type: "SET_CANDRE", value: value! })
-      }
+      onValueChange={(value) => dispatch({ type: "SET_CANDRE", value: value! })}
     >
       <SelectItem value={"null"}>All Roles</SelectItem>
       <SelectItem value="Teaching">Teaching</SelectItem>
@@ -91,9 +79,7 @@ function AdminEmployeesPageSortFilter() {
   return (
     <SelectFilter
       placeholder={"Sort Filter."}
-      onSelectedFilterChange={(value) =>
-        dispatch({ type: "SET_SORT", value: value! })
-      }
+      onValueChange={(value) => dispatch({ type: "SET_SORT", value: value! })}
     >
       <SelectItem value={"null"}>All Names</SelectItem>
       <SelectItem value="name_asc" defaultChecked>

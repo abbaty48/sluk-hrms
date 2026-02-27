@@ -9,6 +9,7 @@ const EmployeeProfilePage = lazy(() => import('@/pages/dashboard/employee/Employ
 
 
 
+import { Toaster } from "sonner";
 
 function App() {
   const routers = createBrowserRouter([
@@ -24,13 +25,27 @@ function App() {
               index: true,
               path: "/admin",
               lazy: () =>
-                import("./pages/dashboard/admin/dashboard/AdminDashboard"),
+                import("@/pages/dashboard/admin/dashboard/AdminDashboard"),
             },
             {
               path: "/admin/employees",
               lazy: () =>
                 import(
-                  "@sluk/src/pages/dashboard/admin/employees/AdminEmployeesPageIndex"
+                  "@/pages/dashboard/admin/employees/AdminEmployeesPageIndex"
+                ),
+            },
+            {
+              path: "/admin/leave",
+              lazy: () =>
+                import(
+                  "@/pages/dashboard/admin/leave/AdminLeavePageIndex"
+                ),
+            },
+            {
+              path: "/admin/attendance",
+              lazy: () =>
+                import(
+                  "@/pages/dashboard/admin/attendance/AdminAttendancePage"
                 ),
             },
             { path: '/employee/profile', element: <EmployeeProfilePage /> },
@@ -62,6 +77,7 @@ function App() {
       <ThemeProvider>
         <RouterProvider router={routers} />
          
+        <Toaster />
       </ThemeProvider>
     </QueryClientProvider>
   );

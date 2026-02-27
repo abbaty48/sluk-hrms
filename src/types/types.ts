@@ -1,5 +1,6 @@
+import type { LeaveRequest, LeaveType } from "./leave-management.types";
+import type { Attendance } from "./attendance.types";
 import type { Request } from "express";
-
 // Enums
 export type UserRole = "ADMIN" | "MANAGER" | "EMPLOYEE";
 export type Gender = "Male" | "Female";
@@ -23,7 +24,6 @@ export type AttendanceStatus =
   | "ON_LEAVE"
   | "WEEKEND"
   | "HOLIDAY";
-export type LeaveStatus = "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
 
 // Entity Interfaces
 export interface User {
@@ -117,6 +117,8 @@ export interface LeaveBalance {
   remaining: number;
 }
 
+export type TStaffWithDepartmentName = Staff & { department: { name: string } };
+
 export interface Department {
   id: string;
   name: string;
@@ -136,46 +138,8 @@ export interface Rank {
   updatedAt: string;
 }
 
-export interface Attendance {
-  id: string;
-  staffId: string;
-  date: string;
-  checkIn: string | null;
-  checkOut: string | null;
-  workHours: number | null;
-  status: AttendanceStatus;
-  remarks: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
 
-export interface LeaveType {
-  id: string;
-  name: string;
-  allowedDays: number;
-  carryForward: boolean;
-  maxCarryForward: number;
-  paidLeave: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
 
-export interface Leave {
-  id: string;
-  staffId: string;
-  leaveTypeId: string;
-  startDate: string;
-  endDate: string;
-  totalDays: number;
-  reason: string;
-  status: LeaveStatus;
-  approverId: string | null;
-  approverComments: string | null;
-  appliedAt: string;
-  respondedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export interface Payroll {
   id: string;
@@ -227,15 +191,18 @@ export interface Announcement {
 // Database Interface
 export interface Database {
   users: User[];
-  staff: Staff[];
-  departments: Department[];
   ranks: Rank[];
   attendance: Attendance[];
   leaves: Leave[];
   leaveTypes: LeaveType[];
   balance: LeaveBalance[];
+  staff: Staff[];
   payrolls: Payroll[];
   documents: Document[];
+  leaves: LeaveRequest[];
+  leaveTypes: LeaveType[];
+  attendance: Attendance[];
+  departments: Department[];
   announcements: Announcement[];
   qualifications: Qualification[];  
   employmentHistory: EmploymentHistory[];
@@ -379,12 +346,7 @@ export interface AttendanceSummary {
   avgWorkHours: string;
 }
 
-export interface LeaveBalance {
-  leaveType: string;
-  allowed: number;
-  used: number;
-  remaining: number;
-}
+
 
 export interface DepartmentSummary {
   departmentId: string;
@@ -464,4 +426,47 @@ export interface StaffStatistics {
     status: string;
     count: number;
   }[];
+}
+
+/* STAFF FORM DATA */
+export type StaffFormData = {
+  // Personal Details
+  personalStaffNumber: string; //staffNo
+  personalStaffName: string; //name
+  personalStaffCategory: string; //staffCategory
+  personalGender: string; //gender
+  personalMaritalStatus: string; // -- MISSING
+  personalDateOfBirth: string; //dateOfBirth
+  personalPhone: string; //phone
+  personalEmail: string; //email
+  personalPlaceOfBirth: string; //address
+  personalNationality: string; // -- MISSING
+  personalState: string; //state
+  personalLocalGovernment: string; //lga
+  personalReligion: string; // -- MISSING
+
+  // Appointment Details
+  appointmentCadre: string; //cadre
+  appointmentRank: string; //rank
+  appointmentNature: string; //natureOfAppointment
+  appointmentDateFirst: string; //dateOfFirstAppointment
+  appointmentDatePresent: string; // dateOfLastPromotion
+  appointmentUnitDepartment: string; //departmentId
+
+  // Location Details
+  locationTown: string; // -- MISSING
+  locationCountry: string; // -- MISSING
+  locationStaffStatus: string; //status
+  locationStaffStatusComment?: string; // -- MISSING
+  locationPermanentAddress: string; // -- MISSING
+};
+
+
+export type TPagination = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasPrevPage: boolean;
+  hasNextPage: boolean;
 }

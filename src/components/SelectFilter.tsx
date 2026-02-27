@@ -13,17 +13,22 @@ type FilterProps = {
   placeholder?: string;
   children: React.ReactNode;
   defaultValue?: string | undefined;
-  onSelectedFilterChange: (value?: string) => void;
+  onValueChange: (value?: string) => void;
 };
 
 export function SelectFilter({
   children,
   placeholder,
   defaultValue,
-  onSelectedFilterChange,
+  onValueChange,
+  ...props
 }: FilterProps) {
   return (
-    <Select defaultValue={defaultValue} onValueChange={onSelectedFilterChange}>
+    <Select
+      defaultValue={defaultValue}
+      onValueChange={onValueChange}
+      {...props}
+    >
       <SelectTrigger className="w-full max-w-48">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>

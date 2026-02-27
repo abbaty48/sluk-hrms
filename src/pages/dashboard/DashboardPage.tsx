@@ -85,7 +85,7 @@ export function AdminSidebar() {
             {/*Leave Management*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/calendar">
+                <Link to="/admin/leave">
                   <Calendar />
                   Leave Management
                 </Link>
@@ -94,7 +94,7 @@ export function AdminSidebar() {
             {/*Attendance*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/attendance">
+                <Link to="/admin/attendance">
                   <Clock />
                   Attendance
                 </Link>
