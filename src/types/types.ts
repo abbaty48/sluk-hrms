@@ -1,15 +1,19 @@
 import type { LeaveRequest, LeaveType } from "./leave-management.types";
 import type { Attendance } from "./attendance.types";
 import type { Request } from "express";
+import type {
+  Notification,
+  NotificationPreferences,
+} from "./notifications-types";
 // Enums
 export type UserRole = "ADMIN" | "MANAGER" | "EMPLOYEE";
-export type Gender = "Male" | "Female";
 export type StaffCategory = "Senior" | "Junior";
+export type Gender = "Male" | "Female";
 export type Cadre =
   | "Teaching"
+  | "Technical"
   | "Non-Teaching"
-  | "Administrative"
-  | "Technical";
+  | "Administrative";
 export type StaffStatus =
   | "Employed"
   | "On Leave"
@@ -83,9 +87,6 @@ export interface Rank {
   updatedAt: string;
 }
 
-
-
-
 export interface Payroll {
   id: string;
   staffId: string;
@@ -141,6 +142,8 @@ export interface Database {
   attendance: Attendance[];
   departments: Department[];
   announcements: Announcement[];
+  notifications: Notification[];
+  notificationPreferences: NotificationPreferences[];
 }
 
 // Request Interfaces
@@ -196,8 +199,6 @@ export interface AttendanceSummary {
   onLeave: number;
   avgWorkHours: string;
 }
-
-
 
 export interface DepartmentSummary {
   departmentId: string;
@@ -308,7 +309,6 @@ export type StaffFormData = {
   locationPermanentAddress: string; // -- MISSING
 };
 
-
 export type TPagination = {
   page: number;
   limit: number;
@@ -316,4 +316,4 @@ export type TPagination = {
   totalPages: number;
   hasPrevPage: boolean;
   hasNextPage: boolean;
-}
+};

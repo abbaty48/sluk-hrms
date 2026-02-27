@@ -32,9 +32,7 @@ function App() {
             {
               path: "/admin/leave",
               lazy: () =>
-                import(
-                  "@/pages/dashboard/admin/leave/AdminLeavePageIndex"
-                ),
+                import("@/pages/dashboard/admin/leave/AdminLeavePageIndex"),
             },
             {
               path: "/admin/attendance",
@@ -48,6 +46,13 @@ function App() {
               lazy: () =>
                 import(
                   "@/pages/dashboard/admin/reports/AdminReportAnalyticPage"
+                ),
+            },
+            {
+              path: "/admin/notifications",
+              lazy: () =>
+                import(
+                  "@/pages/dashboard/admin/notifications/AdminNotificationsPage"
                 ),
             },
           ],

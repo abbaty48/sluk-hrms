@@ -30,5 +30,5 @@
       "@/*": ["./src/*"],
     },
   },
-  "include": ["src", "hooks/components", "src/components/ui"],
+  "include": ["src", "hooks/components", "src/components/ui", "notification-generator.js", "notifications-generator.js"],
 }

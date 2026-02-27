@@ -1,3 +1,7 @@
+import type {
+  Notification,
+  NotificationConfig,
+} from "@/types/notifications-types";
 import { QueryClient } from "@tanstack/react-query";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -5,6 +9,7 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
 export async function sleep(duration = 1000) {
   await new Promise((resolve) => setTimeout(resolve, duration));
 }
@@ -35,3 +40,58 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+// Notification configuration helper
+export function notificationConfig(
+  type: Notification["type"],
+): NotificationConfig {
+  const configs: Record<Notification["type"], NotificationConfig> = {
+    leave_approved: {
+      icon: "CalendarDays",
+      color: "text-success",
+      borderColor: "border-l-success",
+    },
+    leave_rejected: {
+      icon: "CircleAlert",
+      color: "text-danger",
+      borderColor: "border-l-danger",
+    },
+    leave_pending: {
+      icon: "CalendarDays",
+      color: "text-accent",
+      borderColor: "border-l-accent",
+    },
+    payroll: {
+      icon: "DollarSign",
+      color: "text-primary",
+      borderColor: "border-l-primary",
+    },
+    contract: {
+      icon: "CircleAlert",
+      color: "text-warning",
+      borderColor: "border-l-warning",
+    },
+    system: {
+      icon: "Info",
+      color: "text-info",
+      borderColor: "border-l-info",
+    },
+    profile: {
+      icon: "CircleCheckBig",
+      color: "text-success",
+      borderColor: "border-l-success",
+    },
+    attendance: {
+      icon: "Clock",
+      color: "text-primary",
+      borderColor: "border-l-primary",
+    },
+    general: {
+      icon: "Bell",
+      color: "text-primary",
+      borderColor: "border-l-border",
+    },
+  };
+
+  return configs[type] || configs.general;
+}

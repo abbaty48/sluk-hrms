@@ -1,4 +1,5 @@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useUnreadCount } from "@/hooks/api/useAdminNotificationsAPI";
 import { UserContext } from "@sluk/src/states/contexts/UserContext";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Bell, Shield, User } from "lucide-react";
@@ -43,6 +44,24 @@ function RoleSwitcher() {
   );
 }
 
+function NotificationBadge() {
+  const { data: unreadCount } = useUnreadCount();
+
+  if (!unreadCount || unreadCount === 0) return null;
+
+  return (
+    <Link
+      to="/admin/notifications"
+      className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-gray-100 hover:text-gray-900 h-10 w-10 relative"
+    >
+      <Bell className="stroke-primary" />
+      <span className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+        {unreadCount > 99 ? "99+" : unreadCount}
+      </span>
+    </Link>
+  );
+}
+
 export function DashboardHeader() {
   return (
     <header className="sticky top-0 z-30 flex flex-1 items-center gap-4 border-b pl-1 pr-4 py-3 w-full bg-card">
@@ -51,16 +70,7 @@ export function DashboardHeader() {
         {/*Role Switcher*/}
         <RoleSwitcher />
         {/*notifications*/}
-        <Link
-          to="/notifications"
-          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-gray-100 hover:text-gray-900 h-10 w-10 relative"
-        >
-          <Bell className="stroke-primary" />
-          <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
-          </span>
-        </Link>
+        <NotificationBadge />
       </div>
     </header>
   );

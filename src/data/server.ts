@@ -1,8 +1,3 @@
-import type { Response, NextFunction } from "express";
-import jsonServer from "json-server";
-import { fileURLToPath } from "url";
-import path from "path";
-import fs from "fs";
 import type {
   User,
   Database,
@@ -19,7 +14,7 @@ import type {
   AttendanceSummary,
   StaffPerDepartment,
   MonthlyAttendanceTrend,
-} from "../types/types";
+} from "@/types/types";
 import type {
   LeaveTypeDistribution,
   LeaveCalendarEntry,
@@ -33,9 +28,15 @@ import type {
   LeaveStatus,
   LeaveBalance,
   LeaveRequest,
-} from '../types/leave-management.types'
-import { hrmsATTENDANCE_ENDPOINTS } from "./attendance-api-endpoints.ts";
+} from "@/types/leave-management.types";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import jsonServer from "json-server";
+import type { Response, NextFunction } from "express";
 import { hrmsANALYTICS_ENDPOINTS } from "./analytic-api-endpoints.ts";
+import { hrmsATTENDANCE_ENDPOINTS } from "./attendance-api-endpoints.ts";
+import { hrmsNOTIFICATION_ENDPOINTS } from "./notifications-endpoints.ts";
 
 // Get current directory
 const filename =
@@ -328,18 +329,17 @@ server.get(
       avgWorkHours:
         attendanceRecords.length > 0
           ? (
-            attendanceRecords.reduce(
-              (sum, a) => sum + (a.workHours || 0),
-              0,
-            ) / attendanceRecords.length
-          ).toFixed(2)
+              attendanceRecords.reduce(
+                (sum, a) => sum + (a.workHours || 0),
+                0,
+              ) / attendanceRecords.length
+            ).toFixed(2)
           : "0",
     };
 
     res.json(summary);
   },
 );
-
 
 // Department filter
 server.get("/api/departments", (_req: AuthRequest, res: Response): void => {
@@ -587,7 +587,6 @@ server.get(
     res.json(chartData);
   },
 );
-
 
 // Monthly attendance trend (for line/area chart)
 server.get(
@@ -927,38 +926,59 @@ server.patch(
 // Get leaves with pagination
 server.get("/api/leaves", (req: AuthRequest, res: Response): void => {
   const { leaves, leaveTypes, departments, staff: staffs } = getDb();
-  const { search, type, status, fromDate, toDate, page = "1", limit = "5" } = req.query;
+  const {
+    search,
+    type,
+    status,
+    fromDate,
+    toDate,
+    page = "1",
+    limit = "5",
+  } = req.query;
 
   let enrichedLeaves: LeaveRequest[] = leaves;
 
   if (search) {
     const searchTerm = (search as string).toLowerCase();
-    const _staffs = staffs.filter(staff => staff.name.toLowerCase().includes(searchTerm))
+    const _staffs = staffs.filter((staff) =>
+      staff.name.toLowerCase().includes(searchTerm),
+    );
     if (_staffs.length < 0) {
-      res.status(404).send({ data: [] })
+      res.status(404).send({ data: [] });
     }
-    enrichedLeaves.filter(l => _staffs.some(s => s.id === l.staffId))
+    enrichedLeaves.filter((l) => _staffs.some((s) => s.id === l.staffId));
   }
 
-
   if (type) {
-    enrichedLeaves = enrichedLeaves.filter(l => l.leaveTypeId === type)
+    enrichedLeaves = enrichedLeaves.filter((l) => l.leaveTypeId === type);
   }
 
   if (status) {
-    enrichedLeaves = enrichedLeaves.filter((l) => l.status.toLowerCase() === status.toString().toLocaleLowerCase());
+    enrichedLeaves = enrichedLeaves.filter(
+      (l) => l.status.toLowerCase() === status.toString().toLocaleLowerCase(),
+    );
   }
 
   if (fromDate && toDate) {
-    enrichedLeaves = enrichedLeaves.filter(l => l.startDate === new Date(String(fromDate)).toLocaleDateString("en-CA") && l.endDate === new Date(String(toDate)).toLocaleDateString("en-CA"))
+    enrichedLeaves = enrichedLeaves.filter(
+      (l) =>
+        l.startDate ===
+          new Date(String(fromDate)).toLocaleDateString("en-CA") &&
+        l.endDate === new Date(String(toDate)).toLocaleDateString("en-CA"),
+    );
   }
 
   if (fromDate) {
-    enrichedLeaves = enrichedLeaves.filter((l) => l.startDate === new Date(String(fromDate)).toLocaleDateString("en-CA"));
+    enrichedLeaves = enrichedLeaves.filter(
+      (l) =>
+        l.startDate === new Date(String(fromDate)).toLocaleDateString("en-CA"),
+    );
   }
 
   if (toDate) {
-    enrichedLeaves = enrichedLeaves.filter((l) => l.endDate === new Date(String(toDate)).toLocaleDateString("en-CA"));
+    enrichedLeaves = enrichedLeaves.filter(
+      (l) => l.endDate === new Date(String(toDate)).toLocaleDateString("en-CA"),
+    );
   }
 
   // Pagination
@@ -977,17 +997,17 @@ server.get("/api/leaves", (req: AuthRequest, res: Response): void => {
     return {
       id: leave.id,
       staff: {
-        id: staff?.id ?? 'NOT AVAILABLE',
-        name: staff?.name ?? 'NOT AVAILABLE',
-        staffNo: staff?.staffNo ?? 'NOT AVAILABLE',
-        department: department?.name ?? 'NOT AVAILABLE',
+        id: staff?.id ?? "NOT AVAILABLE",
+        name: staff?.name ?? "NOT AVAILABLE",
+        staffNo: staff?.staffNo ?? "NOT AVAILABLE",
+        department: department?.name ?? "NOT AVAILABLE",
       },
       status: leave.status,
       reason: leave.reason,
       endDate: leave.endDate,
       startDate: leave.startDate,
       allowedDays: leave.totalDays,
-      leaveType: leaveType?.name || 'UNKNOWN',
+      leaveType: leaveType?.name || "UNKNOWN",
       duration: `${leave.startDate} ${leave.endDate}`,
     };
   });
@@ -1036,17 +1056,17 @@ server.get("/api/leaves/pending", (req: AuthRequest, res: Response): void => {
     return {
       id: leave.id,
       staff: {
-        id: staff?.id ?? 'NOT AVAILABLE',
-        name: staff?.name ?? 'NOT AVAILABLE',
-        staffNo: staff?.staffNo ?? 'NOT AVAILABLE',
-        department: department?.name ?? 'NOT AVAILABLE',
+        id: staff?.id ?? "NOT AVAILABLE",
+        name: staff?.name ?? "NOT AVAILABLE",
+        staffNo: staff?.staffNo ?? "NOT AVAILABLE",
+        department: department?.name ?? "NOT AVAILABLE",
       },
       status: leave.status,
       reason: leave.reason,
       endDate: leave.endDate,
       startDate: leave.startDate,
       allowedDays: leave.totalDays,
-      leaveType: leaveType?.name || 'UNKNOWN',
+      leaveType: leaveType?.name || "UNKNOWN",
       duration: `${leave.startDate} ${leave.endDate}`,
     };
   });
@@ -1291,107 +1311,138 @@ server.get(
 );
 
 // Leave Types
-server.get('/api/leaves/types', (_req: AuthRequest, res: Response) => {
+server.get("/api/leaves/types", (_req: AuthRequest, res: Response) => {
   const leavesTypes = getDb().leaveTypes || [];
-  res.json(leavesTypes)
-})
-// Leave Types POST
-server.post('/api/leaves/types', (req: AuthRequest, res: Response) => {
-  const leavesTypes = getDb().leaveTypes;
-  const { name, allowedDays, carryForward = false, maxCarryForward = 0 } = req.body;
+  res.json(leavesTypes);
+});
 
-  if (!name || name === '' || name?.trim() === '') {
-    res.status(400).send('Leave type name is required.');
+// Leave Types POST
+server.post("/api/leaves/types", (req: AuthRequest, res: Response) => {
+  const leavesTypes = getDb().leaveTypes;
+  const {
+    name,
+    allowedDays,
+    carryForward = false,
+    maxCarryForward = 0,
+  } = req.body;
+
+  if (!name || name === "" || name?.trim() === "") {
+    res.status(400).send("Leave type name is required.");
     return;
   }
 
   if (!allowedDays || allowedDays < 0) {
-    res.status(400).send('Leave type allowed day is required and must be greater than zero.');
+    res
+      .status(400)
+      .send(
+        "Leave type allowed day is required and must be greater than zero.",
+      );
     return;
   }
 
-  if (leavesTypes.some(l => l.name === name)) {
+  if (leavesTypes.some((l) => l.name === name)) {
     res.status(400).send(`Leave with '${name}' already exist.`);
     return;
   }
 
   leavesTypes.push({
-    id: 'lt_' + Date.now(),
+    id: "lt_" + Date.now(),
     name,
     allowedDays,
     carryForward,
     maxCarryForward,
-    paidLeave: false
+    paidLeave: false,
   });
-  res.status(204).send('A new leave type has successfully been added.');
-})
-// Leave Types PATCH
-server.put('/api/leaves/types/:id', (req: AuthRequest, res: Response) => {
-  let leavesTypes = getDb().leaveTypes;
-  const { id } = req.params
-  const { name, allowedDays, carryForward = false, maxCarryForward = 0 } = req.body;
+  res.status(204).send("A new leave type has successfully been added.");
+});
 
-  if (!name || name === '' || name?.trim() === '') {
-    res.status(400).send('Leave type name is required.');
+// Leave Types PATCH
+server.put("/api/leaves/types/:id", (req: AuthRequest, res: Response) => {
+  let leavesTypes = getDb().leaveTypes;
+  const { id } = req.params;
+  const {
+    name,
+    allowedDays,
+    carryForward = false,
+    maxCarryForward = 0,
+  } = req.body;
+
+  if (!name || name === "" || name?.trim() === "") {
+    res.status(400).send("Leave type name is required.");
     return;
   }
 
   if (!allowedDays || allowedDays < 0) {
-    res.status(400).send('Leave type allowed day is required and must be greater than zero.');
+    res
+      .status(400)
+      .send(
+        "Leave type allowed day is required and must be greater than zero.",
+      );
     return;
   }
 
-
-  const targetLeave = leavesTypes.find(l => l.id === id);
+  const targetLeave = leavesTypes.find((l) => l.id === id);
 
   if (!targetLeave) {
-    res.status(404).send('Leave does not exist.');
+    res.status(404).send("Leave does not exist.");
     return;
   }
 
-  if (leavesTypes.some(l => l.name === name)) {
+  if (leavesTypes.some((l) => l.name === name)) {
     res.status(400).send(`Leave with '${name}' already exist.`);
     return;
   }
 
-  leavesTypes = leavesTypes.map(l => l.id === id ? {
-    id,
-    name,
-    allowedDays,
-    carryForward,
-    maxCarryForward,
-    paidLeave: false
-  } : l);
+  leavesTypes = leavesTypes.map((l) =>
+    l.id === id
+      ? {
+          id,
+          name,
+          allowedDays,
+          carryForward,
+          maxCarryForward,
+          paidLeave: false,
+        }
+      : l,
+  );
 
-  res.status(204).send('A leave type is updated successfully.');
-})
+  res.status(204).send("A leave type is updated successfully.");
+});
+
 // LEAVE TYPES DELETE
-server.delete('/api/leaves/types/:id', (req: AuthRequest, res: Response) => {
-  getDb().leaveTypes = getDb().leaveTypes.filter(leave => leave.id !== req.params.id);
-  res.status(204).send('Deleted')
-})
+server.delete("/api/leaves/types/:id", (req: AuthRequest, res: Response) => {
+  getDb().leaveTypes = getDb().leaveTypes.filter(
+    (leave) => leave.id !== req.params.id,
+  );
+  res.status(204).send("Deleted");
+});
+
 // LEAVE STATS
-server.get('/api/leaves/stats', (_, res: Response) => {
-  let total = 0, approved = 0, rejected = 0, pending = 0;
+server.get("/api/leaves/stats", (_, res: Response) => {
+  let total = 0,
+    approved = 0,
+    rejected = 0,
+    pending = 0;
 
   const stats = getDb().leaves.reduceRight((_, leave) => {
-
-    if (leave.status === 'APPROVED') ++approved;
-    if (leave.status === 'REJECTED') ++rejected;
-    if (leave.status === 'PENDING') ++pending;
+    if (leave.status === "APPROVED") ++approved;
+    if (leave.status === "REJECTED") ++rejected;
+    if (leave.status === "PENDING") ++pending;
     total++;
 
-    return { total, approved, rejected, pending }
+    return { total, approved, rejected, pending };
   }, {});
 
-  res.json(stats)
-})
+  res.json(stats);
+});
 
 // DELETE A LEAVE
-server.delete('/api/leaves', (req: AuthRequest, res: Response) => {
-  getDb().leaveTypes = getDb().leaveTypes.filter(leave => leave.id !== req.params.id);
-  res.status(204)
-})
+server.delete("/api/leaves", (req: AuthRequest, res: Response) => {
+  getDb().leaveTypes = getDb().leaveTypes.filter(
+    (leave) => leave.id !== req.params.id,
+  );
+  res.status(204);
+});
 
 // Validate leave application
 server.post("/api/leaves/validate", (req: AuthRequest, res: Response): void => {
@@ -1602,8 +1653,9 @@ server.get(
 );
 
 // ATTENDANCE ENDPOINTS
-hrmsATTENDANCE_ENDPOINTS(server, getDb);
 hrmsANALYTICS_ENDPOINTS(server, getDb);
+hrmsATTENDANCE_ENDPOINTS(server, getDb);
+hrmsNOTIFICATION_ENDPOINTS(server, getDb);
 // Apply auth middleware to protected routes
 server.use("/api/*", authMiddleware);
 
@@ -1620,13 +1672,16 @@ server.listen(PORT, () => {
   console.log("  POST   /api/auth/login");
   console.log("  POST   /api/auth/register");
   console.log("  GET    /api/dashboard/stats");
+  console.log("💡 Example: /api/staff?_expand=department");
   console.log("  GET    /api/staff");
   console.log("  POST   /api/staff");
   console.log("  GET    /api/staff/:id");
   console.log("  GET    /api/staff/:id/details");
   console.log("  GET    /api/staff/:id/attendance/summary");
   console.log("  GET    /api/staff/:id/leave/balance");
-  console.log("  GET    /api/staff/search?q=name&department=dept_1&page=1&limit=20");
+  console.log(
+    "  GET    /api/staff/search?q=name&department=dept_1&page=1&limit=20",
+  );
   console.log("  GET    /api/staff/statistics");
   console.log("  GET    /api/departments");
   console.log("  GET    /api/departments/summary");
@@ -1648,8 +1703,12 @@ server.listen(PORT, () => {
   console.log("  PATCH  /api/leaves/:id/status");
   console.log("  GET    /api/leaves/pending?departmentId=dept_1");
   console.log("  GET    /api/staff/:id/leaves?year=2025&status=APPROVED");
-  console.log("  GET    /api/departments/:id/leaves/calendar?month=2&year=2025");
-  console.log("  GET    /api/leaves/conflicts?departmentId=dept_1&startDate=...&endDate=...");
+  console.log(
+    "  GET    /api/departments/:id/leaves/calendar?month=2&year=2025",
+  );
+  console.log(
+    "  GET    /api/leaves/conflicts?departmentId=dept_1&startDate=...&endDate=...",
+  );
   console.log("  GET    /api/staff/:id/leave/eligibility?leaveTypeId=lt_1");
   console.log("  POST   /api/leaves/validate");
   console.log("\n🏖️  Report Analytic Endpoints:");
@@ -1659,6 +1718,16 @@ server.listen(PORT, () => {
   console.log("  GET    /api/analytics/monthly-leave-usage");
   console.log("  GET    /api/analytics/payroll-breakdown");
   console.log("  GET    /api/analytics/summary");
+  console.log("\n  Notification Endpoints:");
+  console.log("  GET    /api/notifications");
+  console.log("  GET    /api/notifications/:id");
+  console.log("  PATCH  /api/notifications/mark-read");
+  console.log("  PATCH  /api/notifications/mark-all-read");
+  console.log("  PATCH  /api/notifications/:id/mark-unread");
+  console.log("  DELETE /api/notifications/:id");
+  console.log("  DELETE /api/notifications/delete-read");
+  console.log("  POST   /api/notifications");
+  console.log("  GET    /api/notifications/stats");
+  console.log("  GET/PATCH `/api/notifications/preferences` ");
   console.log("\n💡 Tip: Use ?_embed to include related resources");
-  console.log("💡 Example: /api/staff?_expand=department");
 });

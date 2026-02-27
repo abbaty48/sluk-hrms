@@ -111,7 +111,7 @@ export function AdminSidebar() {
             {/*Notifications*/}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/notifications">
+                <Link to="/admin/notifications">
                   <Bell /> Notifications
                 </Link>
               </SidebarMenuButton>
