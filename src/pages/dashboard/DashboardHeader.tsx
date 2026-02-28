@@ -1,23 +1,29 @@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useUnreadCount } from "@/hooks/api/useAdminNotificationsAPI";
-import { UserContext } from "@sluk/src/states/contexts/UserContext";
+import { UserContext } from "@/states/contexts/UserContext";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Link, useNavigate } from "react-router-dom";
 import { Bell, Shield, User } from "lucide-react";
-import { Link } from "react-router-dom";
 import { use } from "react";
 
 function RoleSwitcher() {
+  const navigate = useNavigate();
   const { roleView, handleRoleChange } = use(UserContext);
   const roles = [
     { label: "Admin", value: "as_admin", icon: <Shield /> },
     { label: "Employee", value: "as_employee", icon: <User /> },
   ];
+
+  const changeRole = (value: string) => {
+    handleRoleChange(value);
+    navigate(value === "as_employee" ? "/employee" : "/admin");
+  };
   return (
     <ToggleGroup
       variant={"outline"}
       type="single"
       size={"sm"}
-      defaultValue="as_admin"
+      defaultValue={roleView}
       className="hidden sm:flex items-center gap-2 rounded-full border px-1 py-1 transition-all"
     >
       {roles.map(({ label, value, icon }) => (
@@ -26,14 +32,11 @@ function RoleSwitcher() {
           value={value}
           name="role_switch"
           data-role={value}
-          aria-label={`Switchdark:bg-primary/20 to ${label} section.`}
-          style={{
-            border: "none",
-            borderRadius: "100px",
-          }}
-          onClick={() => handleRoleChange(value)}
+          onClick={() => changeRole(value)}
+          style={{ border: "none", borderRadius: "100px" }}
+          aria-label={`Switch dark:bg-primary/20 to ${label} section.`}
           className={`flex items-center gap-1.5 cursor-pointer
-            ${roleView === value ? "bg-primary! dark:bg-primary/20! text-white!" : ""}
+            ${roleView === value ? "bg-primary! text-white!" : ""}
              rounded-full px-3 py-1 text-xs font-medium transition-all text-primary shadow-sm`}
         >
           {icon}

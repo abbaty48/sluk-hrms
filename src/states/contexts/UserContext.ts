@@ -5,12 +5,16 @@ type UserContextHandlerType = {
   handleRoleChange: (role: string) => void;
 };
 
-export const initialUserContext = {
-  roleView: "as_admin",
-  handleRoleChange: (role: string) => {
-    return void role;
-  },
+
+
+export function initialUserContext() {
+  return {
+    roleView: window.location.pathname.startsWith('/admin') ? "as_admin" : "as_employee",
+    handleRoleChange: (role: string) => {
+      return void role;
+    },
+  }
 };
 
 export const UserContext =
-  createContext<UserContextHandlerType>(initialUserContext);
+  createContext<UserContextHandlerType>(initialUserContext());
