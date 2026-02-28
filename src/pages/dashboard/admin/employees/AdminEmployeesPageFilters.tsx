@@ -44,9 +44,7 @@ function AdminEmployeesPageStatusFilter() {
   return (
     <SelectFilter
       placeholder={"Filter by status."}
-      onValueChange={(value) =>
-        dispatch({ type: "SET_STATUS", value: value! })
-      }
+      onValueChange={(value) => dispatch({ type: "SET_STATUS", value: value! })}
     >
       <SelectItem value={"null"}>All Statuses</SelectItem>
       <SelectItem value="On Leave">On Leave</SelectItem>
