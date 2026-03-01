@@ -3,43 +3,41 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { EmployeeDashboardSkeleton } from "@sluk/src/components/Skeleton/EmployeeDashboardSkeletonn";
-import { DashboardError } from "@sluk/src/components/ErrorMessage/EmployeeDashboardRetry";
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { EmployeeDashboardSkeleton } from "@sluk/src/components/Skeleton/EmployeeDashboardSkeletonn"
+import { DashboardError } from "@sluk/src/components/ErrorMessage/EmployeeErrorRetry"
 import {
   Calendar,
   DollarSign,
   TrendingUp,
   CheckCircle2,
   AlertCircle,
-} from "lucide-react";
+} from "lucide-react"
 
-import { useEmployeeDashboard } from "@/hooks/api/useEmployeeDashboard";
+import { useEmployeeDashboard } from "@/hooks/api/useEmployeeDashboard"
 
- function EmployeeDashboard() {
-  const { data, isLoading } = useEmployeeDashboard("staff_1");
+function EmployeeDashboard() {
+  const { data, isLoading } = useEmployeeDashboard("staff_1")
 
-  if (isLoading) 
-    return <EmployeeDashboardSkeleton />;
 
-  if (!data) 
-    return <DashboardError />;
- 
-
-  const leave = data.leaveBalance;
-  const attendance = data.attendance;
-  const salary = data.salary;
+  if (isLoading) return <EmployeeDashboardSkeleton />
+  if (!data) return <DashboardError />
+   //if (isLoading) return <div>Loading...</div>
+  //if (isError || !data) return <div>Something went wrong</div>;
+    console.log("Employee Dashboard Data:", data)
+  const leave = data.leaveBalance
+  const attendance = data.attendance
+  const salary = data.salary
 
   const leavePercentage =
     leave.totalAllowed > 0
       ? (leave.totalUsed / leave.totalAllowed) * 100
-      : 0;
+      : 0
 
   return (
     <div className="space-y-8 p-6">
-
       {/* HEADER */}
       <div>
         <h1 className="text-2xl font-semibold">My Dashboard</h1>
@@ -50,7 +48,6 @@ import { useEmployeeDashboard } from "@/hooks/api/useEmployeeDashboard";
 
       {/* STATS */}
       <div className="grid md:grid-cols-3 gap-4">
-
         {/* LEAVE BALANCE */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -143,7 +140,6 @@ import { useEmployeeDashboard } from "@/hooks/api/useEmployeeDashboard";
 
       {/* LOWER SECTION */}
       <div className="grid md:grid-cols-2 gap-6">
-
         {/* RECENT LEAVES */}
         <Card>
           <CardHeader>
@@ -183,7 +179,7 @@ import { useEmployeeDashboard } from "@/hooks/api/useEmployeeDashboard";
           </CardContent>
         </Card>
 
-        {/* SIMPLE NOTIFICATIONS PLACEHOLDER */}
+        {/* QUICK INFO */}
         <Card>
           <CardHeader>
             <CardTitle>Quick Info</CardTitle>
@@ -213,4 +209,5 @@ import { useEmployeeDashboard } from "@/hooks/api/useEmployeeDashboard";
     </div>
   );
 }
-export const Component = EmployeeDashboard;
+
+export const Component = EmployeeDashboard

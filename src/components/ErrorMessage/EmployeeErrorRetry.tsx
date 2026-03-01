@@ -4,7 +4,7 @@ interface Props {
 }
 
 export  function DashboardError({
-  message = "Unable to load employee dashboard.",
+  message = "Unable to load employee .",
   onRetry,
 }: Props) {
   return (

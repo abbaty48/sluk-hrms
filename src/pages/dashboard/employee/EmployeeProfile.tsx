@@ -2,6 +2,7 @@ import ProfileAvatar from "@/components/Profile/ProfileAvatar"
 import ProfileTabs from "@/components/Profile/ProfileTabs"
 import { useStaff } from "@/hooks/api/staff"
 import { ProfileSkeleton} from '@/components/Skeleton/ProfileSkeleton'
+import { DashboardError } from "@sluk/src/components/ErrorMessage/EmployeeErrorRetry"
 
 
 export default function Profile() {
@@ -10,7 +11,7 @@ export default function Profile() {
   if (isLoading) 
     return <ProfileSkeleton/>
   if (!data) 
-    return <p>No profile</p>
+    return <DashboardError />
 
   return (
     <div className="space-y-6 m-6">

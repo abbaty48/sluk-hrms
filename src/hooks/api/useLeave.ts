@@ -1,9 +1,9 @@
-import { useSuspenseQuery , useInfiniteQuery, useMutation, useQueryClient} from '@tanstack/react-query'
+import {  useMutation, useQueryClient,useQuery,useInfiniteQuery} from '@tanstack/react-query'
 import type { LeaveApplication } from '@sluk/src/types/types'
 
 
 export function useLeaveBalances(staffId: string) {
-  const { data } = useSuspenseQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["leave-balances", staffId],
     queryFn: async () => {
       const res = await fetch(`/api/staff/${staffId}/leave-balances`)
@@ -12,27 +12,26 @@ export function useLeaveBalances(staffId: string) {
     }
   })
 
-  return { balances: data }
+  return { balances: data, isLoading, isError, refetch }
 }
 
 export function useLeaveHistory(staffId: string) {
-  return useInfiniteQuery({
-    queryKey: ["leave-history", staffId],
-    initialPageParam: 1,
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch } =
+    useInfiniteQuery({
+      queryKey: ["leave-history", staffId],
+      initialPageParam: 1,
+      queryFn: async ({ pageParam }) => {
+        const res = await fetch(
+          `/api/staff/${staffId}/leaves?page=${pageParam}&limit=3`
+        )
+        if (!res.ok) throw new Error("Failed to fetch leaves")
+        return res.json()
+      },
+      getNextPageParam: lastPage => lastPage.nextPage
+    })
 
-    queryFn: async ({ pageParam }) => {
-      const res = await fetch(
-        `/api/staff/${staffId}/leaves?page=${pageParam}&limit=3`
-      )
-      if (!res.ok) throw new Error("Failed to fetch leaves")
-      return res.json();
-    },
-
-    getNextPageParam: lastPage => lastPage.nextPage
-  })
+  return { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch }
 }
-
-
 // Additional hooks for applying  leave details can be added here
 
 

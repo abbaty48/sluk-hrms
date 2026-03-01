@@ -42,5 +42,5 @@ export  function EmployeeDashboardSkeleton() {
       </div>
 
     </div>
-  );
+  )
 }

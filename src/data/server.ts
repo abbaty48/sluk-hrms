@@ -238,11 +238,11 @@ server.get("/api/dashboard/stats", (_req: AuthRequest, res: Response): void => {
 
 // employee dashboard endpoint
 
-server.get("/api/staff/:id/dashboard", (req: Request, res: Response): void => {
+server.get("/api/staff/:id/dashboard", (req: AuthRequest, res: Response): void => {
   const db = getDb();
 
   // ✅ Get staffId from URL
-  const staffId = req.params.id;
+const staffId = req.params.id
 
   if (!staffId) {
     res.status(400).json({ message: "Staff ID is required" });

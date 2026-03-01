@@ -1,4 +1,5 @@
-export function MyLeaveSkeleton() {
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+export function LeaveBalanceSkeleton() {
   return (
     <div className="space-y-8">
 
@@ -47,5 +48,31 @@ export function MyLeaveSkeleton() {
       </div>
 
     </div>
+  )
+}
+
+
+export function LeaveHistorySkeleton() {
+  return (
+    <Card className="mx-2">
+      <CardHeader>
+        <div className="shimmer h-5 w-28 rounded-md" />
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="flex justify-between items-center bg-muted/40 rounded-lg p-4">
+            <div className="flex gap-4 items-start">
+              <div className="shimmer w-11 h-11 rounded-xl" />
+              <div className="space-y-2">
+                <div className="shimmer h-4 w-40 rounded-md" />
+                <div className="shimmer h-3 w-56 rounded-md" />
+                <div className="shimmer h-3 w-24 rounded-md" />
+              </div>
+            </div>
+            <div className="shimmer h-6 w-20 rounded-full" />
+          </div>
+        ))}
+      </CardContent>
+    </Card>
   )
 }
