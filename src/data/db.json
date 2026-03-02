@@ -43095,10 +43095,10 @@
   "leaveTypes": [
     {
       "id": "lt_1",
-      "name": "Annual Leave",
       "allowedDays": 30,
       "carryForward": true,
       "maxCarryForward": 6,
+      "name": "Annual Leave",
       "paidLeave": true
     },
     {
