@@ -4,21 +4,21 @@
 // ========================================
 
 import type {
-  Notification,
-  NotificationStats,
-  MarkAsReadRequest,
-  MarkAsReadResponse,
-  NotificationListResponse,
+  TNotification,
+  TNotificationStats,
+  TNotificationListResponse,
+  TMarkNotificationAsReadRequest,
+  TMarkNotificationAsReadResponse,
 } from "@/types/notifications-types.ts";
 import type { Application, Response } from "express";
-import type { Database, AuthRequest } from "@/types/types";
+import type { TDatabase, TAuthRequest } from "@/types/types";
 
 export function hrmsNOTIFICATION_ENDPOINTS(
   server: Application,
-  getDb: () => Database,
+  getDb: () => TDatabase,
 ) {
   // 1. Get Notifications (with pagination and filters)
-  server.get("/api/notifications", (req: AuthRequest, res: Response): void => {
+  server.get("/api/notifications", (req: TAuthRequest, res: Response): void => {
     const db = getDb();
     const {
       page = "1",
@@ -81,7 +81,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
     const endIndex = startIndex + limitNum;
     const paginatedData = notifications.slice(startIndex, endIndex);
 
-    const response: NotificationListResponse = {
+    const response: TNotificationListResponse = {
       data: paginatedData,
       pagination: {
         total,
@@ -100,7 +100,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
   // 2. Get Notification by ID
   server.get(
     "/api/notifications/:id",
-    (req: AuthRequest, res: Response): void => {
+    (req: TAuthRequest, res: Response): void => {
       const db = getDb();
       const { id } = req.params;
 
@@ -120,16 +120,16 @@ export function hrmsNOTIFICATION_ENDPOINTS(
   // 3. Mark Notification(s) as Read
   server.patch(
     "/api/notifications/mark-read",
-    (req: AuthRequest, res: Response): void => {
+    (req: TAuthRequest, res: Response): void => {
       const db = getDb();
-      const { notificationIds } = req.body as MarkAsReadRequest;
+      const { notificationIds } = req.body as TMarkNotificationAsReadRequest;
 
       if (!notificationIds || !Array.isArray(notificationIds)) {
         res.status(400).json({ error: "notificationIds array is required" });
         return;
       }
 
-      const updatedNotifications: Notification[] = [];
+      const updatedNotifications: TNotification[] = [];
       const now = new Date().toISOString();
 
       notificationIds.forEach((id) => {
@@ -146,10 +146,10 @@ export function hrmsNOTIFICATION_ENDPOINTS(
 
       // saveDb(db);
 
-      const response: MarkAsReadResponse = {
+      const response: TMarkNotificationAsReadResponse = {
         success: true,
         count: updatedNotifications.length,
-        notifications: updatedNotifications,
+        notifications: updatedNotifications
       };
 
       res.json(response);
@@ -159,11 +159,11 @@ export function hrmsNOTIFICATION_ENDPOINTS(
   // 4. Mark All as Read
   server.patch(
     "/api/notifications/mark-all-read",
-    (req: AuthRequest, res: Response): void => {
+    (req: TAuthRequest, res: Response): void => {
       const db = getDb();
       const now = new Date().toISOString();
 
-      const updatedNotifications: Notification[] = [];
+      const updatedNotifications: TNotification[] = [];
 
       db.notifications.forEach((notification) => {
         if (notification.userId === req.user?.staffId && !notification.read) {
@@ -175,7 +175,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
 
       // saveDb(db);
 
-      const response: MarkAsReadResponse = {
+      const response: TMarkNotificationAsReadResponse = {
         success: true,
         count: updatedNotifications.length,
         notifications: updatedNotifications,
@@ -188,7 +188,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
   // 5. Mark as Unread
   server.patch(
     "/api/notifications/:id/mark-unread",
-    (req: AuthRequest, res: Response): void => {
+    (req: TAuthRequest, res: Response): void => {
       const db = getDb();
       const { id } = req.params;
 
@@ -216,7 +216,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
   // 6. Delete Notification
   server.delete(
     "/api/notifications/:id",
-    (req: AuthRequest, res: Response): void => {
+    (req: TAuthRequest, res: Response): void => {
       const db = getDb();
       const { id } = req.params;
 
@@ -243,7 +243,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
   // 7. Delete All Read Notifications
   server.delete(
     "/api/notifications/delete-read",
-    (req: AuthRequest, res: Response): void => {
+    (req: TAuthRequest, res: Response): void => {
       const db = getDb();
 
       const initialLength = db.notifications.length;
@@ -265,7 +265,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
   );
 
   // 8. Create Notification (Admin/System use)
-  server.post("/api/notifications", (req: AuthRequest, res: Response): void => {
+  server.post("/api/notifications", (req: TAuthRequest, res: Response): void => {
     const db = getDb();
     const {
       icon,
@@ -286,7 +286,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
       return;
     }
 
-    const newNotification: Notification = {
+    const newNotification: TNotification = {
       id: `notif_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
       userId,
       icon,
@@ -314,7 +314,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
   // 9. Get Notification Statistics
   server.get(
     "/api/notifications/stats",
-    (req: AuthRequest, res: Response): void => {
+    (req: TAuthRequest, res: Response): void => {
       const db = getDb();
 
       const userNotifications = db.notifications.filter(
@@ -344,7 +344,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
         (n) => new Date(n.createdAt) >= weekAgo,
       ).length;
 
-      const stats: NotificationStats = {
+      const stats: TNotificationStats = {
         read,
         unread,
         weekCount,
@@ -360,7 +360,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
   // 10. Get/Update Notification Preferences
   server.get(
     "/api/notifications/preferences",
-    (req: AuthRequest, res: Response): void => {
+    (req: TAuthRequest, res: Response): void => {
       const db = getDb();
 
       let preferences = db.notificationPreferences?.find(
@@ -398,7 +398,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
 
   server.patch(
     "/api/notifications/preferences",
-    (req: AuthRequest, res: Response): void => {
+    (req: TAuthRequest, res: Response): void => {
       const db = getDb();
 
       if (!db.notificationPreferences) {

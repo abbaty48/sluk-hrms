@@ -7,11 +7,10 @@ import {
   TrendingDown,
 } from "lucide-react";
 import { Suspense } from "react";
-import type { DashboardStats } from "@/types/types";
 import { StatsShimmerGrid } from "./DashboardShimmer";
-import { Card, CardContent } from "@sluk/src/components/ui/card";
-import { useDashboardStatsAPI } from "@sluk/src/hooks/api/useAdminApi";
-import { QueryErrorBoundary } from "@sluk/src/components/ErrorBoundary";
+import { Card, CardContent } from "@/components/ui/card";
+import { useDashboardStatsAPI } from "@/hooks/api/useAdminApi";
+import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 
 export function AdminDashboardStats() {
   return (

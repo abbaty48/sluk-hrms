@@ -1,4 +1,4 @@
-import type { Department, Rank } from "@/types/types";
+import type { TDepartment, TRank } from "@/types/types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 /**
@@ -6,7 +6,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
  * @returns Department[]
  */
 export const useAdminDepartment = () => {
-  const { data } = useSuspenseQuery<Department[]>({
+  const { data } = useSuspenseQuery<TDepartment[]>({
     queryKey: ["departments"],
     queryFn: async () => {
       const resp = await fetch("/api/departments");
@@ -24,7 +24,7 @@ export const useAdminDepartment = () => {
  * @returns Rank[]
  */
 export const useAdminRank = () => {
-  const { data } = useSuspenseQuery<{ data: Rank[] }>({
+  const { data } = useSuspenseQuery<{ data: TRank[] }>({
     queryKey: ["ranks"],
     queryFn: async () => {
       return fetch("/api/ranks")

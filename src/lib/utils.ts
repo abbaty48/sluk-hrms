@@ -1,6 +1,6 @@
 import type {
-  Notification,
-  NotificationConfig,
+  TNotification,
+  TNotificationConfig,
 } from "@/types/notifications-types";
 import { QueryClient } from "@tanstack/react-query";
 import { clsx, type ClassValue } from "clsx";
@@ -18,6 +18,7 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 30000, // 30 seconds
+      refetchInterval: 5000,
       retry: (failureCount, error) => {
         // Don't retry for 4xx errors
         if (
@@ -43,9 +44,9 @@ export const queryClient = new QueryClient({
 
 // Notification configuration helper
 export function notificationConfig(
-  type: Notification["type"],
-): NotificationConfig {
-  const configs: Record<Notification["type"], NotificationConfig> = {
+  type: TNotification["type"],
+): TNotificationConfig {
+  const configs: Record<TNotification["type"], TNotificationConfig> = {
     leave_approved: {
       icon: "CalendarDays",
       color: "text-success",

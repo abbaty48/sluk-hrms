@@ -1,26 +1,26 @@
-import type { FieldErrors, Control, UseFormRegister } from "react-hook-form";
-import { Controller } from "react-hook-form";
 import {
   Select,
   SelectItem,
   SelectValue,
   SelectTrigger,
   SelectContent,
-} from "@sluk/src/components/ui/select";
+} from "@/components/ui/select";
 import { User } from "lucide-react";
-import { Input } from "@sluk/src/components/ui/input";
-import type { StaffFormData } from "@sluk/src/types/types";
-import { FieldError, FieldLabel } from "@sluk/src/components/ui/field";
-import { Card, CardContent, CardHeader } from "@sluk/src/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Controller } from "react-hook-form";
+import type { TStaffFormData } from "@/types/staff-types";
+import { FieldError, FieldLabel } from "@/components/ui/field";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import type { FieldErrors, Control, UseFormRegister } from "react-hook-form";
 
 export function AdminAddStaffPersonalDetails({
   errors,
   register,
   control,
 }: {
-  errors: FieldErrors<StaffFormData>;
-  register: UseFormRegister<StaffFormData>;
-  control: Control<StaffFormData>;
+  control: Control<TStaffFormData>;
+  errors: FieldErrors<TStaffFormData>;
+  register: UseFormRegister<TStaffFormData>;
 }) {
   return (
     <Card>

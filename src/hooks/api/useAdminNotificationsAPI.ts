@@ -1,17 +1,16 @@
 import type {
-  Notification,
-  NotificationStats,
-  MarkAsReadRequest,
-  MarkAsReadResponse,
-  NotificationPreferences,
-  NotificationQueryParams,
-  NotificationListResponse,
+  TNotificationStats,
+  TNotificationPreferences,
+  TNotificationQueryParams,
+  TNotificationListResponse,
+  TMarkNotificationAsReadRequest,
+  TMarkNotificationAsReadResponse,
 } from "@/types/notifications-types";
-import { queryClient } from "@sluk/src/lib/utils";
+import { queryClient } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 // 1. Get Notifications List
-export function useNotifications(params?: NotificationQueryParams) {
+export function useNotifications(params?: TNotificationQueryParams) {
   const queryParams = new URLSearchParams();
   if (params?.type) queryParams.set("type", params.type);
   if (params?.page) queryParams.set("page", params.page);
@@ -26,7 +25,7 @@ export function useNotifications(params?: NotificationQueryParams) {
     queryFn: async () => {
       const response = await fetch(`/api/notifications?${queryParams}`);
       if (!response.ok) throw new Error("Failed to fetch notifications");
-      return response.json() as Promise<NotificationListResponse>;
+      return response.json() as Promise<TNotificationListResponse>;
     },
     refetchInterval: 30000, // Refetch every 30 seconds
     staleTime: 10000, // Consider fresh for 10 seconds
@@ -53,7 +52,7 @@ export function useNotificationStats() {
     queryFn: async () => {
       const response = await fetch("/api/notifications/stats");
       if (!response.ok) throw new Error("Failed to fetch stats");
-      return response.json() as Promise<NotificationStats>;
+      return response.json() as Promise<TNotificationStats>;
     },
     refetchInterval: 60000, // Refetch every minute
   });
@@ -68,11 +67,11 @@ export function useMarkAsRead() {
       const response = await fetch("/api/notifications/mark-read", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notificationIds } as MarkAsReadRequest),
+        body: JSON.stringify({ notificationIds } as TMarkNotificationAsReadRequest),
       });
 
       if (!response.ok) throw new Error("Failed to mark as read");
-      return response.json() as Promise<MarkAsReadResponse>;
+      return response.json() as Promise<TMarkNotificationAsReadResponse>;
     },
     onSuccess: () => {
       // Invalidate all notification queries
@@ -92,7 +91,7 @@ export function useMarkAllAsRead() {
       });
 
       if (!response.ok) throw new Error("Failed to mark all as read");
-      return response.json() as Promise<MarkAsReadResponse>;
+      return response.json() as Promise<TMarkNotificationAsReadResponse>;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
@@ -186,7 +185,7 @@ export function useNotificationPreferences() {
     queryFn: async () => {
       const response = await fetch("/api/notifications/preferences");
       if (!response.ok) throw new Error("Failed to fetch preferences");
-      return response.json() as Promise<NotificationPreferences>;
+      return response.json() as Promise<TNotificationPreferences>;
     },
   });
 }
@@ -195,7 +194,7 @@ export function useUpdateNotificationPreferences() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (preferences: Partial<NotificationPreferences>) => {
+    mutationFn: async (preferences: Partial<TNotificationPreferences>) => {
       const response = await fetch("/api/notifications/preferences", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -220,7 +219,7 @@ export function useUnreadCount() {
     queryFn: async () => {
       const response = await fetch("/api/notifications?read=false&limit=1");
       if (!response.ok) throw new Error("Failed to fetch unread count");
-      const data = (await response.json()) as NotificationListResponse;
+      const data = (await response.json()) as TNotificationListResponse;
       return data.pagination.unreadCount;
     },
     refetchInterval: 30000, // Refetch every 30 seconds
@@ -228,7 +227,7 @@ export function useUnreadCount() {
 }
 
 // 12. Combined hook for notification page
-export function useNotificationsPage(params?: NotificationQueryParams) {
+export function useNotificationsPage(params?: TNotificationQueryParams) {
   const notifications = useNotifications(params);
   const stats = useNotificationStats();
   const markAsRead = useMarkAsRead();

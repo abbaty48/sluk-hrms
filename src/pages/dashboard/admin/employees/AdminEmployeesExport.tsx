@@ -1,5 +1,5 @@
-import type { TStaffWithDepartmentName as Staff } from "@sluk/src/types/types";
-import { useCSVExporter, type CSVColumn } from "@sluk/src/hooks/use-csv";
+import type { TStaffWithDepartmentName as Staff } from "@/types/staff-types";
+import { useCSVExporter, type CSVColumn } from "@/hooks/use-csv";
 import { LucideDownload, LucideLoader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";

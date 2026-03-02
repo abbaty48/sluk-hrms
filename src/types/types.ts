@@ -1,74 +1,34 @@
-import type { LeaveRequest, LeaveType } from "./leave-management.types";
-import type { Attendance } from "./attendance.types";
+import type { TNotification, TNotificationPreferences } from "./notifications-types";
+import type { TLeaveRequest, TLeaveType } from "./leave-management.types";
+import type { TAttendance } from "./attendance.types";
+import type { TStaff } from "./staff-types";
+import type { TUser } from "./user-types";
 import type { Request } from "express";
-import type {
-  Notification,
-  NotificationPreferences,
-} from "./notifications-types";
-// Enums
-export type UserRole = "ADMIN" | "MANAGER" | "EMPLOYEE";
-export type StaffCategory = "Senior" | "Junior";
-export type Gender = "Male" | "Female";
-export type Cadre =
-  | "Teaching"
-  | "Technical"
-  | "Non-Teaching"
-  | "Administrative";
-export type StaffStatus =
-  | "Employed"
-  | "On Leave"
-  | "Retired"
-  | "Terminated"
-  | "Resigned";
-export type AttendanceStatus =
-  | "PRESENT"
-  | "ABSENT"
-  | "HALF_DAY"
-  | "LATE"
-  | "ON_LEAVE"
-  | "WEEKEND"
-  | "HOLIDAY";
 
-// Entity Interfaces
-export interface User {
+export type TQualification = {
   id: string;
-  email: string;
-  passwordHash: string;
-  role: UserRole;
-  staffId: string | null;
-  createdAt: string;
-  updatedAt: string;
+  staffId: string;
+  degree: string;
+  institution: string;
+  year: string;
+  level: string;
+  isHighest: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type TEmploymentHistory = {
+  id: string;
+  staffId: string;
+  position: string;
+  department: string;
+  subject: string | null;
+  startDate: string;
+  endDate: string; // "Present" or "MMM YYYY"
+  isCurrent: boolean;
 }
 
-export interface Staff {
-  id: string;
-  staffNo: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  dateOfBirth: string | null;
-  gender: Gender | null;
-  address: string | null;
-  city: string | null;
-  state: string | null;
-  lga: string | null;
-  departmentId: string;
-  rankId: string;
-  rank: string;
-  cadre: Cadre;
-  staffCategory: StaffCategory;
-  natureOfAppointment: string | null;
-  conuassContiss: string | null;
-  dateOfFirstAppointment: string | null;
-  dateOfLastPromotion: string | null;
-  status: StaffStatus;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export type TStaffWithDepartmentName = Staff & { department: { name: string } };
-
-export interface Department {
+export type TDepartment = {
   id: string;
   name: string;
   code: string;
@@ -78,7 +38,7 @@ export interface Department {
   updatedAt: string;
 }
 
-export interface Rank {
+export type TRank = {
   id: string;
   title: string;
   level: number;
@@ -87,14 +47,17 @@ export interface Rank {
   updatedAt: string;
 }
 
-export interface Payroll {
+export type TPayroll = {
   id: string;
   staffId: string;
   month: number;
   year: number;
   basicSalary: number;
+  totalAllowances: number;
+  paymentDate: string | null;
   allowances: Record<string, number>;
   deductions: Record<string, number>;
+  totalDeductions: number;
   grossSalary: number;
   netSalary: number;
   status: string;
@@ -103,9 +66,10 @@ export interface Payroll {
   paidAt: string | null;
   createdAt: string;
   updatedAt: string;
+
 }
 
-export interface Document {
+export type TDocument = {
   id: string;
   staffId: string;
   documentType: string;
@@ -118,7 +82,7 @@ export interface Document {
   updatedAt: string;
 }
 
-export interface Announcement {
+export type TAnnouncement = {
   id: string;
   title: string;
   content: string;
@@ -131,23 +95,27 @@ export interface Announcement {
 }
 
 // Database Interface
-export interface Database {
-  users: User[];
-  ranks: Rank[];
-  staff: Staff[];
-  payrolls: Payroll[];
-  documents: Document[];
-  leaves: LeaveRequest[];
-  leaveTypes: LeaveType[];
-  attendance: Attendance[];
-  departments: Department[];
-  announcements: Announcement[];
-  notifications: Notification[];
-  notificationPreferences: NotificationPreferences[];
+export type TDatabase = {
+  users: TUser[];
+  ranks: TRank[];
+  staff: TStaff[];
+  payrolls: TPayroll[];
+  documents: TDocument[];
+  leaves: TLeaveRequest[];
+  leaveTypes: TLeaveType[];
+  attendance: TAttendance[];
+  departments: TDepartment[];
+  announcements: TAnnouncement[];
+  qualifications: TQualification[];
+  employmentHistory: TEmploymentHistory[];
+  notifications: TNotification[],
+  notificationPreferences: TNotificationPreferences[];
+  EmploymentHistoryResponse: TEmploymentHistoryResponse[];
+
 }
 
 // Request Interfaces
-export interface AuthRequest extends Request {
+export type TAuthRequest = Request & {
   user?: {
     id: string;
     email: string;
@@ -157,7 +125,7 @@ export interface AuthRequest extends Request {
 }
 
 // Response DTOs
-export interface DashboardStats {
+export type TDashboardStats = {
   totalStaff: number;
   totalStaffChange: number; // % change from last month
   activeStaff: number;
@@ -175,32 +143,9 @@ export interface DashboardStats {
   totalDepartments: number;
 }
 
-export interface StaffPerDepartment {
-  departmentName: string;
-  staffCount: number;
-  teachingStaff: number;
-  nonTeachingStaff: number;
-}
 
-export interface MonthlyAttendanceTrend {
-  month: string;
-  present: number;
-  absent: number;
-  late: number;
-  onLeave: number;
-  attendanceRate: number;
-}
 
-export interface AttendanceSummary {
-  totalDays: number;
-  present: number;
-  absent: number;
-  late: number;
-  onLeave: number;
-  avgWorkHours: string;
-}
-
-export interface DepartmentSummary {
+export type TDepartmentSummary = {
   departmentId: string;
   departmentName: string;
   staffCount: number;
@@ -210,40 +155,35 @@ export interface DepartmentSummary {
   juniorStaff: number;
 }
 
-export interface StaffDetails extends Staff {
-  department?: Department;
-  rankDetails?: Rank;
-  user?: User;
-}
 
-export interface EnrichedStaff extends Staff {
-  department?: Department;
-  rankDetails?: Rank;
+export type TEmploymentHistoryResponse = {
+  data: TEmploymentHistory[]
+  nextPage: number | null
 }
 
 // Auth DTOs
-export interface LoginRequest {
+export type TLoginRequest = {
   email: string;
   password: string;
 }
 
-export interface LoginResponse {
+export type TLoginResponse = {
   token: string;
   user: {
     id: string;
     email: string;
     role: string;
-    staff?: Staff;
+    staff?: TStaff;
   };
 }
 
-export interface RegisterRequest {
+export type TRegisterRequest = {
   email: string;
   password: string;
   staffId?: string;
 }
 
-export interface RegisterResponse {
+export type TRegisterResponse = {
   message: string;
   user: {
     id: string;
@@ -251,63 +191,6 @@ export interface RegisterResponse {
     role: string;
   };
 }
-
-// Statistics DTOs
-export interface StaffStatistics {
-  byDepartment: {
-    departmentName: string;
-    count: number;
-  }[];
-  byRank: {
-    rank: string;
-    count: number;
-  }[];
-  byCadre: {
-    cadre: string;
-    count: number;
-  }[];
-  byState: {
-    state: string;
-    count: number;
-  }[];
-  byStatus: {
-    status: string;
-    count: number;
-  }[];
-}
-
-/* STAFF FORM DATA */
-export type StaffFormData = {
-  // Personal Details
-  personalStaffNumber: string; //staffNo
-  personalStaffName: string; //name
-  personalStaffCategory: string; //staffCategory
-  personalGender: string; //gender
-  personalMaritalStatus: string; // -- MISSING
-  personalDateOfBirth: string; //dateOfBirth
-  personalPhone: string; //phone
-  personalEmail: string; //email
-  personalPlaceOfBirth: string; //address
-  personalNationality: string; // -- MISSING
-  personalState: string; //state
-  personalLocalGovernment: string; //lga
-  personalReligion: string; // -- MISSING
-
-  // Appointment Details
-  appointmentCadre: string; //cadre
-  appointmentRank: string; //rank
-  appointmentNature: string; //natureOfAppointment
-  appointmentDateFirst: string; //dateOfFirstAppointment
-  appointmentDatePresent: string; // dateOfLastPromotion
-  appointmentUnitDepartment: string; //departmentId
-
-  // Location Details
-  locationTown: string; // -- MISSING
-  locationCountry: string; // -- MISSING
-  locationStaffStatus: string; //status
-  locationStaffStatusComment?: string; // -- MISSING
-  locationPermanentAddress: string; // -- MISSING
-};
 
 export type TPagination = {
   page: number;

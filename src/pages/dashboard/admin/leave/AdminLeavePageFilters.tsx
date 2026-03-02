@@ -1,12 +1,12 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@sluk/src/components/ui/select";
-import { useLeaveTypesAPI } from "@sluk/src/hooks/api/useAdminLeave";
-import { SelectFilter } from "@sluk/src/components/SelectFilter";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DatePickerDialog } from "@/components/DatePickerDialog";
 import { AdminLeavePageContext } from "./AdminLeavePageContext";
-import { Button } from "@sluk/src/components/ui/button";
+import { useLeaveTypesAPI } from "@/hooks/api/useAdminLeave";
 import { Calendar, Filter, Search } from "lucide-react";
-import { Input } from "@sluk/src/components/ui/input";
-import { DatePickerDialog } from "../../../../components/DatePickerDialog";
-import { Card } from "@sluk/src/components/ui/card";
+import { SelectFilter } from "@/components/SelectFilter";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import { use, useState } from "react";
 
 export function AdminLeavePageFilters() {

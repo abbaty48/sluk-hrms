@@ -1,6 +1,6 @@
 import { AdminAttendancePageTableSkeleton } from "./AdminAttendancePageSkeletons";
 import { useAdminAttendanceTodayAPI } from "@/hooks/api/useAdminAttendance";
-import type { AttendanceResponse } from "@/types/attendance.types";
+import type { TAttendanceResponse } from "@/types/attendance.types";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 import { Paginator } from "@/components/Paginator";
 import { Card } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { Logs } from "lucide-react";
 
 
 type AttendanceTableProps = {
-  data: AttendanceResponse[];
+  data: TAttendanceResponse[];
 };
 
 export function AdminAttendancePageTable() {

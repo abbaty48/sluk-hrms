@@ -53,8 +53,37 @@ function App() {
         {
           path: "/employee",
           lazy: () => import(
-            "@/pages/dashboard/employee/EmployeeDashboard"
+            "@/pages/dashboard/employee/EmployeeDashboardPage"
           )
+        },
+        { path: '/employee/profile', lazy: () => import('@/pages/dashboard/employee/EmployeeProfilePage') },
+        {
+          path: "/employee/leave",
+          lazy: () =>
+            import(
+              "@sluk/src/pages/dashboard/employee/EmployeeLeavePage.tsx/EmployeeLeavePage"
+            ),
+        },
+        {
+          path: "/employee/attendance",
+          lazy: () =>
+            import(
+              "@/pages/dashboard/employee/EmployeeAttendancePage"
+            ),
+        },
+        {
+          path: "/employee/documents",
+          lazy: () =>
+            import(
+              "@/pages/dashboard/employee/EmployeeDocumentPage"
+            ),
+        },
+        {
+          path: "/employee/notifications",
+          lazy: () =>
+            import(
+              "@/pages/dashboard/employee/EmployeeNotificationPage"
+            ),
         },
         // 404 Catch-all Route (must be last)
         {

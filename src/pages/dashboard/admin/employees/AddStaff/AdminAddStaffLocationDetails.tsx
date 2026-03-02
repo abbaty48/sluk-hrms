@@ -1,8 +1,8 @@
 import type { FieldErrors, Control, UseFormRegister } from "react-hook-form";
-import { Card, CardContent, CardHeader } from "@sluk/src/components/ui/card";
-import { FieldError, FieldLabel } from "@sluk/src/components/ui/field";
-import type { StaffFormData } from "@sluk/src/types/types";
-import { Input } from "@sluk/src/components/ui/input";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { FieldError, FieldLabel } from "@/components/ui/field";
+import type { TStaffFormData } from "@/types/staff-types";
+import { Input } from "@/components/ui/input";
 import { Controller } from "react-hook-form";
 import { MapPin } from "lucide-react";
 import {
@@ -11,16 +11,16 @@ import {
   SelectValue,
   SelectTrigger,
   SelectContent,
-} from "@sluk/src/components/ui/select";
+} from "@/components/ui/select";
 
 export const AdminAddStaffLocationDetails = ({
   errors,
   control,
   register,
 }: {
-  control: Control<StaffFormData>;
-  errors: FieldErrors<StaffFormData>;
-  register: UseFormRegister<StaffFormData>;
+  control: Control<TStaffFormData>;
+  errors: FieldErrors<TStaffFormData>;
+  register: UseFormRegister<TStaffFormData>;
 }) => {
   return (
     <Card>

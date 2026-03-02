@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { NotificationItem } from "./AdminNotificationItem";
-import type { Notification } from "@/types/notifications-types";
+import type { TNotification } from "@/types/notifications-types";
 import { useNotificationsPage } from "@/hooks/api/useAdminNotificationsAPI";
 
 export const Component = function NotificationsPage() {
@@ -51,7 +51,7 @@ export const Component = function NotificationsPage() {
     }
   };
 
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = (notification: TNotification) => {
     // Mark as read if unread
     if (!notification.read) {
       handleMarkAsRead(notification.id);

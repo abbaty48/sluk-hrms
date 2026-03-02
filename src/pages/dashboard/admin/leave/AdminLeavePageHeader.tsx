@@ -1,6 +1,6 @@
 import { AdminLeavePageContext } from "./AdminLeavePageContext";
-import { useCSVExporter } from "@sluk/src/hooks/use-csv";
-import { Button } from "@sluk/src/components/ui/button";
+import { useCSVExporter } from "@/hooks/use-csv";
+import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { toast } from "sonner";
 import { use } from "react";

@@ -6,7 +6,7 @@ import { Paginator } from "@sluk/src/components/Paginator";
 import { AdminLeavePageContext } from "./AdminLeavePageContext";
 import { Check, CircleX, Loader2, NotepadText } from "lucide-react";
 import { QueryErrorBoundary } from "@sluk/src/components/ErrorBoundary";
-import type { LeaveResponse } from "@sluk/src/types/leave-management.types";
+import type { TLeaveResponse } from "@sluk/src/types/leave-management.types";
 import { Popover, PopoverContent, PopoverTrigger } from "@sluk/src/components/ui/popover";
 import { useLeaveApproval, useLeaveRejection, useLeavesAPI } from "@sluk/src/hooks/api/useAdminLeave";
 
@@ -42,7 +42,7 @@ function LeaveReason({ reason }: { reason: string }) {
 /**
  *
  */
-function TableRow({ id, status, startDate, staff, allowedDays, endDate, leaveType, reason }: LeaveResponse) {
+function TableRow({ id, status, startDate, staff, allowedDays, endDate, leaveType, reason }: TLeaveResponse) {
 
     const { mutateAsync: mutateRejection, isPending: isRejecting } = useLeaveRejection()
     const { mutateAsync: mutateApproval, isPending: isApproving } = useLeaveApproval()

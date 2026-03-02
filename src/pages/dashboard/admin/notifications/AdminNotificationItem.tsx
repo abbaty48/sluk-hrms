@@ -12,10 +12,10 @@ import {
   CircleCheckBig,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { cn, notificationConfig } from "@/lib/utils";
-import { Button } from "@sluk/src/components/ui/button";
-import type { Notification } from "@/types/notifications-types";
+import type { TNotification } from "@/types/notifications-types";
 
 // Icon component mapper
 const iconComponents = {
@@ -30,19 +30,19 @@ const iconComponents = {
   Info,
 };
 
-interface NotificationItemProps {
-  notification: Notification;
-  onClick?: (notification: Notification) => void;
-  onMarkAsRead?: (id: string) => void;
-  onDelete?: (id: string) => void;
+type NotificationItemProps = {
+  notification: TNotification;
   showActions?: boolean;
+  onDelete?: (id: string) => void;
+  onMarkAsRead?: (id: string) => void;
+  onClick?: (notification: TNotification) => void;
 }
 
 export function NotificationItem({
-  notification,
   onClick,
-  onMarkAsRead,
   onDelete,
+  onMarkAsRead,
+  notification,
   showActions = false,
 }: NotificationItemProps) {
   const config = notificationConfig(notification.type);
@@ -135,11 +135,11 @@ export function NotificationItem({
 
 // Compact version for dropdown/popover
 export function NotificationItemCompact({
-  notification,
   onClick,
+  notification,
 }: {
-  notification: Notification;
-  onClick?: (notification: Notification) => void;
+  notification: TNotification;
+  onClick?: (notification: TNotification) => void;
 }) {
   const config = notificationConfig(notification.type);
   const IconComponent =

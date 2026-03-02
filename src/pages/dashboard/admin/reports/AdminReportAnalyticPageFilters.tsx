@@ -5,7 +5,7 @@ import { SelectFilter } from "@/components/SelectFilter";
 import { Building2, Calendar, Filter } from "lucide-react";
 import { DatePickerDialog } from "@/components/DatePickerDialog";
 import { ARAPFilterContext } from "./AdminReportAnalyticPageContext";
-import { DepartmentSelectItems } from "@/components/DeparmentSelectItems";
+import { DepartmentSelectItems } from "@sluk/src/components/DepartmentSelectItems";
 import {
   Select,
   SelectContent,
@@ -19,7 +19,7 @@ export function ARAPFilters() {
   const [isFromDateOpen, setIsFromDateOpen] = useState(false);
   const [isToDateOpen, setIsToDateOpen] = useState(false);
 
-  const handleFiltering = () => {};
+  const handleFiltering = () => { };
 
   return (
     <>

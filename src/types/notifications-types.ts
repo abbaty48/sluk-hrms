@@ -3,7 +3,7 @@
 // Add these to your main types.ts file
 // ========================================
 
-export type NotificationType =
+export type TNotificationType =
   | "leave_approved"
   | "leave_rejected"
   | "leave_pending"
@@ -14,15 +14,15 @@ export type NotificationType =
   | "attendance"
   | "general";
 
-export type NotificationPriority = "low" | "medium" | "high" | "urgent";
+export type TNotificationPriority = "low" | "medium" | "high" | "urgent";
 
-export interface Notification {
+export type TNotification = {
   id: string;
   userId: string;
-  type: NotificationType;
+  type: TNotificationType;
   title: string;
   message: string;
-  priority: NotificationPriority;
+  priority: TNotificationPriority;
   read: boolean;
   icon?: string; // Icon name from lucide-react
   actionUrl?: string; // URL to navigate on click
@@ -31,8 +31,8 @@ export interface Notification {
   readAt?: string | null; // ISO date string when marked as read
 }
 
-export interface NotificationListResponse {
-  data: Notification[];
+export type TNotificationListResponse = {
+  data: TNotification[];
   pagination: {
     page: number;
     limit: number;
@@ -44,41 +44,41 @@ export interface NotificationListResponse {
   };
 }
 
-export interface NotificationStats {
+export type TNotificationStats = {
   total: number;
   unread: number;
   read: number;
-  byType: Record<NotificationType, number>;
   todayCount: number;
   weekCount: number;
+  byType: Record<TNotificationType, number>;
 }
 
-export interface NotificationQueryParams {
+export interface TNotificationQueryParams {
   page?: string;
   limit?: string;
   read?: string; // "true" | "false" | undefined (all)
-  type?: NotificationType;
-  priority?: NotificationPriority;
+  type?: TNotificationType;
+  priority?: TNotificationPriority;
   startDate?: string;
   endDate?: string;
 }
 
-export interface MarkAsReadRequest {
+export type TMarkNotificationAsReadRequest = {
   notificationIds: string[]; // Array of notification IDs to mark as read
 }
 
-export interface MarkAsReadResponse {
+export type TMarkNotificationAsReadResponse = {
   success: boolean;
   count: number; // Number of notifications marked as read
-  notifications: Notification[];
+  notifications: TNotification[];
 }
 
-export interface NotificationPreferences {
+export type TNotificationPreferences = {
   userId: string;
   emailNotifications: boolean;
   pushNotifications: boolean;
   notificationTypes: {
-    [K in NotificationType]: boolean;
+    [K in TNotificationType]: boolean;
   };
   quietHours: {
     enabled: boolean;
@@ -88,7 +88,7 @@ export interface NotificationPreferences {
 }
 
 // Helper type for notification icon colors
-export type NotificationIconColor =
+export type TNotificationIconColor =
   | "text-success"
   | "text-primary"
   | "text-warning"
@@ -97,8 +97,8 @@ export type NotificationIconColor =
   | "text-accent";
 
 // Helper function type for getting notification config
-export interface NotificationConfig {
+export type TNotificationConfig = {
   icon: string; // Lucide icon name
-  color: NotificationIconColor;
+  color: TNotificationIconColor;
   borderColor: string; // Tailwind class
 }

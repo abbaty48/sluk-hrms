@@ -2,14 +2,14 @@
 // ATTENDANCE MANAGEMENT ENDPOINTS
 // ========================================
 
-import type { AttendanceStats } from "../types/attendance.types";
-import type { AuthRequest, Database } from "../types/types";
+import type { TAttendanceStats } from "../types/attendance.types";
+import type { TAuthRequest, TDatabase } from "../types/types";
 import type { Application, Response } from 'express'
 
-export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => Database) {
+export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => TDatabase) {
 
     // 1. Mark Attendance (Single)
-    server.post("/api/attendance/mark", (req: AuthRequest, res: Response): void => {
+    server.post("/api/attendance/mark", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { staffId, date, status, checkIn, checkOut, notes } = req.body;
 
@@ -64,7 +64,7 @@ export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => Datab
     });
 
     // 2. Bulk Mark Attendance
-    server.post("/api/attendance/mark/bulk", (req: AuthRequest, res: Response): void => {
+    server.post("/api/attendance/mark/bulk", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { records } = req.body; // Array of attendance records
 
@@ -144,7 +144,7 @@ export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => Datab
     });
 
     // 3. Update Attendance
-    server.patch("/api/attendance/:id", (req: AuthRequest, res: Response): void => {
+    server.patch("/api/attendance/:id", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { id } = req.params;
         const { status, checkIn, checkOut, notes } = req.body;
@@ -182,7 +182,7 @@ export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => Datab
     });
 
     // 4. Get Attendance Records (with filters and pagination)
-    server.get("/api/attendance", (req: AuthRequest, res: Response): void => {
+    server.get("/api/attendance", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const {
             staffId,
@@ -262,7 +262,7 @@ export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => Datab
     });
 
     // 5. Get Staff Attendance History
-    server.get("/api/staff/:id/attendance", (req: AuthRequest, res: Response): void => {
+    server.get("/api/staff/:id/attendance", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { id } = req.params;
         const { month, year, page = "1", limit = "20" } = req.query;
@@ -306,7 +306,7 @@ export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => Datab
     });
 
     // 6. Get Current Week Attendance Chart Data
-    server.get("/api/charts/current-week-attendance", (_req: AuthRequest, res: Response): void => {
+    server.get("/api/charts/current-week-attendance", (_req: TAuthRequest, res: Response): void => {
         const db = getDb();
 
         // Get current week dates (Monday to Sunday)
@@ -374,7 +374,7 @@ export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => Datab
     });
 
     // 7. Get Department Attendance Statistics
-    server.get("/api/attendance/department/:departmentId/stats", (req: AuthRequest, res: Response): void => {
+    server.get("/api/attendance/department/:departmentId/stats", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { departmentId } = req.params;
         const { startDate, endDate } = req.query;
@@ -418,7 +418,7 @@ export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => Datab
     });
 
     // 8. Get Today's Attendance Overview
-    server.get("/api/attendance/today", (_req: AuthRequest, res: Response): void => {
+    server.get("/api/attendance/today", (_req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const today = new Date().toISOString().split("T")[0];
 
@@ -466,7 +466,7 @@ export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => Datab
     });
 
     // 9. Delete Attendance Record
-    server.delete("/api/attendance/:id", (req: AuthRequest, res: Response): void => {
+    server.delete("/api/attendance/:id", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { id } = req.params;
 
@@ -487,7 +487,7 @@ export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => Datab
     });
 
     // 10. Get Attendance Report (Summary)
-    server.get("/api/attendance/report", (req: AuthRequest, res: Response): void => {
+    server.get("/api/attendance/report", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { startDate, endDate, departmentId } = req.query;
 
@@ -572,9 +572,9 @@ export function hrmsATTENDANCE_ENDPOINTS(server: Application, getDb: () => Datab
     });
 
     // 11. GEt Attendance Stats
-    server.get('/api/attendance/stats', (_req: AuthRequest, res: Response): void => {
+    server.get('/api/attendance/stats', (_req: TAuthRequest, res: Response): void => {
         const attendance = getDb().attendance;
-        let stats: AttendanceStats = {
+        let stats: TAttendanceStats = {
             presentToday: 0,
             lateArrivals: 0,
             onLeave: 0,

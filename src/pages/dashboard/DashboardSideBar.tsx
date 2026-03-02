@@ -35,8 +35,8 @@ import {
 import { use } from "react";
 import { cn } from "@/lib/utils";
 import { ThemeButton } from "@/components/ThemeButton";
-import { UserContext } from "@/states/contexts/UserContext";
 import { Link, NavLink, useLocation } from "react-router";
+import { UserContext } from "@/states/contexts/UserContext";
 /**
  * Admin Sidebar Component
  */
@@ -158,20 +158,20 @@ function EmployeeSidebar() {
 
     const links = [
         {
-            to: "/:userid",
+            to: "/employee",
             label: "Dashboard",
             icon: <LayoutDashboardIcon />,
         },
-        { to: "/:userid/profile", label: "My Profile", icon: <Users /> },
+        { to: "/employee/profile", label: "My Profile", icon: <Users /> },
         {
-            to: "/:userid/leave",
+            to: "/employee/leave",
             label: "Apply Leave",
             icon: <Calendar />,
         },
-        { to: "/:userid/attendance", label: "My Attendance", icon: <Clock /> },
-        { to: "/:userid/documents", label: "Reports", icon: <FileText /> },
+        { to: "/employee/attendance", label: "My Attendance", icon: <Clock /> },
+        { to: "/employee/documents", label: "Reports", icon: <FileText /> },
         {
-            to: "/:userid/notifications",
+            to: "/employee/notifications",
             label: "Notifications",
             icon: <Bell />,
         },

@@ -1,4 +1,5 @@
-import type { Department, Staff } from "@sluk/src/types/types";
+import type { TDepartment } from "@/types/types";
+import type { TStaff } from "@/types/staff-types";
 import { useMutation, useSuspenseInfiniteQuery } from "@tanstack/react-query";
 
 type SearchStaffCriteria = Partial<{
@@ -76,8 +77,8 @@ export function useStaffAPI(searchCriteria?: SearchStaffCriteria) {
     fetchPreviousPage,
     allPages: data.pages,
     pagination: currentPage.pagination,
-    data: currentPage.data as (Staff & {
-      department: Department;
+    data: currentPage.data as (TStaff & {
+      department: TDepartment;
     })[],
   };
 }

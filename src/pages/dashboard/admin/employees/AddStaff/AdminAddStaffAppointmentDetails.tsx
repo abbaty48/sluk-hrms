@@ -4,26 +4,26 @@ import {
   SelectValue,
   SelectTrigger,
   SelectContent,
-} from "@sluk/src/components/ui/select";
+} from "@/components/ui/select";
 import { Briefcase } from "lucide-react";
 import { Controller } from "react-hook-form";
-import { Input } from "@sluk/src/components/ui/input";
-import type { StaffFormData } from "@sluk/src/types/types";
-import { SelectFilter } from "@sluk/src/components/SelectFilter";
-import { FieldError, FieldLabel } from "@sluk/src/components/ui/field";
-import { RankSelectItems } from "@sluk/src/components/RankSelectItems";
-import { Card, CardContent, CardHeader } from "@sluk/src/components/ui/card";
+import { Input } from "@/components/ui/input";
+import type { TStaffFormData } from "@/types/staff-types";
+import { SelectFilter } from "@/components/SelectFilter";
+import { FieldError, FieldLabel } from "@/components/ui/field";
+import { RankSelectItems } from "@/components/RankSelectItems";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { DepartmentSelectItems } from "@/components/DepartmentSelectItems";
 import type { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import { DepartmentSelectItems } from "@sluk/src/components/DeparmentSelectItems";
 
 export const AdminAddStaffAppointmentDetails = ({
   errors,
   control,
   register,
 }: {
-  control: Control<StaffFormData>;
-  errors: FieldErrors<StaffFormData>;
-  register: UseFormRegister<StaffFormData>;
+  control: Control<TStaffFormData>;
+  errors: FieldErrors<TStaffFormData>;
+  register: UseFormRegister<TStaffFormData>;
 }) => {
   return (
     <Card>

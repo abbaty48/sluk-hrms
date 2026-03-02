@@ -1,4 +1,4 @@
-import { DepartmentSelectItems } from "@sluk/src/components/DeparmentSelectItems";
+import { DepartmentSelectItems } from "@sluk/src/components/DepartmentSelectItems";
 import { useAdminEmployeesPageHook } from "./AdminEmployeesPageHook";
 import { Card, CardContent } from "@sluk/src/components/ui/card";
 import { SelectFilter } from "@sluk/src/components/SelectFilter";

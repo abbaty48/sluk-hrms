@@ -11,7 +11,7 @@ import {
 import { Suspense } from "react";
 import { Card } from "@/components/ui/card";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
-import type { AttendanceWeeklyChart } from "@/types/attendance.types";
+import type { TAttendanceWeeklyChart } from "@/types/attendance.types";
 import { useAdminAttendanceWeeklyAPI } from "@/hooks/api/useAdminAttendance";
 import { AdminAttendancePageChartSkeleton } from "./AdminAttendancePageSkeletons";
 
@@ -41,7 +41,7 @@ function AttendancePageChart() {
   )
 }
 
-function AttendanceChart({ data }: { data: AttendanceWeeklyChart }) {
+function AttendanceChart({ data }: { data: TAttendanceWeeklyChart }) {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart

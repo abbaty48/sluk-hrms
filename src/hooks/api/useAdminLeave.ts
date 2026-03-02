@@ -1,7 +1,7 @@
 import { queryClient, sleep } from "@/lib/utils";
 import type { TPagination } from "@/types/types";
 import { useMutation, useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
-import type { LeaveType, LeaveStats, LeaveTypeDistribution, LeaveFilters, LeaveResponse } from "@/types/leave-management.types";
+import type { TLeaveType, TLeaveStats, TLeaveTypeDistribution, TLeaveFilters, TLeaveResponse } from "@/types/leave-management.types";
 
 
 /**
@@ -11,7 +11,7 @@ async function invalidateQueries(queryKeys: string[]) {
     await Promise.all(queryKeys.map(q => queryClient.invalidateQueries({ queryKey: [q], refetchType: 'all' })));
 }
 
-type SearchCriteria = Partial<LeaveFilters>
+type SearchCriteria = Partial<TLeaveFilters>
 export function useLeavesAPI(searchCriteria?: SearchCriteria) {
 
     const { data, refetch, isFetching, fetchNextPage, fetchPreviousPage } = useSuspenseInfiniteQuery({
@@ -58,7 +58,7 @@ export function useLeavesAPI(searchCriteria?: SearchCriteria) {
         fetchNextPage,
         fetchPreviousPage,
         pagination: currentPage.pagination as TPagination,
-        data: currentPage.data as (LeaveResponse[])
+        data: currentPage.data as (TLeaveResponse[])
     }
 }
 /**
@@ -69,10 +69,12 @@ export function useLeaveTypesAPI() {
     const { data } = useSuspenseQuery({
         queryKey: ["adminLeaveTypes"],
         queryFn: async () => {
-            return await ((await fetch('/api/leaves/types')).json())
+            const resp = await fetch('/api/leaves/types');
+            if (!resp.ok) return null;
+            return resp.json()
         }
     })
-    return data as LeaveType[]
+    return data as TLeaveType[]
 }
 
 /**
@@ -83,9 +85,9 @@ export function useLeaveStatsAPI() {
 
     const { data: stats } = useSuspenseQuery({
         queryKey: ["leaveStats"],
-        queryFn: async (): Promise<LeaveStats> => {
+        queryFn: async (): Promise<TLeaveStats> => {
             const response = await fetch("/api/leaves/stats");
-            return await response.json() as LeaveStats;
+            return await response.json() as TLeaveStats;
         }
     });
 
@@ -115,7 +117,7 @@ export function useLeaveTypesDeleteAPI() {
  *
  */
 export function useLeaveTypeDistributionAPI() {
-    const { data } = useSuspenseQuery<LeaveTypeDistribution[]>({
+    const { data } = useSuspenseQuery<TLeaveTypeDistribution[]>({
         queryKey: ["leaveTypeDistribution"],
         queryFn: async () => {
             return fetch("/api/charts/leave-type-distribution?year=2025")
@@ -212,7 +214,7 @@ export function useLeaveTypeUPSERTAPI() {
 
     type params = {
         id: string,
-        payload: LeaveType
+        payload: TLeaveType
         action: 'CREATE' | 'UPDATE',
     }
 

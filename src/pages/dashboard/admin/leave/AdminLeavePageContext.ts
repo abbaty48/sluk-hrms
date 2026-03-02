@@ -1,8 +1,8 @@
-import type { LeaveFilters, LeaveResponse } from "@sluk/src/types/leave-management.types"
+import type { TLeaveFilters, TLeaveResponse } from "@/types/leave-management.types"
 import { createContext } from "react"
 
 export type TLeaveFilterActions = |
-{ leaves: LeaveResponse[] } |
+{ leaves: TLeaveResponse[] } |
 { page: number } |
 { type: string } |
 { limit: string } |
@@ -13,7 +13,7 @@ export type TLeaveFilterActions = |
 /**
  *
  */
-export const AdminLeavePageContextInitialStates: LeaveFilters & {
+export const AdminLeavePageContextInitialStates: TLeaveFilters & {
     setFilters: (actions: TLeaveFilterActions) => void
 } = {
     leaves: [],

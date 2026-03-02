@@ -1,7 +1,7 @@
-import { cn } from "@sluk/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { ExportEmployees } from "./AdminEmployeesExport";
 import { ImportEmployees } from "./AdminEmployeesImport";
-import type { TStaffWithDepartmentName } from "@sluk/src/types/types";
+import type { TStaffWithDepartmentName } from "@/types/staff-types";
 
 type Align = "right" | "left" | "center";
 

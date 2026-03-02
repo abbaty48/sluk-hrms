@@ -12,13 +12,13 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@sluk/src/components/ui/field";
-import type { LeaveType } from "@sluk/src/types/leave-management.types";
+import type { TLeaveType } from "@sluk/src/types/leave-management.types";
 import { useLeaveTypeUPSERTAPI } from "@sluk/src/hooks/api/useAdminLeave";
 
 
 type LeaveTypeDialogProps = {
   open: boolean;
-  leaveType?: LeaveType
+  leaveType?: TLeaveType
   onOpenChange: (open: boolean) => void;
 };
 
@@ -42,7 +42,7 @@ export function LeaveTypeDialog({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LeaveType>();
+  } = useForm<TLeaveType>();
 
   /**
    *
@@ -53,7 +53,7 @@ export function LeaveTypeDialog({
   /**
    *
    */
-  const onSubmit = async (data: LeaveType) => {
+  const onSubmit = async (data: TLeaveType) => {
 
     const { action, error, success, payload } = {
       payload: data,

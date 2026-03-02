@@ -1,30 +1,47 @@
 import type { TPagination } from "./types";
 
 // types/attendance.types.ts
-export type AttendanceStatus = "PRESENT" | "ABSENT" | "LATE" | "ON_LEAVE" | "HALF_DAY";
+export type TAttendanceStatus =
+  | "PRESENT"
+  | "ABSENT"
+  | "HALF_DAY"
+  | "LATE"
+  | "ON_LEAVE"
+  | "WEEKEND"
+  | "HOLIDAY";
 
 // Represent the data's in the database.
-export interface Attendance {
+export type TAttendance = {
   id: string;
   staffId: string;
   date: string;
+  rate: string;
   checkIn: string | null;
   checkOut: string | null;
   workHours: number | null;
-  status: AttendanceStatus;
+  status: TAttendanceStatus;
   remarks: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
-export type AttendanceStats = {
+export type TAttendanceStats = {
   presentToday: number;
   lateArrivals: number;
   onLeave: number;
   absent: number;
 };
 
-export type AttendanceWeeklyChart = {
+export type TMonthlyAttendanceTrend = {
+  month: string;
+  present: number;
+  absent: number;
+  late: number;
+  onLeave: number;
+  attendanceRate: number;
+}
+
+export type TAttendanceWeeklyChart = {
   weekData: {
     day: string,
     date: string,
@@ -46,57 +63,65 @@ export type AttendanceWeeklyChart = {
   }
 }
 
-export type AttendanceResponse = {
+export type TAttendanceResponse = {
   id: string;
   employeeId: string;
   employeeName: string;
   department: string;
   checkIn: string | null;
   checkOut?: string | null;
-  status: AttendanceStatus;
+  status: TAttendanceStatus;
   date: string;
   notes?: string;
 };
 
-export type AttendanceResponseList = {
-  data: AttendanceResponse[],
+export type TAttendanceResponseList = {
+  data: TAttendanceResponse[],
   pagination: TPagination
 }
 
 
-export type AttendanceFilters = {
+export type TAttendanceFilters = {
   department?: string;
-  status?: AttendanceStatus | "all";
+  status?: TAttendanceStatus | "all";
   date?: string;
   search?: string;
 };
 
-export type AttendanceSummary = {
-  totalEmployees: number;
-  presentCount: number;
-  absentCount: number;
-  lateCount: number;
-  onLeaveCount: number;
-  attendanceRate: number;
-};
+// export type TAttendanceSummary = {
+//   totalEmployees: number;
+//   presentCount: number;
+//   absentCount: number;
+//   lateCount: number;
+//   onLeaveCount: number;
+//   attendanceRate: number;
+// };
 
-export type CheckInRequest = {
+export type TAttendanceSummary = {
+  totalDays: number;
+  present: number;
+  absent: number;
+  late: number;
+  onLeave: number;
+  avgWorkHours: string;
+}
+export type TCheckInRequest = {
   employeeId: string;
   checkInTime: string;
   location?: string;
   notes?: string;
 };
 
-export type CheckOutRequest = {
+export type TCheckOutRequest = {
   employeeId: string;
   checkOutTime: string;
   notes?: string;
 };
 
-export type AttendanceReport = {
+export type TAttendanceReport = {
   startDate: string;
   endDate: string;
   department?: string;
-  data: AttendanceResponse[];
-  summary: AttendanceSummary;
+  data: TAttendanceResponse[];
+  summary: TAttendanceSummary;
 };

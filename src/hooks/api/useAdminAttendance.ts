@@ -1,4 +1,4 @@
-import type { AttendanceResponse, AttendanceResponseList, AttendanceStats, AttendanceWeeklyChart } from "@/types/attendance.types";
+import type { TAttendanceResponse, TAttendanceResponseList, TAttendanceStats, TAttendanceWeeklyChart } from "@/types/attendance.types";
 import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
 import type { TPagination } from "@/types/types";
 
@@ -6,7 +6,7 @@ import type { TPagination } from "@/types/types";
  *
  */
 export function useAdminAttendanceDashboardStatsAPI() {
-    const { data, isLoading } = useSuspenseQuery<AttendanceStats | null>({
+    const { data, isLoading } = useSuspenseQuery<TAttendanceStats | null>({
         queryKey: ["adminAttendanceDashboardStats"],
         queryFn: async () => {
             const response = await fetch("/api/attendance/stats");
@@ -21,7 +21,7 @@ export function useAdminAttendanceDashboardStatsAPI() {
  *
  */
 export function useAdminAttendanceWeeklyAPI() {
-    const { data } = useSuspenseQuery<AttendanceWeeklyChart>({
+    const { data } = useSuspenseQuery<TAttendanceWeeklyChart>({
         queryKey: ["adminAttendanceWeekly"],
         queryFn: async () => {
             const response = await fetch("/api/charts/current-week-attendance");
@@ -36,7 +36,7 @@ export function useAdminAttendanceWeeklyAPI() {
  *
  */
 export function useAdminAttendanceTodayAPI(pagePerRow: string) {
-    const { data, isFetching, fetchNextPage, fetchPreviousPage } = useSuspenseInfiniteQuery<AttendanceResponseList>({
+    const { data, isFetching, fetchNextPage, fetchPreviousPage } = useSuspenseInfiniteQuery<TAttendanceResponseList>({
         queryKey: ["adminAttendanceToday"],
         maxPages: 5,
         initialPageParam: 1,
@@ -61,6 +61,6 @@ export function useAdminAttendanceTodayAPI(pagePerRow: string) {
         fetchNextPage,
         fetchPreviousPage,
         pagination: currentPage.pagination as TPagination,
-        data: currentPage.data as (AttendanceResponse[])
+        data: currentPage.data as (TAttendanceResponse[])
     }
 }

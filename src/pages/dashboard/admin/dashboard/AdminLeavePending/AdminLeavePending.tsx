@@ -1,9 +1,9 @@
 import { Check, LoaderPinwheel, LucideMoreHorizontal, X } from "lucide-react";
-import { CardContent, CardHeader, Card } from "@sluk/src/components/ui/card";
-import type { LeaveResponse } from "@sluk/src/types/leave-management.types";
-import { QueryErrorBoundary } from "@sluk/src/components/ErrorBoundary";
 import { useAdminLeavePendingHook } from "./useAdminLeavePendingHook";
-import { Button } from "@sluk/src/components/ui/button";
+import { CardContent, CardHeader, Card } from "@/components/ui/card";
+import type { TLeaveResponse } from "@/types/leave-management.types";
+import { QueryErrorBoundary } from "@/components/ErrorBoundary";
+import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 
 function ShimmerCard() {
@@ -52,7 +52,7 @@ function PendingLeavesList({ departmentId }: { departmentId?: string }) {
   return (
     <div className="space-y-4">
       <div className="space-y-4 min-h-[50vh] max-h-60 overflow-hidden overflow-y-auto">
-        {optimisticData.map((leave: LeaveResponse) => (
+        {optimisticData.map((leave: TLeaveResponse) => (
           <article
             key={leave.id}
             className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"

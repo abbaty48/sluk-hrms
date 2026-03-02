@@ -1,6 +1,6 @@
 import { useLeaveTypesAPI, useLeaveTypeDeleteAPI } from "@sluk/src/hooks/api/useAdminLeave";
 import { QueryErrorBoundary } from "@sluk/src/components/ErrorBoundary";
-import type { LeaveType } from "@/types/leave-management.types";
+import type { TLeaveType } from "@/types/leave-management.types";
 import { Button } from "@sluk/src/components/ui/button";
 import { LeaveTypeDialog } from "./AdminLeavePageTypeDialog";
 import { Card } from "@sluk/src/components/ui/card";
@@ -22,10 +22,10 @@ export function AdminLeavePageTypes() {
 function LeaveTypes() {
     const leaveTypes = useLeaveTypesAPI();
     const [isAddTypeDialogOpen, setIsAddTypeDialogOpen] = useState(false);
-    const [editingLeaveType, setEditingLeaveType] = useState<LeaveType | undefined>();
+    const [editingLeaveType, setEditingLeaveType] = useState<TLeaveType | undefined>();
     const { isPending: isDeletingLeaveType, mutateAsync: deleteLeaveTypeAsync } = useLeaveTypeDeleteAPI()
 
-    const handleEditLeaveType = (type: LeaveType) => {
+    const handleEditLeaveType = (type: TLeaveType) => {
         setEditingLeaveType(type);
         setIsAddTypeDialogOpen(true);
     };
@@ -62,7 +62,7 @@ function LeaveTypes() {
                     </Button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    {leaveTypes?.map((type: LeaveType) => (
+                    {leaveTypes?.map((type: TLeaveType) => (
                         <div
                             key={type.id}
                             className="flex items-center gap-2 rounded-lg border border-border bg-muted/30 px-3 py-1.5 text-sm"

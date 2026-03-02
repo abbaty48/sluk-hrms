@@ -3,7 +3,7 @@ import {
   TabsList,
   TabsContent,
   TabsTrigger,
-} from "@sluk/src/components/ui/tabs";
+} from "@/components/ui/tabs";
 import {
   Sheet,
   SheetTitle,
@@ -13,12 +13,12 @@ import {
   SheetContent,
   SheetTrigger,
   SheetDescription,
-} from "@sluk/src/components/ui/sheet";
+} from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import type { StaffFormData } from "@sluk/src/types/types";
-import { useAddStaffAPI } from "@sluk/src/hooks/api/useAdminStaffApi";
+import type { TStaffFormData } from "@/types/staff-types";
+import { useAddStaffAPI } from "@/hooks/api/useAdminStaffApi";
 import { type ReactNode, type PropsWithChildren, useState } from "react";
 import { User, Save, Briefcase, LucideMapPin, Loader2 } from "lucide-react";
 import { AdminAddStaffPersonalDetails } from "./AdminAddStaffPersonalDetails";
@@ -57,9 +57,9 @@ function AdminEmployeePageAddStaffContent({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<StaffFormData>();
+  } = useForm<TStaffFormData>();
   const { mutate: submitMutate, isPending } = useAddStaffAPI();
-  const onSubmit = (data: StaffFormData) => {
+  const onSubmit = (data: TStaffFormData) => {
     const payload = {
       staffNo: data.personalStaffNumber,
       name: data.personalStaffName,

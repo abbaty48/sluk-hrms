@@ -1,13 +1,13 @@
 // ========================================
 // ANALYTICS & REPORTS ENDPOINTS
 // ========================================
-import type { AuthRequest, Database } from "../types/types";
+import type { TAuthRequest, TDatabase } from "@/types/types";
 import type { Application, Response } from 'express'
 
-export function hrmsANALYTICS_ENDPOINTS(server: Application, getDb: () => Database) {
+export function hrmsANALYTICS_ENDPOINTS(server: Application, getDb: () => TDatabase) {
 
     // 1. Staff Strength Over Years
-    server.get("/api/analytics/staff-strength-years", (req: AuthRequest, res: Response): void => {
+    server.get("/api/analytics/staff-strength-years", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { startYear, endYear } = req.query;
 
@@ -40,7 +40,7 @@ export function hrmsANALYTICS_ENDPOINTS(server: Application, getDb: () => Databa
     });
 
     // 2. Staff by Category (Pie Chart Data)
-    server.get("/api/analytics/staff-by-category", (req: AuthRequest, res: Response): void => {
+    server.get("/api/analytics/staff-by-category", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { departmentId } = req.query;
 
@@ -87,7 +87,7 @@ export function hrmsANALYTICS_ENDPOINTS(server: Application, getDb: () => Databa
     });
 
     // 3. Staff by Department (Horizontal Bar Chart)
-    server.get("/api/analytics/staff-by-department", (req: AuthRequest, res: Response): void => {
+    server.get("/api/analytics/staff-by-department", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { limit = "10" } = req.query;
 
@@ -116,7 +116,7 @@ export function hrmsANALYTICS_ENDPOINTS(server: Application, getDb: () => Databa
     });
 
     // 4. Monthly Leave Usage Trend
-    server.get("/api/analytics/monthly-leave-usage", (req: AuthRequest, res: Response): void => {
+    server.get("/api/analytics/monthly-leave-usage", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { months = "6" } = req.query;
 
@@ -159,7 +159,7 @@ export function hrmsANALYTICS_ENDPOINTS(server: Application, getDb: () => Databa
     });
 
     // 5. Payroll Breakdown (Monthly)
-    server.get("/api/analytics/payroll-breakdown", (req: AuthRequest, res: Response): void => {
+    server.get("/api/analytics/payroll-breakdown", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { months = "6" } = req.query;
 
@@ -192,7 +192,7 @@ export function hrmsANALYTICS_ENDPOINTS(server: Application, getDb: () => Databa
     });
 
     // 6. Complete Analytics Summary
-    server.get("/api/analytics/summary", (req: AuthRequest, res: Response): void => {
+    server.get("/api/analytics/summary", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { departmentId, year } = req.query;
 
@@ -269,7 +269,7 @@ export function hrmsANALYTICS_ENDPOINTS(server: Application, getDb: () => Databa
     });
 
     // 7. Department Performance Report
-    server.get("/api/analytics/department-performance", (_req: AuthRequest, res: Response): void => {
+    server.get("/api/analytics/department-performance", (_req: TAuthRequest, res: Response): void => {
         const db = getDb();
 
         const departments = db.departments.map((dept) => {
@@ -305,7 +305,7 @@ export function hrmsANALYTICS_ENDPOINTS(server: Application, getDb: () => Databa
     });
 
     // 8. Year-over-Year Growth
-    server.get("/api/analytics/year-over-year-growth", (_req: AuthRequest, res: Response): void => {
+    server.get("/api/analytics/year-over-year-growth", (_req: TAuthRequest, res: Response): void => {
         const db = getDb();
 
         const currentYear = new Date().getFullYear();
@@ -346,7 +346,7 @@ export function hrmsANALYTICS_ENDPOINTS(server: Application, getDb: () => Databa
     });
 
     // 9. Leave Type Distribution
-    server.get("/api/analytics/leave-type-distribution", (req: AuthRequest, res: Response): void => {
+    server.get("/api/analytics/leave-type-distribution", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { year } = req.query;
 
@@ -378,7 +378,7 @@ export function hrmsANALYTICS_ENDPOINTS(server: Application, getDb: () => Databa
     });
 
     // 10. Export Report Data (for PDF/Excel)
-    server.get("/api/analytics/export", (req: AuthRequest, res: Response): void => {
+    server.get("/api/analytics/export", (req: TAuthRequest, res: Response): void => {
         const db = getDb();
         const { departmentId, startDate, endDate } = req.query;
 
