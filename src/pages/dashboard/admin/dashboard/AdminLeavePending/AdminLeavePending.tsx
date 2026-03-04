@@ -1,7 +1,7 @@
 import { Check, LoaderPinwheel, LucideMoreHorizontal, X } from "lucide-react";
 import { useAdminLeavePendingHook } from "./useAdminLeavePendingHook";
 import { CardContent, CardHeader, Card } from "@/components/ui/card";
-import type { TLeaveResponse } from "@/types/leave-management.types";
+import type { TLeaveResponse } from "@sluk/src/types/leave-managementTypes";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 import { Button } from "@/components/ui/button";
 import { Suspense } from "react";

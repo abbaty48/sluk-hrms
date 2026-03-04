@@ -1,9 +1,4 @@
-import {
-  Tabs,
-  TabsList,
-  TabsContent,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sheet,
   SheetTitle,
@@ -17,7 +12,7 @@ import {
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import type { TStaffFormData } from "@/types/staff-types";
+import type { TStaffFormData } from "@/types/staffTypes";
 import { useAddStaffAPI } from "@/hooks/api/useAdminStaffApi";
 import { type ReactNode, type PropsWithChildren, useState } from "react";
 import { User, Save, Briefcase, LucideMapPin, Loader2 } from "lucide-react";
@@ -81,7 +76,7 @@ function AdminEmployeePageAddStaffContent({
       dateOfLastPromotion: data.appointmentDatePresent,
       status: data.locationStaffStatus,
       // NOT INCLUDED IN THE MAIN DATABASE
-      marital: data.personalMaritalStatus,
+      maritalStatus: data.personalMaritalStatus,
       nationality: data.personalNationality,
       religion: data.personalReligion,
       town: data.locationTown,

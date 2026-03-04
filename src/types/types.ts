@@ -1,9 +1,18 @@
-import type { TNotification, TNotificationPreferences } from "./notifications-types";
-import type { TLeaveRequest, TLeaveType } from "./leave-management.types";
+import type {
+  TNotification,
+  TNotificationPreferences,
+} from "./notificationsTypes";
+import type { TLeaveRequest, TLeaveType } from "./leave-managementTypes";
+import type { TNatureOfAppointment } from "./appointmentTypes";
+import type { TResponsibility } from "./responsibilityTypes";
+import type { TSystemPreferences } from "./settingsTypes";
 import type { TAttendance } from "./attendance.types";
-import type { TStaff } from "./staff-types";
-import type { TUser } from "./user-types";
+import type { TCommittee } from "./committeeTypes";
+import type { TStaff } from "./staffTypes";
+import type { TUser } from "./userTypes";
 import type { Request } from "express";
+import type { TRank } from "./rankTypes";
+import type { TDepartment } from "./departmentTypes";
 
 export type TQualification = {
   id: string;
@@ -26,26 +35,7 @@ export type TEmploymentHistory = {
   startDate: string;
   endDate: string; // "Present" or "MMM YYYY"
   isCurrent: boolean;
-}
-
-export type TDepartment = {
-  id: string;
-  name: string;
-  code: string;
-  description: string | null;
-  headId: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export type TRank = {
-  id: string;
-  title: string;
-  level: number;
-  description: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
+};
 
 export type TPayroll = {
   id: string;
@@ -66,8 +56,7 @@ export type TPayroll = {
   paidAt: string | null;
   createdAt: string;
   updatedAt: string;
-
-}
+};
 
 export type TDocument = {
   id: string;
@@ -80,7 +69,7 @@ export type TDocument = {
   expiryDate: string | null;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 export type TAnnouncement = {
   id: string;
@@ -92,7 +81,7 @@ export type TAnnouncement = {
   expiresAt: string;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 // Database Interface
 export type TDatabase = {
@@ -102,17 +91,20 @@ export type TDatabase = {
   payrolls: TPayroll[];
   documents: TDocument[];
   leaves: TLeaveRequest[];
+  committees: TCommittee[];
   leaveTypes: TLeaveType[];
   attendance: TAttendance[];
   departments: TDepartment[];
+  notifications: TNotification[];
   announcements: TAnnouncement[];
   qualifications: TQualification[];
+  responsibilities: TResponsibility[];
+  systemPreferences: TSystemPreferences;
   employmentHistory: TEmploymentHistory[];
-  notifications: TNotification[],
+  natureOfAppointments: TNatureOfAppointment[];
   notificationPreferences: TNotificationPreferences[];
   EmploymentHistoryResponse: TEmploymentHistoryResponse[];
-
-}
+};
 
 // Request Interfaces
 export type TAuthRequest = Request & {
@@ -122,7 +114,7 @@ export type TAuthRequest = Request & {
     role: string;
     staffId: string;
   };
-}
+};
 
 // Response DTOs
 export type TDashboardStats = {
@@ -141,31 +133,18 @@ export type TDashboardStats = {
   teachingStaff: number;
   nonTeachingStaff: number;
   totalDepartments: number;
-}
-
-
-
-export type TDepartmentSummary = {
-  departmentId: string;
-  departmentName: string;
-  staffCount: number;
-  teachingStaff: number;
-  nonTeachingStaff: number;
-  seniorStaff: number;
-  juniorStaff: number;
-}
-
+};
 
 export type TEmploymentHistoryResponse = {
-  data: TEmploymentHistory[]
-  nextPage: number | null
-}
+  data: TEmploymentHistory[];
+  nextPage: number | null;
+};
 
 // Auth DTOs
 export type TLoginRequest = {
   email: string;
   password: string;
-}
+};
 
 export type TLoginResponse = {
   token: string;
@@ -175,13 +154,13 @@ export type TLoginResponse = {
     role: string;
     staff?: TStaff;
   };
-}
+};
 
 export type TRegisterRequest = {
   email: string;
   password: string;
   staffId?: string;
-}
+};
 
 export type TRegisterResponse = {
   message: string;
@@ -190,7 +169,7 @@ export type TRegisterResponse = {
     email: string;
     role: string;
   };
-}
+};
 
 export type TPagination = {
   page: number;

@@ -1,4 +1,4 @@
-import type { TStaffWithDepartmentName as Staff } from "@/types/staff-types";
+import type { TStaffWithDepartmentName as Staff } from "@/types/staffTypes";
 import { useCSVExporter, type CSVColumn } from "@/hooks/use-csv";
 import { LucideDownload, LucideLoader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

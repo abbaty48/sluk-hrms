@@ -1,5 +1,5 @@
-import type { TStaffStats } from "@/types/staff-types";
 import { useQuery } from "@tanstack/react-query";
+import type { TStaffStats } from "@/types/staffTypes";
 
 export const useEmployeeDashboard = (staffId: string) => {
   return useQuery({

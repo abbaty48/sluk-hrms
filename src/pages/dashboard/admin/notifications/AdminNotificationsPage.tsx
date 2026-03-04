@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { NotificationItem } from "./AdminNotificationItem";
-import type { TNotification } from "@/types/notifications-types";
+import type { TNotification } from "@/types/notificationsTypes";
 import { useNotificationsPage } from "@/hooks/api/useAdminNotificationsAPI";
 
 export const Component = function NotificationsPage() {

@@ -1,4 +1,4 @@
-import type { TLeaveFilters, TLeaveResponse } from "@/types/leave-management.types"
+import type { TLeaveFilters, TLeaveResponse } from "@/types/leave-managementTypes"
 import { createContext } from "react"
 
 export type TLeaveFilterActions = |

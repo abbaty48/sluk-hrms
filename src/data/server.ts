@@ -6,20 +6,26 @@ import type {
   TDashboardStats,
   TRegisterRequest,
   TRegisterResponse,
-  TDepartmentSummary,
 } from "@/types/types";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import jsonServer from "json-server";
-import type { TUser } from "../types/user-types.ts";
+import type { TUser } from "@/types/userTypes.ts";
 import type { Response, NextFunction } from "express";
-import { hrmsSTAFF_ENDPOINTS } from "./staff-api-endpoints.ts";
+import { hrmsRANK_ENDPOINTS } from "./ranks-api-endpoints.ts";
 import { hrmsLEAVE_ENDPOINTS } from "./leave-api-endpoints.ts";
+import { hrmsSTAFF_ENDPOINTS } from "./staff-api-endpoints.ts";
+import { hrmsSETTINGS_ENDPOINTS } from "./settings-endpoints.ts";
 import { hrmsANALYTICS_ENDPOINTS } from "./analytic-api-endpoints.ts";
 import { hrmsATTENDANCE_ENDPOINTS } from "./attendance-api-endpoints.ts";
+import { hrmsCOMMITTEES_ENDPOINTS } from "./committees-api-endpoints.ts";
+import { hrmsDEPARTMENT_ENDPOINTS } from "./department-api-endpoints.ts";
 import { hrmsNOTIFICATION_ENDPOINTS } from "./notifications-endpoints.ts";
 import type { TMonthlyAttendanceTrend } from "../types/attendance.types.ts";
+import { hrmsAPPOINTMENT_ENDPOINTS } from "./appointments-api-endpoints.ts";
+import { hrmsQUALIFICATION_ENDPOINTS } from "./qualification-api-endpoints.ts";
+import { hrmsRESPONSIBILITY_ENDPOINTS } from "./responsibility-api-endpoints.ts";
 
 // Get current directory
 const filename =
@@ -104,10 +110,120 @@ const authMiddleware = (
   res.status(401).json({ error: "Unauthorized" });
 };
 
-// Helper function to get database
-const getDb = (): TDatabase => {
-  return router.db.getState() as TDatabase;
-};
+// Global database cache
+let dbCache: TDatabase | null = null;
+
+/**
+ * Get database - loads from file or returns cached version
+ */
+function getDb(): TDatabase {
+  if (dbCache) {
+    return dbCache;
+  }
+
+  try {
+    const data = fs.readFileSync(dbPath, "utf-8");
+    dbCache = JSON.parse(data);
+    return dbCache as TDatabase;
+  } catch (error) {
+    console.error("Error reading database:", error);
+    throw new Error("Failed to read database");
+  }
+}
+
+/**
+ * Save database - writes changes to file
+ * @param db - The database object to save
+ */
+function saveDb(db: TDatabase): void {
+  try {
+    // Update cache
+    dbCache = db;
+
+    // Write to file with pretty formatting
+    fs.writeFileSync(dbPath, JSON.stringify(db, null, 2), "utf-8");
+  } catch (error) {
+    console.error("Error saving database:", error);
+    throw new Error("Failed to save database");
+  }
+}
+
+/**
+ * Reload database from file (useful for clearing cache)
+ */
+export function reloadDb(): TDatabase {
+  dbCache = null;
+  return getDb();
+}
+
+/**
+ * Backup database to a timestamped file
+ */
+export function backupDb(): string {
+  try {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const backupPath = path.join(process.cwd(), `db.backup.${timestamp}.json`);
+
+    const db = getDb();
+    fs.writeFileSync(backupPath, JSON.stringify(db, null, 2), "utf-8");
+
+    console.log(`Database backed up to: ${backupPath}`);
+    return backupPath;
+  } catch (error) {
+    console.error("Error backing up database:", error);
+    throw new Error("Failed to backup database");
+  }
+}
+
+// Alternative implementation with debouncing (prevents too many writes)
+// Useful if you have high-frequency updates
+
+let saveTimeout: NodeJS.Timeout | null = null;
+let pendingDb: TDatabase | null = null;
+
+/**
+ * Save database with debouncing (waits 100ms before actually writing)
+ * @param db - The database object to save
+ * @param immediate - If true, saves immediately without debouncing
+ */
+export function saveDebouncedDb(
+  db: TDatabase,
+  immediate: boolean = false,
+): void {
+  pendingDb = db;
+  dbCache = db;
+
+  if (immediate) {
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+      saveTimeout = null;
+    }
+    writeDb(db);
+    return;
+  }
+
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+  }
+
+  saveTimeout = setTimeout(() => {
+    if (pendingDb) {
+      writeDb(pendingDb);
+      pendingDb = null;
+    }
+    saveTimeout = null;
+  }, 100); // Wait 100ms
+}
+
+function writeDb(db: TDatabase): void {
+  try {
+    fs.writeFileSync(dbPath, JSON.stringify(db, null, 2), "utf-8");
+    console.log("Database saved successfully");
+  } catch (error) {
+    console.error("Error writing database:", error);
+    throw new Error("Failed to write database");
+  }
+}
 
 // Login endpoint
 server.post("/api/auth/login", (req: TAuthRequest, res: Response): void => {
@@ -171,132 +287,66 @@ server.post("/api/auth/register", (req: TAuthRequest, res: Response): void => {
   };
 
   res.status(201).json(response);
-})
+});
 
 // Dashboard stats endpoint with month-over-month comparisons
-server.get("/api/dashboard/stats", (_req: TAuthRequest, res: Response): void => {
-  const db = getDb();
-
-  const totalStaff = db.staff.length;
-  const activeStaff = db.staff.filter((s) => s.status === "Employed").length;
-  const onLeaveToday = db.staff.filter((s) => s.status === "On Leave").length;
-  const teachingStaff = db.staff.filter((s) => s.cadre === "Teaching").length;
-  const nonTeachingStaff = db.staff.filter(
-    (s) => s.cadre === "Non-Teaching",
-  ).length;
-
-  const today = new Date().toISOString().split("T")[0];
-  const todayAttendance = db.attendance.filter((a) => a.date.startsWith(today));
-
-  const presentToday = todayAttendance.filter(
-    (a) => a.status === "PRESENT" || a.status === "LATE",
-  ).length;
-
-  const attendanceRate =
-    totalStaff > 0 ? ((presentToday / totalStaff) * 100).toFixed(1) : "0";
-
-  const pendingLeaves = db.leaves.filter((l) => l.status === "PENDING").length;
-
-  // Calculate month-over-month changes (simulated with reasonable values)
-  // In production, you would calculate these from historical data
-  const totalStaffChange = 2.3; // 2.3% increase from last month
-  const activeStaffChange = 1.8; // 1.8% increase
-  const onLeaveChange = -12.5; // 12.5% decrease (fewer on leave)
-  const attendanceRateChange = 3.2; // 3.2% improvement
-
-  const stats: TDashboardStats = {
-    totalStaff,
-    totalStaffChange,
-    activeStaff,
-    activeStaffChange,
-    presentToday,
-    onLeaveToday,
-    onLeaveChange,
-    attendanceRate,
-    attendanceRateChange,
-    pendingActions: pendingLeaves,
-    lateArrivals: todayAttendance.filter((a) => a.status === "LATE").length,
-    avgWorkHours: 8.0,
-    teachingStaff,
-    nonTeachingStaff,
-    totalDepartments: db.departments.length,
-  };
-
-  res.json(stats);
-});
-
-// Get all ranks with optional filtering
-server.get("/api/ranks", (req: TAuthRequest, res: Response): void => {
-  const db = getDb();
-  const { level, search } = req.query;
-
-  let ranks = db.ranks;
-
-  // Filter by level
-  if (level) {
-    ranks = ranks.filter((r) => r.level === parseInt(level as string));
-  }
-
-  // Search by title
-  if (search) {
-    const searchTerm = (search as string).toLowerCase();
-    ranks = ranks.filter(
-      (r) =>
-        r.title.toLowerCase().includes(searchTerm) ||
-        (r.description && r.description.toLowerCase().includes(searchTerm)),
-    );
-  }
-
-  // Sort by level (ascending)
-  ranks = ranks.sort((a, b) => a.level - b.level);
-
-  res.json({
-    data: ranks,
-  });
-});
-
-
-// Department filter
-server.get("/api/departments", (_req: TAuthRequest, res: Response): void => {
-  const db = getDb();
-
-  const departments = db.departments.map((dept) => {
-    return {
-      id: dept.id,
-      name: dept.name,
-    };
-  });
-
-  res.json(departments);
-});
-
-// Department summary
 server.get(
-  "/api/departments/summary",
+  "/api/dashboard/stats",
   (_req: TAuthRequest, res: Response): void => {
     const db = getDb();
 
-    const summary: TDepartmentSummary[] = db.departments.map((dept) => {
-      const deptStaff = db.staff.filter((s) => s.departmentId === dept.id);
+    const totalStaff = db.staff.length;
+    const activeStaff = db.staff.filter((s) => s.status === "Employed").length;
+    const onLeaveToday = db.staff.filter((s) => s.status === "On Leave").length;
+    const teachingStaff = db.staff.filter((s) => s.cadre === "Teaching").length;
+    const nonTeachingStaff = db.staff.filter(
+      (s) => s.cadre === "Non-Teaching",
+    ).length;
 
-      return {
-        departmentId: dept.id,
-        departmentName: dept.name,
-        staffCount: deptStaff.length,
-        teachingStaff: deptStaff.filter((s) => s.cadre === "Teaching").length,
-        nonTeachingStaff: deptStaff.filter((s) => s.cadre === "Non-Teaching")
-          .length,
-        seniorStaff: deptStaff.filter((s) => s.staffCategory === "Senior")
-          .length,
-        juniorStaff: deptStaff.filter((s) => s.staffCategory === "Junior")
-          .length,
-      };
-    });
+    const today = new Date().toISOString().split("T")[0];
+    const todayAttendance = db.attendance.filter((a) =>
+      a.date.startsWith(today),
+    );
 
-    res.json(summary);
+    const presentToday = todayAttendance.filter(
+      (a) => a.status === "PRESENT" || a.status === "LATE",
+    ).length;
+
+    const attendanceRate =
+      totalStaff > 0 ? ((presentToday / totalStaff) * 100).toFixed(1) : "0";
+
+    const pendingLeaves = db.leaves.filter(
+      (l) => l.status === "PENDING",
+    ).length;
+
+    // Calculate month-over-month changes (simulated with reasonable values)
+    // In production, you would calculate these from historical data
+    const totalStaffChange = 2.3; // 2.3% increase from last month
+    const activeStaffChange = 1.8; // 1.8% increase
+    const onLeaveChange = -12.5; // 12.5% decrease (fewer on leave)
+    const attendanceRateChange = 3.2; // 3.2% improvement
+
+    const stats: TDashboardStats = {
+      totalStaff,
+      totalStaffChange,
+      activeStaff,
+      activeStaffChange,
+      presentToday,
+      onLeaveToday,
+      onLeaveChange,
+      attendanceRate,
+      attendanceRateChange,
+      pendingActions: pendingLeaves,
+      lateArrivals: todayAttendance.filter((a) => a.status === "LATE").length,
+      avgWorkHours: 8.0,
+      teachingStaff,
+      nonTeachingStaff,
+      totalDepartments: db.departments.length,
+    };
+
+    res.json(stats);
   },
 );
-
 
 // Monthly attendance trend (for line/area chart)
 server.get(
@@ -358,13 +408,19 @@ server.get(
   },
 );
 
-
 // ATTENDANCE ENDPOINTS
-hrmsNOTIFICATION_ENDPOINTS(server, getDb);
-hrmsATTENDANCE_ENDPOINTS(server, getDb);
 hrmsANALYTICS_ENDPOINTS(server, getDb);
-hrmsLEAVE_ENDPOINTS(server, getDb);
-hrmsSTAFF_ENDPOINTS(server, getDb);
+hrmsRANK_ENDPOINTS(server, getDb, saveDb);
+hrmsLEAVE_ENDPOINTS(server, getDb, saveDb);
+hrmsSTAFF_ENDPOINTS(server, getDb, saveDb);
+hrmsSETTINGS_ENDPOINTS(server, getDb, saveDb);
+hrmsCOMMITTEES_ENDPOINTS(server, getDb, saveDb);
+hrmsATTENDANCE_ENDPOINTS(server, getDb, saveDb);
+hrmsDEPARTMENT_ENDPOINTS(server, getDb, saveDb);
+hrmsAPPOINTMENT_ENDPOINTS(server, getDb, saveDb);
+hrmsNOTIFICATION_ENDPOINTS(server, getDb, saveDb);
+hrmsQUALIFICATION_ENDPOINTS(server, getDb, saveDb);
+hrmsRESPONSIBILITY_ENDPOINTS(server, getDb, saveDb);
 
 // Apply auth middleware to protected routes
 server.use("/api/*", authMiddleware);
@@ -389,10 +445,14 @@ server.listen(PORT, () => {
   console.log("  GET    /api/staff/:id/details");
   console.log("  GET    /api/staff/:id/attendance/summary");
   console.log("  GET    /api/staff/:id/leave/balance");
-  console.log("  GET    /api/staff/search?q=name&department=dept_1&page=1&limit=20");
+  console.log(
+    "  GET    /api/staff/search?q=name&department=dept_1&page=1&limit=20",
+  );
   console.log("  GET    /api/staff/statistics");
+  console.log("\n📊 Department Endpoints:");
   console.log("  GET    /api/departments");
   console.log("  GET    /api/departments/summary");
+  console.log("\n📊 Others Endpoints:");
   console.log("  GET    /api/ranks?level=5&search=professor&page=1&limit=50");
   console.log("  GET    /api/attendance");
   console.log("  GET    /api/leaves");
@@ -411,8 +471,12 @@ server.listen(PORT, () => {
   console.log("  PATCH  /api/leaves/:id/status");
   console.log("  GET    /api/leaves/pending?departmentId=dept_1");
   console.log("  GET    /api/staff/:id/leaves?year=2025&status=APPROVED");
-  console.log("  GET    /api/departments/:id/leaves/calendar?month=2&year=2025");
-  console.log("  GET    /api/leaves/conflicts?departmentId=dept_1&startDate=...&endDate=...");
+  console.log(
+    "  GET    /api/departments/:id/leaves/calendar?month=2&year=2025",
+  );
+  console.log(
+    "  GET    /api/leaves/conflicts?departmentId=dept_1&startDate=...&endDate=...",
+  );
   console.log("  GET    /api/staff/:id/leave/eligibility?leaveTypeId=lt_1");
   console.log("  POST   /api/leaves/validate");
   console.log("\n🏖️  Report Analytic Endpoints:");
@@ -433,5 +497,6 @@ server.listen(PORT, () => {
   console.log("  POST   /api/notifications");
   console.log("  GET    /api/notifications/stats");
   console.log("  GET/PATCH `/api/notifications/preferences` ");
+  console.log("\n⚙️  Settings Endpoints:");
   console.log("\n💡 Tip: Use ?_embed to include related resources");
 });

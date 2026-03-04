@@ -1,7 +1,8 @@
+import type { TLeaveBalance, TLeaveResponse } from "./leave-managementTypes";
 import type { TAttendance } from "./attendance.types";
-import type { TLeaveBalance, TLeaveResponse } from "./leave-management.types";
-import type { TDepartment, TRank } from "./types";
-import type { TUser } from "./user-types";
+import type { TUser } from "./userTypes";
+import type { TDepartment } from "./departmentTypes";
+import type { TRank } from "./rankTypes";
 
 export type TStaffWithDepartmentName = TStaff & { department: { name: string } };
 export type TStaffCategory = "Senior" | "Junior";

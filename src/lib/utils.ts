@@ -1,7 +1,7 @@
 import type {
   TNotification,
   TNotificationConfig,
-} from "@/types/notifications-types";
+} from "@/types/notificationsTypes";
 import { QueryClient } from "@tanstack/react-query";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -18,7 +18,6 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 30000, // 30 seconds
-      refetchInterval: 5000,
       retry: (failureCount, error) => {
         // Don't retry for 4xx errors
         if (

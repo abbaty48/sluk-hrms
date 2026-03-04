@@ -1,5 +1,5 @@
-import type { TDepartment } from "@/types/types";
-import type { TStaff } from "@/types/staff-types";
+import type { TStaff } from "@/types/staffTypes";
+import type { TDepartment } from "@/types/departmentTypes";
 import { useMutation, useSuspenseInfiniteQuery } from "@tanstack/react-query";
 
 type SearchStaffCriteria = Partial<{
@@ -92,10 +92,8 @@ export function useAddStaffAPI() {
       // Replace with your actual API endpoint
       const response = await fetch("/api/staff", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
       });
 
       if (!response.ok) {

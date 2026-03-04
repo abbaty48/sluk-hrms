@@ -9,6 +9,7 @@ import type { Application, Response } from "express";
 export function hrmsATTENDANCE_ENDPOINTS(
   server: Application,
   getDb: () => TDatabase,
+  saveDb: (db: TDatabase) => void,
 ) {
   // 1. Mark Attendance (Single)
   server.post(
@@ -62,7 +63,7 @@ export function hrmsATTENDANCE_ENDPOINTS(
       };
 
       db.attendance.push(newAttendance);
-      // saveDb(db);
+      saveDb(db);
 
       res.status(201).json({
         message: "Attendance marked successfully",
@@ -132,7 +133,7 @@ export function hrmsATTENDANCE_ENDPOINTS(
           staffId,
           date,
           status,
-          rate: '',
+          rate: "",
           checkIn: checkIn || null,
           checkOut: checkOut || null,
           workHours: parseFloat(workHours.toFixed(2)),
@@ -146,7 +147,7 @@ export function hrmsATTENDANCE_ENDPOINTS(
         results.created.push(newAttendance);
       });
 
-      // saveDb(db);
+      saveDb(db);
 
       res.status(results.failed > 0 ? 207 : 201).json({
         message: `Bulk attendance marking completed`,
@@ -187,7 +188,7 @@ export function hrmsATTENDANCE_ENDPOINTS(
       // attendance.updatedBy = req.user?.id || "system";
       attendance.updatedAt = new Date().toISOString();
 
-      // saveDb(db);
+      saveDb(db);
 
       res.json({
         message: "Attendance updated successfully",
@@ -559,7 +560,7 @@ export function hrmsATTENDANCE_ENDPOINTS(
       }
 
       const deleted = db.attendance.splice(index, 1)[0];
-      // saveDb(db);
+      saveDb(db);
 
       res.json({
         message: "Attendance record deleted successfully",

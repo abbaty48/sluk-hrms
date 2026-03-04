@@ -8,7 +8,7 @@ import {
 import { User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Controller } from "react-hook-form";
-import type { TStaffFormData } from "@/types/staff-types";
+import type { TStaffFormData } from "@/types/staffTypes";
 import { FieldError, FieldLabel } from "@/components/ui/field";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { FieldErrors, Control, UseFormRegister } from "react-hook-form";

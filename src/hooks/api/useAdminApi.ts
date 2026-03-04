@@ -1,6 +1,6 @@
 import type { TDashboardStats } from "@/types/types";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import type { TStaffPerDepartment } from "@/types/staff-types";
+import type { TStaffPerDepartment } from "@/types/staffTypes";
 
 /**
  *

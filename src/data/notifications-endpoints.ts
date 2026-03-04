@@ -9,13 +9,14 @@ import type {
   TNotificationListResponse,
   TMarkNotificationAsReadRequest,
   TMarkNotificationAsReadResponse,
-} from "@/types/notifications-types.ts";
+} from "@/types/notificationsTypes";
 import type { Application, Response } from "express";
 import type { TDatabase, TAuthRequest } from "@/types/types";
 
 export function hrmsNOTIFICATION_ENDPOINTS(
   server: Application,
   getDb: () => TDatabase,
+  saveDb: (db: TDatabase) => void,
 ) {
   // 1. Get Notifications (with pagination and filters)
   server.get("/api/notifications", (req: TAuthRequest, res: Response): void => {
@@ -144,12 +145,12 @@ export function hrmsNOTIFICATION_ENDPOINTS(
         }
       });
 
-      // saveDb(db);
+      saveDb(db);
 
       const response: TMarkNotificationAsReadResponse = {
         success: true,
         count: updatedNotifications.length,
-        notifications: updatedNotifications
+        notifications: updatedNotifications,
       };
 
       res.json(response);
@@ -173,7 +174,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
         }
       });
 
-      // saveDb(db);
+      saveDb(db);
 
       const response: TMarkNotificationAsReadResponse = {
         success: true,
@@ -204,7 +205,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
       notification.read = false;
       notification.readAt = null;
 
-      // saveDb(db);
+      saveDb(db);
 
       res.json({
         success: true,
@@ -230,7 +231,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
       }
 
       const deleted = db.notifications.splice(index, 1)[0];
-      // saveDb(db);
+      saveDb(db);
 
       res.json({
         success: true,
@@ -254,7 +255,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
 
       const deletedCount = initialLength - db.notifications.length;
 
-      // saveDb(db);
+      saveDb(db);
 
       res.json({
         success: true,
@@ -265,51 +266,54 @@ export function hrmsNOTIFICATION_ENDPOINTS(
   );
 
   // 8. Create Notification (Admin/System use)
-  server.post("/api/notifications", (req: TAuthRequest, res: Response): void => {
-    const db = getDb();
-    const {
-      icon,
-      userId,
-      type,
-      title,
-      message,
-      priority,
-      metadata,
-      actionUrl,
-    } = req.body;
+  server.post(
+    "/api/notifications",
+    (req: TAuthRequest, res: Response): void => {
+      const db = getDb();
+      const {
+        icon,
+        userId,
+        type,
+        title,
+        message,
+        priority,
+        metadata,
+        actionUrl,
+      } = req.body;
 
-    // Validation
-    if (!userId || !type || !title || !message) {
-      res.status(400).json({
-        error: "userId, type, title, and message are required",
+      // Validation
+      if (!userId || !type || !title || !message) {
+        res.status(400).json({
+          error: "userId, type, title, and message are required",
+        });
+        return;
+      }
+
+      const newNotification: TNotification = {
+        id: `notif_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+        userId,
+        icon,
+        type,
+        title,
+        message,
+        metadata,
+        actionUrl,
+        read: false,
+        priority: priority || "medium",
+        createdAt: new Date().toISOString(),
+        readAt: null,
+      };
+
+      db.notifications.push(newNotification);
+      saveDb(db);
+
+      res.status(201).json({
+        success: true,
+        message: "Notification created successfully",
+        notification: newNotification,
       });
-      return;
-    }
-
-    const newNotification: TNotification = {
-      id: `notif_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-      userId,
-      icon,
-      type,
-      title,
-      message,
-      metadata,
-      actionUrl,
-      read: false,
-      priority: priority || "medium",
-      createdAt: new Date().toISOString(),
-      readAt: null,
-    };
-
-    db.notifications.push(newNotification);
-    // saveDb(db);
-
-    res.status(201).json({
-      success: true,
-      message: "Notification created successfully",
-      notification: newNotification,
-    });
-  });
+    },
+  );
 
   // 9. Get Notification Statistics
   server.get(
@@ -421,7 +425,7 @@ export function hrmsNOTIFICATION_ENDPOINTS(
         db.notificationPreferences.push(preferences!);
       }
 
-      // saveDb(db);
+      saveDb(db);
 
       res.json({
         success: true,

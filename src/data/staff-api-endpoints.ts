@@ -3,13 +3,14 @@ import type {
   TEnrichedStaff,
   TStaffStatistics,
   TStaffPerDepartment,
-} from "@/types/staff-types";
-import type { TAuthRequest, TDatabase } from "@/types/types";
+} from "@/types/staffTypes";
 import type { Application, Response } from "express";
+import type { TAuthRequest, TDatabase } from "@/types/types";
 
 export function hrmsSTAFF_ENDPOINTS(
   server: Application,
   getDb: () => TDatabase,
+  saveDb: (db: TDatabase) => void,
 ) {
   server.get(
     "/api/staff/:id/employment",
@@ -436,7 +437,7 @@ export function hrmsSTAFF_ENDPOINTS(
       lga: lga || null,
       departmentId,
       rankId,
-      rank: rank || rankDetails.title,
+      rank: rank || rankDetails.name,
       religion,
       maritalStatus,
       cadre: cadre || "Non-Teaching",
@@ -465,6 +466,7 @@ export function hrmsSTAFF_ENDPOINTS(
     };
 
     db.users.push(newUser);
+    saveDb(db);
 
     res.status(201).json({
       staff: newStaff,
@@ -761,7 +763,7 @@ export function hrmsSTAFF_ENDPOINTS(
         staffId,
         name: staff.name,
         department: department?.name ?? null,
-        rank: rank?.title ?? staff.rank,
+        rank: rank?.name ?? staff.rank,
         leaveBalance: totalLeaveBalance,
         leavePercent:
           totalLeaveBalance.totalAllowed > 0

@@ -8,7 +8,7 @@ import {
 import { Briefcase } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import type { TStaffFormData } from "@/types/staff-types";
+import type { TStaffFormData } from "@/types/staffTypes";
 import { SelectFilter } from "@/components/SelectFilter";
 import { FieldError, FieldLabel } from "@/components/ui/field";
 import { RankSelectItems } from "@/components/RankSelectItems";

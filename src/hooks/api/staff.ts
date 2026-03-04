@@ -1,5 +1,5 @@
 import { sleep } from "@/lib/utils"
-import type { TStaff } from "@/types/staff-types"
+import type { TStaff } from "@/types/staffTypes"
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query"
 import type { TEmploymentHistoryResponse, TQualification } from "@/types/types"
 

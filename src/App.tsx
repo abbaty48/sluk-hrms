@@ -49,6 +49,12 @@ function App() {
             "@/pages/dashboard/admin/notifications/AdminNotificationsPage"
           )
         },
+        {
+          path: "/admin/settings",
+          lazy: () => import(
+            "@/pages/dashboard/admin/settings/AdminSettingsPage"
+          )
+        },
         // Employee Routes
         {
           path: "/employee",
@@ -61,7 +67,7 @@ function App() {
           path: "/employee/leave",
           lazy: () =>
             import(
-              "@sluk/src/pages/dashboard/employee/EmployeeLeavePage.tsx/EmployeeLeavePage"
+              "@/pages/dashboard/employee/EmployeeLeavePage.tsx/EmployeeLeavePage"
             ),
         },
         {

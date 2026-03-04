@@ -1,7 +1,7 @@
 import type { FieldErrors, Control, UseFormRegister } from "react-hook-form";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { FieldError, FieldLabel } from "@/components/ui/field";
-import type { TStaffFormData } from "@/types/staff-types";
+import type { TStaffFormData } from "@/types/staffTypes";
 import { Input } from "@/components/ui/input";
 import { Controller } from "react-hook-form";
 import { MapPin } from "lucide-react";

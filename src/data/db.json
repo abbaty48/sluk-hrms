@@ -28684,7 +28684,10 @@
       "description": "Vice Chancellor's Office",
       "headId": null,
       "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
+      "updatedAt": "2026-03-02T16:10:36.951Z",
+      "staffCount": 231,
+      "isActive": true,
+      "headOfDepartment": ""
     },
     {
       "id": "dept_2",
@@ -28693,7 +28696,8 @@
       "description": "School of Postgraduate Studies",
       "headId": null,
       "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
+      "updatedAt": "2024-01-01T08:00:00.000Z",
+      "staffCount": 2
     },
     {
       "id": "dept_3",
@@ -28702,7 +28706,8 @@
       "description": "Registry Department",
       "headId": null,
       "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
+      "updatedAt": "2024-01-01T08:00:00.000Z",
+      "staffCount": 84
     },
     {
       "id": "dept_4",
@@ -28711,7 +28716,8 @@
       "description": "Haruna Wakili Library",
       "headId": null,
       "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
+      "updatedAt": "2024-01-01T08:00:00.000Z",
+      "staffCount": 7
     },
     {
       "id": "dept_5",
@@ -28720,7 +28726,8 @@
       "description": "Guidance and Human Development Center",
       "headId": null,
       "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
+      "updatedAt": "2024-01-01T08:00:00.000Z",
+      "staffCount": 2
     },
     {
       "id": "dept_6",
@@ -28729,7 +28736,8 @@
       "description": "Faculty of Natural and Applied Sciences",
       "headId": null,
       "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
+      "updatedAt": "2024-01-01T08:00:00.000Z",
+      "staffCount": 23
     },
     {
       "id": "dept_7",
@@ -28738,7 +28746,8 @@
       "description": "Department of Physical Planning and Maintenance Services",
       "headId": null,
       "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
+      "updatedAt": "2024-01-01T08:00:00.000Z",
+      "staffCount": 86
     },
     {
       "id": "dept_8",
@@ -28747,7 +28756,8 @@
       "description": "Department of Mathematics",
       "headId": null,
       "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
+      "updatedAt": "2024-01-01T08:00:00.000Z",
+      "staffCount": 28
     },
     {
       "id": "dept_9",
@@ -28756,7 +28766,8 @@
       "description": "Faculty of Education",
       "headId": null,
       "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
+      "updatedAt": "2024-01-01T08:00:00.000Z",
+      "staffCount": 13
     },
     {
       "id": "dept_10",
@@ -28765,7 +28776,8 @@
       "description": "Department of Arabic",
       "headId": null,
       "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
+      "updatedAt": "2024-01-01T08:00:00.000Z",
+      "staffCount": 30
     },
     {
       "id": "dept_11",
@@ -29184,106 +29196,22 @@
   ],
   "ranks": [
     {
-      "id": "rank_1",
-      "title": "Vice-Chancellor",
-      "level": 1,
-      "description": "Vice-Chancellor",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_2",
-      "title": "Professor",
-      "level": 2,
-      "description": "Professor",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_3",
-      "title": "Registrar",
-      "level": 3,
-      "description": "Registrar",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_4",
-      "title": "University Librarian",
-      "level": 3,
-      "description": "University Librarian",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
       "id": "rank_5",
       "title": "Director",
       "level": 10,
       "description": "Director",
       "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_6",
-      "title": "Associate Professor",
-      "level": 3,
-      "description": "Associate Professor",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_7",
-      "title": "Senior Lecturer",
-      "level": 4,
-      "description": "Senior Lecturer",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_8",
-      "title": "Lecturer I",
-      "level": 5,
-      "description": "Lecturer I",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_9",
-      "title": "Lecturer II",
-      "level": 5,
-      "description": "Lecturer II",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_10",
-      "title": "Librarian I",
-      "level": 3,
-      "description": "Librarian I",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_11",
-      "title": "Assistant Lecturer",
-      "level": 7,
-      "description": "Assistant Lecturer",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
+      "updatedAt": "2026-03-03T10:06:40.967Z",
+      "name": "Professor",
+      "category": "Academic",
+      "salaryGrade": "Grade 15",
+      "requirements": ""
     },
     {
       "id": "rank_12",
       "title": "Library I",
       "level": 10,
       "description": "Library I",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_13",
-      "title": "Assistant Librarian",
-      "level": 3,
-      "description": "Assistant Librarian",
       "createdAt": "2024-01-01T08:00:00.000Z",
       "updatedAt": "2024-01-01T08:00:00.000Z"
     },
@@ -29296,14 +29224,6 @@
       "updatedAt": "2024-01-01T08:00:00.000Z"
     },
     {
-      "id": "rank_15",
-      "title": "Graduate assistant",
-      "level": 8,
-      "description": "Graduate assistant",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
       "id": "rank_16",
       "title": "Chief Security Officer",
       "level": 10,
@@ -29312,26 +29232,10 @@
       "updatedAt": "2024-01-01T08:00:00.000Z"
     },
     {
-      "id": "rank_17",
-      "title": "Deputy Registrar",
-      "level": 3,
-      "description": "Deputy Registrar",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
       "id": "rank_18",
       "title": "Bursar",
       "level": 10,
       "description": "Bursar",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_19",
-      "title": "Senior Assistant Registrar I",
-      "level": 3,
-      "description": "Senior Assistant Registrar I",
       "createdAt": "2024-01-01T08:00:00.000Z",
       "updatedAt": "2024-01-01T08:00:00.000Z"
     },
@@ -29364,14 +29268,6 @@
       "title": "Principal Acadamic Planning Officer",
       "level": 10,
       "description": "Principal Acadamic Planning Officer",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_24",
-      "title": "Principal Assistant Registrar I",
-      "level": 3,
-      "description": "Principal Assistant Registrar I",
       "createdAt": "2024-01-01T08:00:00.000Z",
       "updatedAt": "2024-01-01T08:00:00.000Z"
     },
@@ -29436,14 +29332,6 @@
       "title": "Principal executive officer l (Admin)",
       "level": 10,
       "description": "Principal executive officer l (Admin)",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_33",
-      "title": "Senior Assistant Registrar II",
-      "level": 3,
-      "description": "Senior Assistant Registrar II",
       "createdAt": "2024-01-01T08:00:00.000Z",
       "updatedAt": "2024-01-01T08:00:00.000Z"
     },
@@ -29592,14 +29480,6 @@
       "updatedAt": "2024-01-01T08:00:00.000Z"
     },
     {
-      "id": "rank_52",
-      "title": "Assistant Registrar",
-      "level": 3,
-      "description": "Assistant Registrar",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
       "id": "rank_53",
       "title": "Principal Protocol Officer",
       "level": 10,
@@ -29612,14 +29492,6 @@
       "title": "Principal executive officer I (Admin)",
       "level": 10,
       "description": "Principal executive officer I (Admin)",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
-      "id": "rank_55",
-      "title": "Assitant Registrar",
-      "level": 3,
-      "description": "Assitant Registrar",
       "createdAt": "2024-01-01T08:00:00.000Z",
       "updatedAt": "2024-01-01T08:00:00.000Z"
     },
@@ -30464,14 +30336,6 @@
       "updatedAt": "2024-01-01T08:00:00.000Z"
     },
     {
-      "id": "rank_161",
-      "title": "Instructor",
-      "level": 8,
-      "description": "Instructor",
-      "createdAt": "2024-01-01T08:00:00.000Z",
-      "updatedAt": "2024-01-01T08:00:00.000Z"
-    },
-    {
       "id": "rank_162",
       "title": "Principal Technical Officer",
       "level": 10,
@@ -30518,6 +30382,169 @@
       "description": "Library Assistant",
       "createdAt": "2024-01-01T08:00:00.000Z",
       "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_15",
+      "title": "Graduate assistant",
+      "level": 8,
+      "description": "Graduate assistant",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_161",
+      "title": "Instructor",
+      "level": 8,
+      "description": "Instructor",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_11",
+      "title": "Assistant Lecturer",
+      "level": 7,
+      "description": "Assistant Lecturer",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_8",
+      "title": "Lecturer I",
+      "level": 5,
+      "description": "Lecturer I",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_9",
+      "title": "Lecturer II",
+      "level": 5,
+      "description": "Lecturer II",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_7",
+      "title": "Senior Lecturer",
+      "level": 4,
+      "description": "Senior Lecturer",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_3",
+      "title": "Registrar",
+      "level": 3,
+      "description": "Registrar",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_4",
+      "title": "University Librarian",
+      "level": 3,
+      "description": "University Librarian",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_6",
+      "title": "Associate Professor",
+      "level": 3,
+      "description": "Associate Professor",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_10",
+      "title": "Librarian I",
+      "level": 3,
+      "description": "Librarian I",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_13",
+      "title": "Assistant Librarian",
+      "level": 3,
+      "description": "Assistant Librarian",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_17",
+      "title": "Deputy Registrar",
+      "level": 3,
+      "description": "Deputy Registrar",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_19",
+      "title": "Senior Assistant Registrar I",
+      "level": 3,
+      "description": "Senior Assistant Registrar I",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_24",
+      "title": "Principal Assistant Registrar I",
+      "level": 3,
+      "description": "Principal Assistant Registrar I",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_33",
+      "title": "Senior Assistant Registrar II",
+      "level": 3,
+      "description": "Senior Assistant Registrar II",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_52",
+      "title": "Assistant Registrar",
+      "level": 3,
+      "description": "Assistant Registrar",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_55",
+      "title": "Assitant Registrar",
+      "level": 3,
+      "description": "Assitant Registrar",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_2",
+      "title": "Professor",
+      "level": 2,
+      "description": "Professor",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_1",
+      "title": "Vice-Chancellor",
+      "level": 1,
+      "description": "Vice-Chancellor",
+      "createdAt": "2024-01-01T08:00:00.000Z",
+      "updatedAt": "2024-01-01T08:00:00.000Z"
+    },
+    {
+      "id": "rank_1772533721655_jehape2ts",
+      "name": "afa",
+      "level": 1,
+      "category": "Academic",
+      "salaryGrade": "",
+      "requirements": "",
+      "isActive": true,
+      "createdAt": "2026-03-03T10:28:41.655Z",
+      "updatedAt": "2026-03-03T10:28:41.655Z"
     }
   ],
   "users": [
@@ -68390,6 +68417,49 @@
       "year": "1987",
       "level": "Master's",
       "isHighest": true
+    }
+  ],
+  "systemPreferences": {
+    "id": "sys_pref_1",
+    "institutionName": "Sule Lamido University HRMS",
+    "institutionAbbreviation": "SLU",
+    "dateFormat": "YYYY-MM-DD",
+    "fiscalYearStart": "February",
+    "leaveApprovalLevels": 1,
+    "emailNotifications": true,
+    "smsNotifications": true,
+    "theme": "system",
+    "language": "en",
+    "timezone": "Africa/Lagos",
+    "updatedAt": "2026-03-02T15:55:19.236Z"
+  },
+  "committees": [
+    {
+      "id": "comm_1772532135082_gic8y92",
+      "name": "Acedemic Board",
+      "description": "Oversea description",
+      "chairman": "John Doe",
+      "members": [],
+      "purpose": "Oversea academic research",
+      "meetingSchedule": "",
+      "isActive": true,
+      "createdAt": "2026-03-03T10:02:15.082Z",
+      "updatedAt": "2026-03-03T10:02:51.776Z"
+    }
+  ],
+  "responsibilities": [
+    {
+      "id": "resp_1772532349302_ev0agosa0",
+      "title": "Course Coordination",
+      "description": "Course guard coordinate",
+      "department": "Computer Science",
+      "assignedTo": [
+        "staff_350"
+      ],
+      "priority": "medium",
+      "isActive": true,
+      "createdAt": "2026-03-03T10:05:49.302Z",
+      "updatedAt": "2026-03-03T10:06:07.978Z"
     }
   ]
 }

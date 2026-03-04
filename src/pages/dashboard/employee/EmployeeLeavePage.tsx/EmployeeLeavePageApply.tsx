@@ -1,7 +1,7 @@
 import { useApplyLeaveAPI, useLeaveBalancesAPI } from "@/hooks/api/useEmployeeLeaveAPI";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog"
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { TLeaveApplication } from "@/types/leave-management.types";
+import type { TLeaveApplication } from "@/types/leave-managementTypes";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { SelectFilter } from "@/components/SelectFilter"
 import { useForm, Controller } from "react-hook-form";

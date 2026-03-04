@@ -1,5 +1,5 @@
 import { useCallback, useState, type PropsWithChildren } from "react";
-import type { TLeaveFilters } from "@sluk/src/types/leave-management.types";
+import type { TLeaveFilters } from "@/types/leave-managementTypes";
 import { AdminLeavePageContext, AdminLeavePageContextInitialStates, type TLeaveFilterActions } from "./AdminLeavePageContext";
 /**
  *

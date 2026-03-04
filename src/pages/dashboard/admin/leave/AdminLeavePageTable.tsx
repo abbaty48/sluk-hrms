@@ -4,11 +4,11 @@ import { Button } from "@sluk/src/components/ui/button";
 import { Suspense, use, useEffect, useState } from "react";
 import { Paginator } from "@sluk/src/components/Paginator";
 import { AdminLeavePageContext } from "./AdminLeavePageContext";
+import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 import { Check, CircleX, Loader2, NotepadText } from "lucide-react";
-import { QueryErrorBoundary } from "@sluk/src/components/ErrorBoundary";
-import type { TLeaveResponse } from "@sluk/src/types/leave-management.types";
-import { Popover, PopoverContent, PopoverTrigger } from "@sluk/src/components/ui/popover";
-import { useLeaveApproval, useLeaveRejection, useLeavesAPI } from "@sluk/src/hooks/api/useAdminLeave";
+import type { TLeaveResponse } from "@/types/leave-managementTypes";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useLeaveApproval, useLeaveRejection, useLeavesAPI } from "@/hooks/api/useAdminLeave";
 
 /**
  *

@@ -1,7 +1,7 @@
 import { queryClient, sleep } from "@/lib/utils";
 import type { TPagination } from "@/types/types";
 import { useMutation, useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
-import type { TLeaveType, TLeaveStats, TLeaveTypeDistribution, TLeaveFilters, TLeaveResponse } from "@/types/leave-management.types";
+import type { TLeaveType, TLeaveStats, TLeaveTypeDistribution, TLeaveFilters, TLeaveResponse } from "@/types/leave-managementTypes";
 
 
 /**

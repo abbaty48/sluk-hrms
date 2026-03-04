@@ -5,7 +5,7 @@ import type {
   TNotificationListResponse,
   TMarkNotificationAsReadRequest,
   TMarkNotificationAsReadResponse,
-} from "@/types/notifications-types";
+} from "@/types/notificationsTypes";
 import { queryClient } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 

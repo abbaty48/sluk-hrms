@@ -16,10 +16,12 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type Props = {
+  value?: string;
   isFetching: boolean;
   totalPages: number;
   currentPage: number;
   hasNextPage: boolean;
+  defaultValue?: string;
   hasPreviousPage: boolean;
   fetchNextPage: () => void;
   fetchPreviousPage: () => void;
@@ -27,6 +29,7 @@ type Props = {
 };
 
 export function Paginator({
+  value,
   isFetching,
   totalPages,
   currentPage,
@@ -34,13 +37,14 @@ export function Paginator({
   fetchNextPage,
   hasPreviousPage,
   fetchPreviousPage,
+  defaultValue,
   onRowsPerPageChange,
 }: Props) {
   return (
     <div className="flex items-center justify-between gap-4 m-auto">
       <Field orientation="horizontal" className="w-fit">
         <FieldLabel htmlFor="select-rows-per-page">Rows per page</FieldLabel>
-        <Select defaultValue="5" onValueChange={onRowsPerPageChange}>
+        <Select value={value} defaultValue={defaultValue} onValueChange={onRowsPerPageChange}>
           <SelectTrigger className="w-20" id="select-rows-per-page">
             <SelectValue />
           </SelectTrigger>

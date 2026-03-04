@@ -15,7 +15,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { cn, notificationConfig } from "@/lib/utils";
-import type { TNotification } from "@/types/notifications-types";
+import type { TNotification } from "@/types/notificationsTypes";
 
 // Icon component mapper
 const iconComponents = {

@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { ExportEmployees } from "./AdminEmployeesExport";
 import { ImportEmployees } from "./AdminEmployeesImport";
-import type { TStaffWithDepartmentName } from "@/types/staff-types";
+import type { TStaffWithDepartmentName } from "@/types/staffTypes";
 
 type Align = "right" | "left" | "center";
 

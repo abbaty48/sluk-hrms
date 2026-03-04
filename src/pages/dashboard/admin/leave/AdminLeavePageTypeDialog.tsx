@@ -11,9 +11,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Field, FieldLabel } from "@sluk/src/components/ui/field";
-import type { TLeaveType } from "@sluk/src/types/leave-management.types";
-import { useLeaveTypeUPSERTAPI } from "@sluk/src/hooks/api/useAdminLeave";
+import { Field, FieldLabel } from "@/components/ui/field";
+import type { TLeaveType } from "@/types/leave-managementTypes";
+import { useLeaveTypeUPSERTAPI } from "@/hooks/api/useAdminLeave";
 
 
 type LeaveTypeDialogProps = {

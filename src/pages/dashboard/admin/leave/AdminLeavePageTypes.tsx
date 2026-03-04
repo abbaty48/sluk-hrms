@@ -1,8 +1,8 @@
-import { useLeaveTypesAPI, useLeaveTypeDeleteAPI } from "@sluk/src/hooks/api/useAdminLeave";
-import { QueryErrorBoundary } from "@sluk/src/components/ErrorBoundary";
-import type { TLeaveType } from "@/types/leave-management.types";
-import { Button } from "@sluk/src/components/ui/button";
+import { useLeaveTypesAPI, useLeaveTypeDeleteAPI } from "@/hooks/api/useAdminLeave";
+import { QueryErrorBoundary } from "@/components/ErrorBoundary";
+import type { TLeaveType } from "@/types/leave-managementTypes";
 import { LeaveTypeDialog } from "./AdminLeavePageTypeDialog";
+import { Button } from "@/components/ui/button";
 import { Card } from "@sluk/src/components/ui/card";
 import { Pencil, Plus, X } from "lucide-react";
 import { Suspense, useState } from "react";

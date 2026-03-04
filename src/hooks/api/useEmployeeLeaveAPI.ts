@@ -2,7 +2,7 @@ import type {
   TLeaveRequest,
   TLeaveApplication,
   TLeaveBalance,
-} from "@/types/leave-management.types";
+} from "@sluk/src/types/leave-managementTypes";
 import {
   useSuspenseQuery,
   useMutation,
