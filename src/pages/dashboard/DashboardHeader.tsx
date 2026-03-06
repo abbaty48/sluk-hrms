@@ -1,29 +1,34 @@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useUnreadCount } from "@/hooks/api/useAdminNotificationsAPI";
-import { UserContext } from "@/states/contexts/UserContext";
+import { useAuthContext } from "@/states/contexts/AuthContext";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell, Shield, User } from "lucide-react";
-import { use } from "react";
+import { useState } from "react";
 
 function RoleSwitcher() {
   const navigate = useNavigate();
-  const { roleView, handleRoleChange } = use(UserContext);
+  const { user } = useAuthContext();
+  const [userRole, setUserRole] = useState(() =>
+    window.location.pathname.startsWith("/admin") ? "admin" : "employee",
+  );
+
   const roles = [
-    { label: "Admin", value: "as_admin", icon: <Shield /> },
-    { label: "Employee", value: "as_employee", icon: <User /> },
+    { label: "Admin", value: "admin", icon: <Shield /> },
+    { label: "Employee", value: "employee", icon: <User /> },
   ];
 
   const changeRole = (value: string) => {
-    handleRoleChange(value);
-    navigate(value === "as_employee" ? "/employee" : "/admin");
+    setUserRole(value);
+    navigate(value === "employee" ? "/employee" : "/admin");
   };
+
   return (
     <ToggleGroup
-      variant={"outline"}
-      type="single"
       size={"sm"}
-      defaultValue={roleView}
+      type="single"
+      variant={"outline"}
+      defaultValue={userRole}
       className="hidden sm:flex items-center gap-2 rounded-full border px-1 py-1 transition-all"
     >
       {roles.map(({ label, value, icon }) => (
@@ -31,12 +36,10 @@ function RoleSwitcher() {
           key={value}
           value={value}
           name="role_switch"
-          data-role={value}
           onClick={() => changeRole(value)}
           style={{ border: "none", borderRadius: "100px" }}
-          aria-label={`Switch dark:bg-primary/20 to ${label} section.`}
           className={`flex items-center gap-1.5 cursor-pointer
-            ${roleView === value ? "bg-primary! text-white!" : ""}
+            ${userRole === value ? "bg-primary! text-white!" : ""}
              rounded-full px-3 py-1 text-xs font-medium transition-all text-primary shadow-sm`}
         >
           {icon}
@@ -66,12 +69,14 @@ function NotificationBadge() {
 }
 
 export function DashboardHeader() {
+  const { user } = useAuthContext();
+
   return (
     <header className="sticky top-0 z-30 flex flex-1 items-center gap-4 border-b pl-1 pr-4 py-3 w-full bg-card">
       <SidebarTrigger className="hover:bg-primary/50 hover:dark:bg-primary" />
       <div className="flex items-center gap-3 mx-auto">
         {/*Role Switcher*/}
-        <RoleSwitcher />
+        {user?.role === "admin" && <RoleSwitcher />}
         {/*notifications*/}
         <NotificationBadge />
       </div>

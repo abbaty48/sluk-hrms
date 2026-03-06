@@ -6,11 +6,10 @@ import {
   CheckCircle2,
   TrendingDown,
   CalendarDays,
-  type LucideIcon
+  type LucideIcon,
 } from "lucide-react";
 import { useAttendanceSummary } from "@/hooks/api/useAttendance";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 
 type TStatCardProps = {
   title: string;
@@ -36,9 +35,7 @@ function StatCard({ title, value = 0, icon: Icon, trend = 0 }: TStatCardProps) {
   return (
     <Card className="hover:shadow-md transition-all duration-200">
       <CardHeader className="pb-2 flex flex-row justify-between items-center">
-        <CardTitle className="text-sm text-muted-foreground">
-          {title}
-        </CardTitle>
+        <CardTitle className="text-sm text-muted-foreground">{title}</CardTitle>
 
         {/* Colored Icon Badge */}
         <div className={`p-2 rounded-md ${badgeColor}`}>
@@ -51,15 +48,15 @@ function StatCard({ title, value = 0, icon: Icon, trend = 0 }: TStatCardProps) {
 
         {/* Trend Indicator */}
         <div
-          className={`flex items-center text-xs font-medium ${isPositive ? "text-green-500" : "text-red-400"
-            }`}
+          className={`flex items-center text-xs font-medium ${
+            isPositive ? "text-green-500" : "text-red-400"
+          }`}
         >
           {isPositive ? (
             <TrendingUp className="w-4 h-4 mr-1" />
           ) : (
             <TrendingDown className="w-4 h-4 mr-1" />
           )}
-
           {isPositive ? "+" : ""}
           {trend}% vs last month
         </div>
@@ -68,14 +65,13 @@ function StatCard({ title, value = 0, icon: Icon, trend = 0 }: TStatCardProps) {
   );
 }
 
-export const Component = function EmployeeAttendancePage() {
+export default function EmployeeAttendancePage() {
   const { data } = useAttendanceSummary("staff_2");
 
   const summary = data?.pages?.[0]?.summary;
 
   return (
     <div className="space-y-6 p-6">
-
       {/* HEADER */}
       <div>
         <h2 className="text-xl font-semibold">Attendance Overview</h2>
@@ -86,7 +82,6 @@ export const Component = function EmployeeAttendancePage() {
 
       {/* SUMMARY CARDS */}
       <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
-
         <StatCard
           title="Total Days"
           value={summary?.totalDays ?? 0}
@@ -121,7 +116,6 @@ export const Component = function EmployeeAttendancePage() {
           icon={Timer}
           trend={3}
         />
-
       </div>
 
       {/* RECENT LOGS CARD */}
@@ -134,7 +128,6 @@ export const Component = function EmployeeAttendancePage() {
           Logs section ready for table integration.
         </CardContent>
       </Card>
-
     </div>
   );
 }

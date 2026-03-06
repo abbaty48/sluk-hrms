@@ -5,7 +5,7 @@ import { AdminLeavePageHeader } from "./AdminLeavePageHeader";
 import { AdminLeavePageFilters } from "./AdminLeavePageFilters";
 import { AdminLeavePageProvider } from "./AdminLeavePageProvider";
 
-export const Component = function AdminLeavePageIndex() {
+const Component = function AdminLeavePageIndex() {
   /*
   const [filters, setFilters] = useState<LeaveFilters>({
     search: "",
@@ -22,7 +22,6 @@ export const Component = function AdminLeavePageIndex() {
     setCurrentPage(1); // Reset to first page on filter change
   };
   */
-
 
   return (
     <AdminLeavePageProvider>
@@ -42,4 +41,6 @@ export const Component = function AdminLeavePageIndex() {
       </main>
     </AdminLeavePageProvider>
   );
-}
+};
+
+export default Component;

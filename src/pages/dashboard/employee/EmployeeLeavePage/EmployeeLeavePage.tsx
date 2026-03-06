@@ -1,10 +1,10 @@
-import { EmployeeLeavePageHistory } from "./EmployeeLeavePageHistory"
-import { EmployeeLeavePageBalance } from "./EmployeeLeavePageBalance"
-import { EmployeeLeavePageApply } from "./EmployeeLeavePageApply"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { EmployeeLeavePageHistory } from "./EmployeeLeavePageHistory";
+import { EmployeeLeavePageBalance } from "./EmployeeLeavePageBalance";
+import { EmployeeLeavePageApply } from "./EmployeeLeavePageApply";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
-export const Component = function EmployeeLeavePage() {
+const Component = function EmployeeLeavePage() {
   const [isDialogOpened, setIsDialogOpened] = useState(false);
 
   return (
@@ -31,7 +31,10 @@ export const Component = function EmployeeLeavePage() {
       {/* DIALOG */}
       <EmployeeLeavePageApply
         isDialog={isDialogOpened}
-        setDialog={setIsDialogOpened} />
+        setDialog={setIsDialogOpened}
+      />
     </>
-  )
-}
+  );
+};
+
+export default Component;

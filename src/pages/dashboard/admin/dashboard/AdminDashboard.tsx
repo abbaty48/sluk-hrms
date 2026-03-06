@@ -4,7 +4,7 @@ import { AdminLeaveDistributionChart } from "./AdminLeaveDistributionChart/Admin
 import { AdminStaffPerDepartmentChart } from "./AdminStaffPerDepartmentChart/AdminStaffPerDepartmentChart";
 import { AdminMonthlyAttendanceTrendChart } from "./AdminMonthlyAttendanceTrendChart/AdminMonthlyAttendanceTrendChart";
 
-export const Component = function AdminDashboardView() {
+export default function AdminDashboardView() {
   return (
     <article className="p-4 lg:p-6 overflow-auto w-full">
       <div className="mb-6">
@@ -26,4 +26,4 @@ export const Component = function AdminDashboardView() {
       </div>
     </article>
   );
-};
+}

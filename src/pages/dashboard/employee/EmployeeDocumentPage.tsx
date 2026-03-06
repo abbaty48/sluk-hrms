@@ -1,3 +1,5 @@
-export const Component = function EmployeeDocumentViewPage() {
+const Component = function EmployeeDocumentViewPage() {
   return <></>;
-}
+};
+
+export default Component;

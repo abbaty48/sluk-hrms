@@ -1,6 +1,6 @@
 import { AdminEmployeesPage } from "./AdminEmployeesPage";
 
-export const Component = function AdminEmployeesPageIndex() {
+const Component = function AdminEmployeesPageIndex() {
   return (
     <AdminEmployeesPage>
       <AdminEmployeesPage.Header />
@@ -9,3 +9,5 @@ export const Component = function AdminEmployeesPageIndex() {
     </AdminEmployeesPage>
   );
 };
+
+export default Component;

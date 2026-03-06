@@ -1,18 +1,14 @@
 import type {
   TDatabase,
   TAuthRequest,
-  TLoginRequest,
-  TLoginResponse,
   TDashboardStats,
-  TRegisterRequest,
-  TRegisterResponse,
 } from "@/types/types";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import jsonServer from "json-server";
-import type { TUser } from "@/types/userTypes.ts";
 import type { Response, NextFunction } from "express";
+import { hrmsAUTH_ENDPOINTS } from "./auth-endpoints.ts";
 import { hrmsRANK_ENDPOINTS } from "./ranks-api-endpoints.ts";
 import { hrmsLEAVE_ENDPOINTS } from "./leave-api-endpoints.ts";
 import { hrmsSTAFF_ENDPOINTS } from "./staff-api-endpoints.ts";
@@ -225,70 +221,6 @@ function writeDb(db: TDatabase): void {
   }
 }
 
-// Login endpoint
-server.post("/api/auth/login", (req: TAuthRequest, res: Response): void => {
-  const { email }: TLoginRequest = req.body;
-
-  const db = getDb();
-  const user = db.users.find((u) => u.email === email);
-
-  if (!user) {
-    res.status(401).json({ error: "Invalid credentials" });
-    return;
-  }
-
-  const token = "mock_jwt_token_" + Date.now();
-  const staff = db.staff.find((s) => s.id === user.staffId);
-
-  const response: TLoginResponse = {
-    token,
-    user: {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      staff: staff,
-    },
-  };
-
-  res.json(response);
-});
-
-// Register endpoint
-server.post("/api/auth/register", (req: TAuthRequest, res: Response): void => {
-  const { email, staffId }: TRegisterRequest = req.body;
-
-  const db = getDb();
-  const existingUser = db.users.find((u) => u.email === email);
-
-  if (existingUser) {
-    res.status(400).json({ error: "User already exists" });
-    return;
-  }
-
-  const newUser: TUser = {
-    id: "user_" + Date.now(),
-    email,
-    passwordHash: "$2a$10$XQa9Z9Z9Z9Z9Z9Z9Z9Z9Z9",
-    role: "EMPLOYEE",
-    staffId: staffId || null,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  db.users.push(newUser);
-
-  const response: TRegisterResponse = {
-    message: "User created successfully",
-    user: {
-      id: newUser.id,
-      email: newUser.email,
-      role: newUser.role,
-    },
-  };
-
-  res.status(201).json(response);
-});
-
 // Dashboard stats endpoint with month-over-month comparisons
 server.get(
   "/api/dashboard/stats",
@@ -410,6 +342,7 @@ server.get(
 
 // ATTENDANCE ENDPOINTS
 hrmsANALYTICS_ENDPOINTS(server, getDb);
+hrmsAUTH_ENDPOINTS(server, getDb, saveDb);
 hrmsRANK_ENDPOINTS(server, getDb, saveDb);
 hrmsLEAVE_ENDPOINTS(server, getDb, saveDb);
 hrmsSTAFF_ENDPOINTS(server, getDb, saveDb);

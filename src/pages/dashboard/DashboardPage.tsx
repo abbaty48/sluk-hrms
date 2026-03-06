@@ -2,15 +2,14 @@ import { Outlet } from "react-router";
 import { DashboardHeader } from "./DashboardHeader";
 import { DashboardSideBar } from "./DashboardSideBar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { UserProvider } from "@/states/providers/UserProvider";
-
+import { AuthProvider } from "@/states/contexts/AuthContext";
 
 /**
  *
  */
 export function DashBoardPage() {
   return (
-    <UserProvider>
+    <AuthProvider>
       <SidebarProvider>
         <DashboardSideBar />
         <main className="full-container mx-auto w-full">
@@ -18,6 +17,6 @@ export function DashBoardPage() {
           <Outlet />
         </main>
       </SidebarProvider>
-    </UserProvider>
+    </AuthProvider>
   );
 }

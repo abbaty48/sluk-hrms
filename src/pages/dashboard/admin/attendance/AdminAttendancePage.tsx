@@ -2,8 +2,7 @@ import { AdminAttendancePageTable } from "./AdminAttendancePageTable";
 import { AdminAttendancePageStats } from "./AdminAttendancePageStats";
 import { AdminAttendancePageChart } from "./AdminAttendancePageChart";
 
-export const Component = function AttendancePageWithQuery() {
-
+const Component = function AttendancePageWithQuery() {
   return (
     <main className="flex-1 p-4 lg:p-6 overflow-auto">
       <div className="animate-fade-in">
@@ -25,4 +24,6 @@ export const Component = function AttendancePageWithQuery() {
       </div>
     </main>
   );
-}
+};
+
+export default Component;

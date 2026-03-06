@@ -5,6 +5,11 @@ import {
   CalendarDays,
   FileSpreadsheet,
 } from "lucide-react";
+import {
+  AdminReportPageSkeletonChartCard,
+  AdminReportPageSkeletonPieChartCard,
+  AdminReportPageSkeletonMonthlyChartCard,
+} from "./AdminReportAnalyticPageSkeleton";
 import { ARAPChart } from "./charts/ARAPChart";
 import { Button } from "@/components/ui/button";
 import { ARAPFilters } from "./AdminReportAnalyticPageFilters";
@@ -15,11 +20,8 @@ import { ARAPFilterContextProvider } from "./AdminReportAnalyticPageProvider";
 import { ARAPPayrollBreakdownChart } from "./charts/ARAPPayrollBreakdownChart";
 import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components/ui/tabs";
 import { ARAPMonthlyLeaveUsageChart } from "./charts/ARAPMonthlyLeaveUsageChart";
-import { AdminReportPageSkeletonChartCard, AdminReportPageSkeletonPieChartCard, AdminReportPageSkeletonMonthlyChartCard } from "./AdminReportAnalyticPageSkeleton";
 
-
-export const Component = function AdminReportsAnalyticsPage() {
-
+const Component = function AdminReportsAnalyticsPage() {
   const handleExportPDF = () => {
     // Implement PDF export logic
     console.log("Exporting to PDF...");
@@ -37,14 +39,24 @@ export const Component = function AdminReportsAnalyticsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 space-y-8">
           <div>
             <h1 className="page-title">Reports & Analytics</h1>
-            <p className="page-subtitle">Comprehensive HR analytics and insights</p>
+            <p className="page-subtitle">
+              Comprehensive HR analytics and insights
+            </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleExportPDF} className="gap-1.5">
+            <Button
+              variant="outline"
+              onClick={handleExportPDF}
+              className="gap-1.5"
+            >
               <FileText className="h-4 w-4" />
               Export PDF
             </Button>
-            <Button variant="outline" onClick={handleExportExcel} className="gap-1.5">
+            <Button
+              variant="outline"
+              onClick={handleExportExcel}
+              className="gap-1.5"
+            >
               <FileSpreadsheet className="h-4 w-4" />
               Export Excel
             </Button>
@@ -74,40 +86,47 @@ export const Component = function AdminReportsAnalyticsPage() {
           <ARAPFilters />
           {/*  */}
           <TabsContent value="all">
-
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <ARAPChart
                 title="Staff Strength Over Years"
                 chart={ARAPStaffStrengthChart}
                 fallback={<AdminReportPageSkeletonChartCard />}
-                onDownload={() => { }} />
+                onDownload={() => {}}
+              />
               <ARAPChart
                 title="Staff by Category"
                 chart={ARAPStaffCategoryChart}
                 fallback={<AdminReportPageSkeletonPieChartCard />}
-                onDownload={() => { }} />
+                onDownload={() => {}}
+              />
             </div>
 
             <ARAPChart
               title="Staff by Department"
               chart={ARAPStaffDepartmentChart}
-              fallback={<AdminReportPageSkeletonMonthlyChartCard height={280} />}
-              onDownload={() => { }} />
+              fallback={
+                <AdminReportPageSkeletonMonthlyChartCard height={280} />
+              }
+              onDownload={() => {}}
+            />
 
             <ARAPChart
               title="Payroll Breakdown (monthly)."
               chart={ARAPPayrollBreakdownChart}
               fallback={<AdminReportPageSkeletonChartCard height={320} />}
-              onDownload={() => { }} />
-
+              onDownload={() => {}}
+            />
           </TabsContent>
           {/*  */}
           <TabsContent value="staff">
             <ARAPChart
               title="Staff by Department"
               chart={ARAPStaffDepartmentChart}
-              fallback={<AdminReportPageSkeletonMonthlyChartCard height={280} />}
-              onDownload={() => { }} />
+              fallback={
+                <AdminReportPageSkeletonMonthlyChartCard height={280} />
+              }
+              onDownload={() => {}}
+            />
           </TabsContent>
           {/*  */}
           <TabsContent value="leave">
@@ -115,7 +134,8 @@ export const Component = function AdminReportsAnalyticsPage() {
               title="Monthly Leave Usage."
               chart={ARAPMonthlyLeaveUsageChart}
               fallback={<AdminReportPageSkeletonChartCard height={300} />}
-              onDownload={() => { }} />
+              onDownload={() => {}}
+            />
           </TabsContent>
           {/*  */}
           <TabsContent value="payroll">
@@ -123,10 +143,13 @@ export const Component = function AdminReportsAnalyticsPage() {
               title="Payroll Breakdown (monthly)."
               chart={ARAPPayrollBreakdownChart}
               fallback={<AdminReportPageSkeletonChartCard height={320} />}
-              onDownload={() => { }} />
+              onDownload={() => {}}
+            />
           </TabsContent>
         </Tabs>
       </main>
     </ARAPFilterContextProvider>
   );
-}
+};
+
+export default Component;

@@ -1,103 +1,227 @@
-import { RootErrorBoundary, NotFoundPage } from "@/components/ErrorBoundary";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { ThemeProvider } from "./states/providers/ThemeProvider";
-import { DashBoardPage } from "@/pages/dashboard/DashboardPage";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "@/lib/utils";
+import {
+  AdminRoute,
+  PublicRoute,
+  RootRedirect,
+  EmployeeRoute,
+} from "@/components/ProtectedRoute";
 import { Toaster } from "sonner";
+import { queryClient } from "@/lib/utils";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { DashBoardPage } from "@/pages/dashboard/DashboardPage";
+import { ThemeProvider } from "@/states/providers/ThemeProvider";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { RootErrorBoundary, NotFoundPage } from "@/components/ErrorBoundary";
 
 function App() {
   const routers = createBrowserRouter([
+    // Root redirect - redirects to /admin or /employee based on user role
     {
+      index: true,
       path: "/",
-      element: <DashBoardPage />,
+      element: <RootRedirect />,
+    },
+
+    // Admin Routes
+    {
+      path: "/admin",
+      element: (
+        <AdminRoute>
+          <DashBoardPage />
+        </AdminRoute>
+      ),
       errorElement: <RootErrorBoundary />,
       children: [
         {
           index: true,
-          path: "/admin",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/admin/dashboard/AdminDashboard"
+            );
+            return { Component };
+          },
           errorElement: <RootErrorBoundary />,
-          lazy: () => import("@/pages/dashboard/admin/dashboard/AdminDashboard")
         },
         {
-          path: "/admin/employees",
-          lazy: () => import(
-            "@/pages/dashboard/admin/employees/AdminEmployeesPageIndex"
-          )
+          path: "employees",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/admin/employees/AdminEmployeesPageIndex"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
         {
-          path: "/admin/leave",
-          lazy: () => import(
-            "@/pages/dashboard/admin/leave/AdminLeavePageIndex"
-          ),
+          path: "leave",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/admin/leave/AdminLeavePageIndex"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
         {
-          path: "/admin/attendance",
-          lazy: () => import(
-            "@/pages/dashboard/admin/attendance/AdminAttendancePage"
-          )
+          path: "attendance",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/admin/attendance/AdminAttendancePage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
         {
-          path: "/admin/reports",
-          lazy: () => import(
-            "@/pages/dashboard/admin/reports/AdminReportAnalyticPage"
-          )
+          path: "reports",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/admin/reports/AdminReportAnalyticPage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
         {
-          path: "/admin/notifications",
-          lazy: () => import(
-            "@/pages/dashboard/admin/notifications/AdminNotificationsPage"
-          )
+          path: "notifications",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/admin/notifications/AdminNotificationsPage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
         {
-          path: "/admin/settings",
-          lazy: () => import(
-            "@/pages/dashboard/admin/settings/AdminSettingsPage"
-          )
+          path: "settings",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/admin/settings/AdminSettingsPage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
-        // Employee Routes
+      ],
+    },
+
+    // Employee Routes
+    {
+      path: "/employee",
+      element: (
+        <EmployeeRoute>
+          <DashBoardPage />
+        </EmployeeRoute>
+      ),
+      errorElement: <RootErrorBoundary />,
+      children: [
         {
-          path: "/employee",
-          lazy: () => import(
-            "@/pages/dashboard/employee/EmployeeDashboardPage"
-          )
+          index: true,
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/employee/EmployeeDashboardPage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
-        { path: '/employee/profile', lazy: () => import('@/pages/dashboard/employee/EmployeeProfilePage') },
         {
-          path: "/employee/leave",
-          lazy: () =>
-            import(
-              "@/pages/dashboard/employee/EmployeeLeavePage.tsx/EmployeeLeavePage"
-            ),
+          path: "profile",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/employee/EmployeeProfilePage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
         {
-          path: "/employee/attendance",
-          lazy: () =>
-            import(
+          path: "leave",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/employee/EmployeeLeavePage/EmployeeLeavePage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
+        },
+        {
+          path: "attendance",
+          lazy: async () => {
+            const { default: Component } = await import(
               "@/pages/dashboard/employee/EmployeeAttendancePage"
-            ),
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
         {
-          path: "/employee/documents",
-          lazy: () =>
-            import(
+          path: "documents",
+          lazy: async () => {
+            const { default: Component } = await import(
               "@/pages/dashboard/employee/EmployeeDocumentPage"
-            ),
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
         {
-          path: "/employee/notifications",
-          lazy: () =>
-            import(
+          path: "notifications",
+          lazy: async () => {
+            const { default: Component } = await import(
               "@/pages/dashboard/employee/EmployeeNotificationPage"
-            ),
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
-        // 404 Catch-all Route (must be last)
+      ],
+    },
+
+    // Auth Routes (Public - redirect to dashboard if already logged in)
+    {
+      path: "/auth",
+      element: <PublicRoute />,
+      errorElement: <RootErrorBoundary />,
+      children: [
         {
-          path: "*",
-          element: <NotFoundPage />,
+          path: "login",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/auth/AuthLoginPage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
         },
-      ]
-    }]);
+        {
+          path: "forgot-password",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/auth/AuthForgotPasswordPage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
+        },
+        {
+          path: "reset-password",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/auth/AuthResetPasswordPage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
+        },
+      ],
+    },
+
+    // 404 Catch-all Route (must be last)
+    {
+      path: "*",
+      element: <NotFoundPage />,
+    },
+  ]);
 
   return (
     <QueryClientProvider client={queryClient}>

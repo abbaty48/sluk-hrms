@@ -7,12 +7,12 @@ import type { TNatureOfAppointment } from "./appointmentTypes";
 import type { TResponsibility } from "./responsibilityTypes";
 import type { TSystemPreferences } from "./settingsTypes";
 import type { TAttendance } from "./attendance.types";
+import type { IPasswordReset, IUser } from "./authTypes";
+import type { TDepartment } from "./departmentTypes";
 import type { TCommittee } from "./committeeTypes";
 import type { TStaff } from "./staffTypes";
-import type { TUser } from "./userTypes";
-import type { Request } from "express";
 import type { TRank } from "./rankTypes";
-import type { TDepartment } from "./departmentTypes";
+import type { Request } from "express";
 
 export type TQualification = {
   id: string;
@@ -85,7 +85,7 @@ export type TAnnouncement = {
 
 // Database Interface
 export type TDatabase = {
-  users: TUser[];
+  users: IUser[];
   ranks: TRank[];
   staff: TStaff[];
   payrolls: TPayroll[];
@@ -97,6 +97,7 @@ export type TDatabase = {
   departments: TDepartment[];
   notifications: TNotification[];
   announcements: TAnnouncement[];
+  passwordResets: IPasswordReset[];
   qualifications: TQualification[];
   responsibilities: TResponsibility[];
   systemPreferences: TSystemPreferences;

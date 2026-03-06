@@ -1,3 +1,3 @@
-export const Component = function EmployeeNotificationViewPage() {
+export default function EmployeeNotificationViewPage() {
   return <></>;
 }

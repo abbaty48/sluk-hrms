@@ -63,7 +63,7 @@ const TABS: TabConfig[] = [
   },
 ];
 
-export const Component = function AdminSettingsPage() {
+const Component = function AdminSettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>("preferences");
 
   const ActiveTabComponent =
@@ -115,4 +115,6 @@ export const Component = function AdminSettingsPage() {
       </div>
     </div>
   );
-}
+};
+
+export default Component;

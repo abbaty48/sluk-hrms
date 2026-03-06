@@ -1,10 +1,4 @@
 import {
-  Card,
-  CardTitle,
-  CardHeader,
-  CardContent,
-} from "@/components/ui/card";
-import {
   Calendar,
   DollarSign,
   TrendingUp,
@@ -15,23 +9,26 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useEmployeeDashboard } from "@/hooks/api/useEmployeeDashboard";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { EmployeeDashboardSkeleton } from "./skeletons/EmployeeDashboardSkeleton";
 
-export const Component = function EmployeeDashboardPage() {
+export default function EmployeeDashboardPage() {
   const { data, isLoading, isError } = useEmployeeDashboard("staff_1");
 
-  if (isLoading) return <EmployeeDashboardSkeleton />
-  if (isError) return (
-    <div className="p-6">
-      <Alert variant={'destructive'} >
-        <AlertTitle>Server Error.</AlertTitle>
-        <AlertDescription>
-          Something went amiss, might be from server, we'll try again little moment.
-        </AlertDescription>
-      </Alert>
-      <EmployeeDashboardSkeleton />
-    </div>
-  )
+  if (isLoading) return <EmployeeDashboardSkeleton />;
+  if (isError)
+    return (
+      <div className="p-6">
+        <Alert variant={"destructive"}>
+          <AlertTitle>Server Error.</AlertTitle>
+          <AlertDescription>
+            Something went amiss, might be from server, we'll try again little
+            moment.
+          </AlertDescription>
+        </Alert>
+        <EmployeeDashboardSkeleton />
+      </div>
+    );
   return (
     <div className="space-y-8 p-6">
       {/* HEADER */}
@@ -42,11 +39,8 @@ export const Component = function EmployeeDashboardPage() {
         </p>
       </div>
 
-
-
       {/* STATS */}
       <div className="grid md:grid-cols-3 gap-4">
-
         {/* LEAVE BALANCE */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -88,9 +82,7 @@ export const Component = function EmployeeDashboardPage() {
           </CardHeader>
 
           <CardContent>
-            <div className="text-2xl font-bold">
-              {data?.attendance.rate}
-            </div>
+            <div className="text-2xl font-bold">{data?.attendance.rate}</div>
 
             <p className="text-xs text-muted-foreground mt-2">
               Work Hours: {data?.attendance.workHours}
@@ -139,7 +131,6 @@ export const Component = function EmployeeDashboardPage() {
 
       {/* LOWER SECTION */}
       <div className="grid md:grid-cols-2 gap-6">
-
         {/* RECENT LEAVES */}
         <Card>
           <CardHeader>
@@ -148,10 +139,7 @@ export const Component = function EmployeeDashboardPage() {
 
           <CardContent className="space-y-4">
             {data?.recentLeaves.map((leave) => (
-              <div
-                key={leave.id}
-                className="flex justify-between items-center"
-              >
+              <div key={leave.id} className="flex justify-between items-center">
                 <div>
                   <p className="font-medium">{leave.leaveType}</p>
                   <p className="text-xs text-muted-foreground">
@@ -189,18 +177,14 @@ export const Component = function EmployeeDashboardPage() {
             <div className="flex gap-3">
               <CheckCircle2 className="w-4 h-4 text-green-600 mt-1" />
               <div>
-                <p className="text-sm">
-                  Department: {data?.department}
-                </p>
+                <p className="text-sm">Department: {data?.department}</p>
               </div>
             </div>
 
             <div className="flex gap-3">
               <AlertCircle className="w-4 h-4 text-orange-500 mt-1" />
               <div>
-                <p className="text-sm">
-                  Rank: {data?.rank}
-                </p>
+                <p className="text-sm">Rank: {data?.rank}</p>
               </div>
             </div>
           </CardContent>

@@ -10,7 +10,7 @@ import { NotificationItem } from "./AdminNotificationItem";
 import type { TNotification } from "@/types/notificationsTypes";
 import { useNotificationsPage } from "@/hooks/api/useAdminNotificationsAPI";
 
-export const Component = function NotificationsPage() {
+const Component = function NotificationsPage() {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     page: "1",
@@ -148,3 +148,5 @@ export const Component = function NotificationsPage() {
     </div>
   );
 };
+
+export default Component;
