@@ -68,7 +68,7 @@ function AdminSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <SidebarMenu className="flex flex-row items-center overflow-hidden gap-3 py-3 border-b border-primary/10">
+        <SidebarMenu className="flex flex-row items-center overflow-hidden gap-3 py-2.5 border-b border-primary/10">
           <div className="flex items-center justify-center rounded-lg bg-primary p-2">
             <GraduationCap size={16} />
           </div>
@@ -102,7 +102,7 @@ function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-primary/50">
+      <SidebarFooter className="border-t border-primary/10">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
@@ -192,7 +192,7 @@ function EmployeeSidebar() {
   ];
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-4 border-b border-primary/50">
+      <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-2.5 border-b border-primary/10">
         <SidebarMenu>
           <SidebarMenuButton>
             <div className="flex items-center justify-center rounded-lg bg-primary p-1">
@@ -229,7 +229,7 @@ function EmployeeSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-primary/50">
+      <SidebarFooter className="border-t border-primary/10">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
