@@ -36,12 +36,14 @@ import { cn } from "@/lib/utils";
 import { useLogout } from "@/hooks/api/useAuthAPI";
 import { ThemeButton } from "@/components/ThemeButton";
 import { Link, NavLink, useLocation } from "react-router";
+import { useAuthContext } from "@/states/contexts/AuthContext";
 /**
  * Admin Sidebar Component
  */
 function AdminSidebar() {
   const pathname = useLocation().pathname;
   const logout = useLogout().mutate;
+  const { user } = useAuthContext();
 
   const links = [
     {
@@ -120,10 +122,20 @@ function AdminSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <div className="flex items-center gap-2 py-4 -m-1">
-                    <UserCircle className="rounded-full bg-primary/50 border-2" />
-                    <p className="flex flex-col max-w-prose">
-                      <span>John Doe</span>
-                      <span>john.doe@example.com</span>
+                    {user?.profilePhoto ? (
+                      <img
+                        src={user.profilePhoto}
+                        alt={user.firstName + " " + user.lastName}
+                        className="rounded-full bg-primary/50 border-2"
+                      />
+                    ) : (
+                      <UserCircle className="rounded-full w-6 h-6" />
+                    )}
+                    <p className="flex flex-col max-w-prose text-xs">
+                      <span className="font-black mask-x-to-chart-4 text-ellipsis">
+                        {user?.firstName + " " + user?.lastName}
+                      </span>
+                      <span>{user?.email}</span>
                     </p>
                   </div>
                   <ChevronsUpDown className="ml-auto" />
@@ -156,6 +168,7 @@ function AdminSidebar() {
 function EmployeeSidebar() {
   const pathname = useLocation().pathname;
   const logout = useLogout().mutate;
+  const { user } = useAuthContext();
 
   const links = [
     {
@@ -229,10 +242,18 @@ function EmployeeSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <div className="flex items-center gap-2 py-4 -m-1">
-                    <UserCircle className="rounded-full bg-primary/50 border-2" />
+                    {user?.profilePhoto ? (
+                      <img
+                        src={user.profilePhoto}
+                        alt={user.firstName + " " + user.lastName}
+                        className="rounded-full bg-primary/50 border-2"
+                      />
+                    ) : (
+                      <UserCircle className="rounded-full w-6 h-6" />
+                    )}
                     <p className="flex flex-col max-w-prose">
-                      <span>John Doe</span>
-                      <span>john.doe@example.com</span>
+                      <span>{user?.firstName + " " + user?.lastName}</span>
+                      <span>{user?.email}</span>
                     </p>
                   </div>
                   <ChevronsUpDown className="ml-auto" />
