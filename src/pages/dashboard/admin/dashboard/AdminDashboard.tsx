@@ -1,3 +1,4 @@
+import { Motion } from "@sluk/src/components/Motion";
 import { AdminLeavePending } from "./AdminLeavePending/AdminLeavePending";
 import { AdminDashboardStats } from "./AdminDashboardStats/AdminDashboardStats";
 import { AdminLeaveDistributionChart } from "./AdminLeaveDistributionChart/AdminLeaveDistributionChart";
@@ -6,7 +7,7 @@ import { AdminMonthlyAttendanceTrendChart } from "./AdminMonthlyAttendanceTrendC
 
 export default function AdminDashboardView() {
   return (
-    <article className="p-4 lg:p-6 overflow-auto w-full">
+    <Motion element="article" className="p-4 lg:p-6 overflow-auto w-full">
       <div className="mb-6">
         <h2 className="text-2xl leading-8 font-bold text-foreground">
           Dashboard
@@ -24,6 +25,6 @@ export default function AdminDashboardView() {
         <AdminLeaveDistributionChart />
         <AdminLeavePending />
       </div>
-    </article>
+    </Motion>
   );
 }

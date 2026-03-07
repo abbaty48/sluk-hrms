@@ -5,6 +5,7 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
+import { Motion } from "@/components/Motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useEmployeeDashboard } from "@/hooks/api/useEmployeeDashboard";
@@ -30,7 +31,7 @@ export default function EmployeeDashboardPage() {
       </div>
     );
   return (
-    <div className="space-y-8 p-6">
+    <Motion className="space-y-8 p-6">
       {/* HEADER */}
       <div>
         <h1 className="text-2xl font-semibold">My Dashboard</h1>
@@ -190,6 +191,6 @@ export default function EmployeeDashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </Motion>
   );
 }

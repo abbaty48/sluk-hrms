@@ -2,6 +2,7 @@ import { EmployeeLeavePageHistory } from "./EmployeeLeavePageHistory";
 import { EmployeeLeavePageBalance } from "./EmployeeLeavePageBalance";
 import { EmployeeLeavePageApply } from "./EmployeeLeavePageApply";
 import { Button } from "@/components/ui/button";
+import { Motion } from "@/components/Motion";
 import { useState } from "react";
 
 const Component = function EmployeeLeavePage() {
@@ -9,7 +10,7 @@ const Component = function EmployeeLeavePage() {
 
   return (
     <>
-      <div className="space-y-8 p-4">
+      <Motion className="space-y-8 p-4">
         {/* HEADER */}
         <div className="flex items-center justify-between px-2">
           <div>
@@ -27,7 +28,7 @@ const Component = function EmployeeLeavePage() {
         <EmployeeLeavePageBalance />
         {/* HISTORY */}
         <EmployeeLeavePageHistory />
-      </div>
+      </Motion>
       {/* DIALOG */}
       <EmployeeLeavePageApply
         isDialog={isDialogOpened}

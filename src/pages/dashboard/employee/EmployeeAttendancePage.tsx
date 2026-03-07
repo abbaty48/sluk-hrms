@@ -8,6 +8,7 @@ import {
   CalendarDays,
   type LucideIcon,
 } from "lucide-react";
+import { Motion } from "@/components/Motion";
 import { useAttendanceSummary } from "@/hooks/api/useAttendance";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -71,7 +72,7 @@ export default function EmployeeAttendancePage() {
   const summary = data?.pages?.[0]?.summary;
 
   return (
-    <div className="space-y-6 p-6">
+    <Motion className="space-y-6 p-6">
       {/* HEADER */}
       <div>
         <h2 className="text-xl font-semibold">Attendance Overview</h2>
@@ -128,6 +129,6 @@ export default function EmployeeAttendancePage() {
           Logs section ready for table integration.
         </CardContent>
       </Card>
-    </div>
+    </Motion>
   );
 }

@@ -1,3 +1,4 @@
+import { Motion } from "@sluk/src/components/Motion";
 import { AdminLeavePageTable } from "./AdminLeavePageTable";
 import { AdminLeavePageTypes } from "./AdminLeavePageTypes";
 import { AdminLeavePageStats } from "./AdminLeavePageStats";
@@ -25,7 +26,7 @@ const Component = function AdminLeavePageIndex() {
 
   return (
     <AdminLeavePageProvider>
-      <main className="flex-1 p-4 lg:p-6 overflow-auto">
+      <Motion element="main" className="flex-1 p-4 lg:p-6 overflow-auto">
         <div className="animate-fade-in">
           {/* Header */}
           <AdminLeavePageHeader />
@@ -38,7 +39,7 @@ const Component = function AdminLeavePageIndex() {
           {/* Table */}
           <AdminLeavePageTable />
         </div>
-      </main>
+      </Motion>
     </AdminLeavePageProvider>
   );
 };

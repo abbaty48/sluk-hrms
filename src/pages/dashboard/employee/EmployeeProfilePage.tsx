@@ -2,6 +2,7 @@ import { ProfileSkeleton } from "@/pages/dashboard/employee/skeletons/EmployeePr
 import ProfileAvatar from "@/pages/dashboard/employee/profile/EmployeeProfileAvatar";
 import ProfileTabs from "@/pages/dashboard/employee/profile/EmployeeProfileTabs";
 import { useStaff } from "@/hooks/api/staff";
+import { Motion } from "@/components/Motion";
 import { Card } from "@/components/ui/card";
 
 export default function EmployeeProfilePage() {
@@ -31,7 +32,7 @@ export default function EmployeeProfilePage() {
     );
 
   return (
-    <div className="space-y-6 m-6">
+    <Motion className="space-y-6 m-6">
       {/* Header Card */}
       <div className="bg-card rounded-xl shadow p-6 flex items-center gap-6 ">
         <ProfileAvatar
@@ -50,6 +51,6 @@ export default function EmployeeProfilePage() {
 
       {/* Tabs */}
       <ProfileTabs />
-    </div>
+    </Motion>
   );
 }

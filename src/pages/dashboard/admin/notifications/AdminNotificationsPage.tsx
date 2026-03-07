@@ -6,11 +6,12 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Motion } from "@sluk/src/components/Motion";
 import { NotificationItem } from "./AdminNotificationItem";
 import type { TNotification } from "@/types/notificationsTypes";
 import { useNotificationsPage } from "@/hooks/api/useAdminNotificationsAPI";
 
-const Component = function NotificationsPage() {
+export default function NotificationsPage() {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     page: "1",
@@ -71,7 +72,7 @@ const Component = function NotificationsPage() {
     notifications.data && notifications.data.data.length > 0;
 
   return (
-    <div className="p-5 space-y-5">
+    <Motion element="article" className="p-5 space-y-5">
       {/* Page Header */}
       <div className="page-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -145,8 +146,6 @@ const Component = function NotificationsPage() {
           </Button>
         </div>
       )}
-    </div>
+    </Motion>
   );
-};
-
-export default Component;
+}

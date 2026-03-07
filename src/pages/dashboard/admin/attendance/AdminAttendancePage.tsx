@@ -1,10 +1,11 @@
 import { AdminAttendancePageTable } from "./AdminAttendancePageTable";
 import { AdminAttendancePageStats } from "./AdminAttendancePageStats";
 import { AdminAttendancePageChart } from "./AdminAttendancePageChart";
+import { Motion } from "@sluk/src/components/Motion";
 
 const Component = function AttendancePageWithQuery() {
   return (
-    <main className="flex-1 p-4 lg:p-6 overflow-auto">
+    <Motion element="main" className="flex-1 p-4 lg:p-6 overflow-auto">
       <div className="animate-fade-in">
         {/* Header */}
         <div className="mb-6">
@@ -22,7 +23,7 @@ const Component = function AttendancePageWithQuery() {
         {/* Table */}
         <AdminAttendancePageTable />
       </div>
-    </main>
+    </Motion>
   );
 };
 

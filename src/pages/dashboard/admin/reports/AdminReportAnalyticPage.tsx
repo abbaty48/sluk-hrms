@@ -10,6 +10,7 @@ import {
   AdminReportPageSkeletonPieChartCard,
   AdminReportPageSkeletonMonthlyChartCard,
 } from "./AdminReportAnalyticPageSkeleton";
+import { Motion } from "@/components/Motion";
 import { ARAPChart } from "./charts/ARAPChart";
 import { Button } from "@/components/ui/button";
 import { ARAPFilters } from "./AdminReportAnalyticPageFilters";
@@ -21,7 +22,7 @@ import { ARAPPayrollBreakdownChart } from "./charts/ARAPPayrollBreakdownChart";
 import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components/ui/tabs";
 import { ARAPMonthlyLeaveUsageChart } from "./charts/ARAPMonthlyLeaveUsageChart";
 
-const Component = function AdminReportsAnalyticsPage() {
+export default function AdminReportsAnalyticsPage() {
   const handleExportPDF = () => {
     // Implement PDF export logic
     console.log("Exporting to PDF...");
@@ -34,7 +35,10 @@ const Component = function AdminReportsAnalyticsPage() {
 
   return (
     <ARAPFilterContextProvider>
-      <main className="flex-1 p-4 lg:p-6 overflow-auto space-y-6">
+      <Motion
+        element="main"
+        className="flex-1 p-4 lg:p-6 overflow-auto space-y-6"
+      >
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 space-y-8">
           <div>
@@ -147,9 +151,7 @@ const Component = function AdminReportsAnalyticsPage() {
             />
           </TabsContent>
         </Tabs>
-      </main>
+      </Motion>
     </ARAPFilterContextProvider>
   );
-};
-
-export default Component;
+}

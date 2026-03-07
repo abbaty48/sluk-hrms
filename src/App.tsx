@@ -6,6 +6,7 @@ import {
 } from "@/components/ProtectedRoute";
 import { Toaster } from "sonner";
 import { queryClient } from "@/lib/utils";
+import { AnimatePresence } from "framer-motion";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { DashBoardPage } from "@/pages/dashboard/DashboardPage";
 import { ThemeProvider } from "@/states/providers/ThemeProvider";
@@ -226,7 +227,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <RouterProvider router={routers} />
+        <AnimatePresence mode="wait">
+          <RouterProvider router={routers} />
+        </AnimatePresence>
         <Toaster position="top-right" richColors closeButton />
       </ThemeProvider>
     </QueryClientProvider>

@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
+import { Motion } from "@/components/Motion";
 import type { SettingsTab } from "@/types/settingsTypes";
 import { AdminSettingsRanksTab } from "./AdminSettingsRanksTab";
 import { AdminSettingsCommitteesTab } from "./AdminSettingsCommiteeTab";
@@ -63,7 +64,7 @@ const TABS: TabConfig[] = [
   },
 ];
 
-const Component = function AdminSettingsPage() {
+export default function AdminSettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>("preferences");
 
   const ActiveTabComponent =
@@ -71,7 +72,7 @@ const Component = function AdminSettingsPage() {
     AdminSettingsPreferencesTab;
 
   return (
-    <div className="animate-in p-4 space-y-5">
+    <Motion className="animate-in p-4 space-y-5">
       {/* Page Header */}
       <div className="page-header">
         <h1 className="page-title">Settings</h1>
@@ -113,8 +114,6 @@ const Component = function AdminSettingsPage() {
           <ActiveTabComponent />
         </div>
       </div>
-    </div>
+    </Motion>
   );
-};
-
-export default Component;
+}
