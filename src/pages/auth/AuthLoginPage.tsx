@@ -12,14 +12,15 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useLogin } from "@/hooks/api/useAuth";
 import { Button } from "@/components/ui/button";
 import { ROLE_CONFIGS } from "@/types/authTypes";
+import { useLogin } from "@/hooks/api/useAuthAPI";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate, Link } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { ThemeButton } from "@/components/ThemeButton";
-import type { ILoginCredentials, UserRole } from "@/types/authTypes";
+import type { ILoginCredentials } from "@/types/authTypes";
+import type { TUserRole } from "@sluk/src/types/userTypes";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 
 export default function LoginPage() {
@@ -34,7 +35,7 @@ export default function LoginPage() {
     defaultValues: { role: "admin", rememberMe: true },
   });
 
-  const [selectedRole, setSelectedRole] = useState<UserRole>("admin");
+  const [selectedRole, setSelectedRole] = useState<TUserRole>("admin");
   const [showPassword, setShowPassword] = useState(false);
 
   const _handleSubmit = async ({
@@ -150,7 +151,7 @@ export default function LoginPage() {
               Sign in as
             </Label>
             <div className="grid grid-cols-3 gap-2">
-              {(Object.keys(ROLE_CONFIGS) as UserRole[]).map((role) => {
+              {(Object.keys(ROLE_CONFIGS) as TUserRole[]).map((role) => {
                 const config = ROLE_CONFIGS[role];
                 const Icon = roleIcons[role];
                 const isSelected = selectedRole === role;

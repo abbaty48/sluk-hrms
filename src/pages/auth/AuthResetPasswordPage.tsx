@@ -1,6 +1,6 @@
 import { GraduationCap, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { useResetPassword } from "@/hooks/api/useAuth";
+import { useResetPassword } from "@/hooks/api/useAuthAPI";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

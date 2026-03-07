@@ -1,32 +1,16 @@
-export type UserRole = "admin" | "staff";
+import type { TUser, TUserRole } from "./userTypes";
 
 export interface ILoginCredentials {
   email: string;
   password: string;
-  role: UserRole;
+  role: TUserRole;
   rememberMe?: boolean;
-}
-
-export interface IUser {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: UserRole;
-  staffId?: string;
-  passwordHash: string;
-  departmentId?: string;
-  profilePhoto?: string;
-  phoneNumber?: string;
-  isActive: boolean;
-  lastLogin?: string;
-  createdAt: string;
 }
 
 export interface IAuthResponse {
   success: boolean;
   message: string;
-  user: IUser;
+  user: TUser;
   token: string;
   expiresIn: number; // milliseconds
 }
@@ -34,7 +18,7 @@ export interface IAuthResponse {
 export interface ILoginRequest {
   email: string;
   password: string;
-  role: UserRole;
+  role: TUserRole;
   rememberMe?: boolean;
 }
 
@@ -80,35 +64,35 @@ export interface IVerifyTokenRequest {
 
 export interface IVerifyTokenResponse {
   valid: boolean;
-  user?: IUser;
+  user?: TUser;
 }
 
 export interface IPasswordReset {
-  userId: string,
-  token: string,
-  expiresAt: string, // 1 hour
-  createdAt: string,
+  userId: string;
+  token: string;
+  expiresAt: string; // 1 hour
+  createdAt: string;
 }
 
 export interface IAuthContextType {
-  user: IUser | null;
+  user: TUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (credentials: ILoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
-  updateUser: (user: IUser) => void;
+  updateUser: (user: TUser) => void;
 }
 
 // Role configuration
 export interface IRoleConfig {
-  id: UserRole;
+  id: TUserRole;
   label: string;
   description: string;
   icon: string;
   permissions: string[];
 }
 
-export const ROLE_CONFIGS: Record<UserRole, IRoleConfig> = {
+export const ROLE_CONFIGS: Record<TUserRole, IRoleConfig> = {
   admin: {
     id: "admin",
     label: "HR Admin",

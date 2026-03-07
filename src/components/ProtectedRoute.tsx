@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "@/hooks/api/useAuth";
+import { useAuth } from "@/hooks/api/useAuthAPI";
 import { type ReactNode } from "react";
 
 interface ProtectedRouteProps {

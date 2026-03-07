@@ -1,5 +1,5 @@
 import { GraduationCap, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
-import { useForgotPassword } from "@/hooks/api/useAuth";
+import { useForgotPassword } from "@/hooks/api/useAuthAPI";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

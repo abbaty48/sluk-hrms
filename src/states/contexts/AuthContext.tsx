@@ -1,7 +1,15 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import type { IUser, ILoginCredentials, IAuthContextType } from "@/types/authTypes";
-import { useLogin, useLogout } from "@/hooks/api/useAuth";
+import {
+  useState,
+  useEffect,
+  useContext,
+  createContext,
+  type ReactNode,
+  useEffectEvent,
+} from "react";
 import { useNavigate } from "react-router-dom";
+import type { TUser } from "@/types/userTypes";
+import { useLogin, useLogout } from "@/hooks/api/useAuthAPI";
+import type { ILoginCredentials, IAuthContextType } from "@/types/authTypes";
 
 const AuthContext = createContext<IAuthContextType | undefined>(undefined);
 
@@ -10,18 +18,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginMutation = useLogin();
   const logoutMutation = useLogout();
 
-  const [user, setUser] = useState<IUser | null>(null);
+  const [user, setUser] = useState<TUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load user from localStorage on mount
-  useEffect(() => {
+  const userEffect = useEffectEvent(() => {
     const token = localStorage.getItem("auth_token");
     const userString = localStorage.getItem("user");
 
     if (token && userString) {
       try {
-        const userData = JSON.parse(userString);
-        setUser(userData);
+        (() => {
+          const userData = JSON.parse(userString);
+          setUser(userData);
+        })();
       } catch (error) {
         console.error("Failed to parse user data:", error);
         localStorage.removeItem("auth_token");
@@ -30,6 +39,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setIsLoading(false);
+  });
+
+  // Load user from localStorage on mount
+  useEffect(() => {
+    userEffect();
   }, []);
 
   const login = async (credentials: ILoginCredentials) => {
@@ -39,8 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Navigate based on role
     if (credentials.role === "admin") {
       navigate("/admin");
-    } else if (credentials.role === "department_admin") {
-      navigate("/department");
     } else {
       navigate("/employee");
     }
@@ -52,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate("/auth/login");
   };
 
-  const updateUser = (updatedUser: IUser) => {
+  const updateUser = (updatedUser: TUser) => {
     setUser(updatedUser);
     localStorage.setItem("user", JSON.stringify(updatedUser));
   };

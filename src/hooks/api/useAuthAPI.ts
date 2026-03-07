@@ -1,5 +1,4 @@
 import type {
-  IUser,
   ILoginRequest,
   IAuthResponse,
   IVerifyTokenRequest,
@@ -11,6 +10,7 @@ import type {
   IForgotPasswordResponse,
   IChangePasswordResponse,
 } from "@/types/authTypes";
+import type { TUser } from "@/types/userTypes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // ========================================
@@ -135,7 +135,7 @@ export function useCurrentUser() {
         throw new Error("Failed to fetch user");
       }
 
-      return response.json() as Promise<IUser>;
+      return response.json() as Promise<TUser>;
     },
     enabled: !!localStorage.getItem("auth_token"),
     retry: false,
@@ -225,7 +225,7 @@ export function useAuth() {
   const token = localStorage.getItem("auth_token");
   const userString = localStorage.getItem("user");
 
-  const user = userString ? (JSON.parse(userString) as IUser) : null;
+  const user = userString ? (JSON.parse(userString) as TUser) : null;
   const isAuthenticated = !!token && !!user;
 
   return {

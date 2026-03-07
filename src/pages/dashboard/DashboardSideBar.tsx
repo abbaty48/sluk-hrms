@@ -33,7 +33,7 @@ import {
   LayoutDashboardIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useLogout } from "@/hooks/api/useAuth";
+import { useLogout } from "@/hooks/api/useAuthAPI";
 import { ThemeButton } from "@/components/ThemeButton";
 import { Link, NavLink, useLocation } from "react-router";
 /**

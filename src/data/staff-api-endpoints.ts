@@ -458,8 +458,11 @@ export function hrmsSTAFF_ENDPOINTS(
     const newUser = {
       id: `user_${Date.now()}`,
       email,
+      firstName: name,
+      lastName: name,
+      isActive: true,
       passwordHash: "$2a$10$XQa9Z9Z9Z9Z9Z9Z9Z9Z9Z9",
-      role: "EMPLOYEE" as const,
+      role: "staff" as const,
       staffId: newStaff.id,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

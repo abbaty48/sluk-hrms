@@ -1,6 +1,4 @@
-
 import type {
-  IUser,
   ILoginRequest,
   IAuthResponse,
   IVerifyTokenRequest,
@@ -16,11 +14,12 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 // Secret key for JWT (use environment variable in production)
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "your-secret-key-change-in-production";
 const TOKEN_EXPIRY = "7d"; // 7 days
 
 // Helper function to generate JWT
-function generateToken(user: IUser): string {
+function generateToken(user: TUser): string {
   return jwt.sign(
     {
       userId: user.id,
@@ -28,19 +27,19 @@ function generateToken(user: IUser): string {
       role: user.role,
     },
     JWT_SECRET,
-    { expiresIn: TOKEN_EXPIRY }
+    { expiresIn: TOKEN_EXPIRY },
   );
 }
 
 // Helper function to hash password
-async function hashPassword(password: string): Promise<string> {
+export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
 }
 
 // Helper function to verify password
-async function verifyPassword(
+export async function verifyPassword(
   password: string,
-  hashedPassword: string
+  hashedPassword: string,
 ): Promise<boolean> {
   return bcrypt.compare(password, hashedPassword);
 }
@@ -51,13 +50,13 @@ async function verifyPassword(
 
 import type { TAuthRequest, TDatabase } from "../types/types";
 import type { Application, Request, Response } from "express";
+import type { TUser } from "../types/userTypes";
 
 export function hrmsAUTH_ENDPOINTS(
   server: Application,
   getDb: () => TDatabase,
   saveDb: (db: TDatabase) => void,
 ) {
-
   server.post("/api/auth/login", async (req: Request, res: Response) => {
     const db = getDb();
     const { email, password, role, rememberMe } = req.body as ILoginRequest;
@@ -73,7 +72,7 @@ export function hrmsAUTH_ENDPOINTS(
 
     // Find user by email
     const user = db.users?.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase()
+      (u) => u.email.toLowerCase() === email.toLowerCase(),
     );
 
     if (!user) {
@@ -120,7 +119,9 @@ export function hrmsAUTH_ENDPOINTS(
 
     // Generate JWT token
     const token = generateToken(user);
-    const expiresIn = rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000; // 7 days or 1 day
+    const expiresIn = rememberMe
+      ? 7 * 24 * 60 * 60 * 1000
+      : 24 * 60 * 60 * 1000; // 7 days or 1 day
 
     // Remove password from response
     const { passwordHash: _, ...userWithoutPassword } = user;
@@ -128,7 +129,7 @@ export function hrmsAUTH_ENDPOINTS(
     const response: IAuthResponse = {
       success: true,
       message: "Login successful",
-      user: userWithoutPassword as IUser,
+      user: userWithoutPassword as TUser,
       token,
       expiresIn,
     };
@@ -181,11 +182,11 @@ export function hrmsAUTH_ENDPOINTS(
 
       const response: IVerifyTokenResponse = {
         valid: true,
-        user: userWithoutPassword as IUser,
+        user: userWithoutPassword as TUser,
       };
 
       res.json(response);
-    } catch (error) {
+    } catch {
       res.json({ valid: false });
     }
   });
@@ -208,7 +209,7 @@ export function hrmsAUTH_ENDPOINTS(
 
     // Find user
     const user = db.users?.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase()
+      (u) => u.email.toLowerCase() === email.toLowerCase(),
     );
 
     // Always return success for security (don't reveal if email exists)
@@ -247,94 +248,98 @@ export function hrmsAUTH_ENDPOINTS(
   // 5. RESET PASSWORD ENDPOINT
   // ========================================
 
-  server.post("/api/auth/reset-password", async (req: Request, res: Response) => {
-    const db = getDb();
-    const { token, newPassword, confirmPassword } =
-      req.body as IResetPasswordRequest;
+  server.post(
+    "/api/auth/reset-password",
+    async (req: Request, res: Response) => {
+      const db = getDb();
+      const { token, newPassword, confirmPassword } =
+        req.body as IResetPasswordRequest;
 
-    // Validation
-    if (!token || !newPassword || !confirmPassword) {
-      res.status(400).json({
-        success: false,
-        message: "Token, new password, and confirm password are required",
-      });
-      return;
-    }
+      // Validation
+      if (!token || !newPassword || !confirmPassword) {
+        res.status(400).json({
+          success: false,
+          message: "Token, new password, and confirm password are required",
+        });
+        return;
+      }
 
-    if (newPassword !== confirmPassword) {
-      res.status(400).json({
-        success: false,
-        message: "Passwords do not match",
-      });
-      return;
-    }
+      if (newPassword !== confirmPassword) {
+        res.status(400).json({
+          success: false,
+          message: "Passwords do not match",
+        });
+        return;
+      }
 
-    if (newPassword.length < 8) {
-      res.status(400).json({
-        success: false,
-        message: "Password must be at least 8 characters long",
-      });
-      return;
-    }
+      if (newPassword.length < 8) {
+        res.status(400).json({
+          success: false,
+          message: "Password must be at least 8 characters long",
+        });
+        return;
+      }
 
-    // Verify token
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      // Verify token
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET) as any;
 
-      // Find reset token in database
-      const resetRecord = db.passwordResets?.find(
-        (r) => r.token === token && r.userId === decoded.userId
-      );
+        // Find reset token in database
+        const resetRecord = db.passwordResets?.find(
+          (r) => r.token === token && r.userId === decoded.userId,
+        );
 
-      if (!resetRecord) {
+        if (!resetRecord) {
+          res.status(400).json({
+            success: false,
+            message: "Invalid or expired reset token",
+          });
+          return;
+        }
+
+        // Check if token has expired
+        if (new Date(resetRecord.expiresAt) < new Date()) {
+          res.status(400).json({
+            success: false,
+            message: "Reset token has expired",
+          });
+          return;
+        }
+
+        // Find user
+        const user = db.users?.find((u) => u.id === decoded.userId);
+
+        if (!user) {
+          res.status(404).json({
+            success: false,
+            message: "User not found",
+          });
+          return;
+        }
+
+        // Update password (in production, hash the password)
+        user.passwordHash = newPassword; // Replace with: await hashPassword(newPassword)
+
+        // Remove used reset token
+        db.passwordResets = db.passwordResets?.filter((r) => r.token !== token);
+
+        saveDb(db);
+
+        const response: IResetPasswordResponse = {
+          success: true,
+          message:
+            "Password reset successful. You can now login with your new password.",
+        };
+
+        res.json(response);
+      } catch {
         res.status(400).json({
           success: false,
           message: "Invalid or expired reset token",
         });
-        return;
       }
-
-      // Check if token has expired
-      if (new Date(resetRecord.expiresAt) < new Date()) {
-        res.status(400).json({
-          success: false,
-          message: "Reset token has expired",
-        });
-        return;
-      }
-
-      // Find user
-      const user = db.users?.find((u) => u.id === decoded.userId);
-
-      if (!user) {
-        res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-        return;
-      }
-
-      // Update password (in production, hash the password)
-      user.passwordHash = newPassword; // Replace with: await hashPassword(newPassword)
-
-      // Remove used reset token
-      db.passwordResets = db.passwordResets?.filter((r) => r.token !== token);
-
-      saveDb(db);
-
-      const response: IResetPasswordResponse = {
-        success: true,
-        message: "Password reset successful. You can now login with your new password.",
-      };
-
-      res.json(response);
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: "Invalid or expired reset token",
-      });
-    }
-  });
+    },
+  );
 
   // ========================================
   // 6. CHANGE PASSWORD ENDPOINT (Authenticated)
@@ -351,7 +356,8 @@ export function hrmsAUTH_ENDPOINTS(
       if (!currentPassword || !newPassword || !confirmPassword) {
         res.status(400).json({
           success: false,
-          message: "Current password, new password, and confirm password are required",
+          message:
+            "Current password, new password, and confirm password are required",
         });
         return;
       }
@@ -405,7 +411,7 @@ export function hrmsAUTH_ENDPOINTS(
       };
 
       res.json(response);
-    }
+    },
   );
 
   // ========================================

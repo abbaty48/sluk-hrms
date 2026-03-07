@@ -8,7 +8,6 @@ import { useState } from "react";
 
 function RoleSwitcher() {
   const navigate = useNavigate();
-  const { user } = useAuthContext();
   const [userRole, setUserRole] = useState(() =>
     window.location.pathname.startsWith("/admin") ? "admin" : "employee",
   );
