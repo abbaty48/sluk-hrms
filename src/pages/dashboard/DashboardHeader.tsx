@@ -4,7 +4,7 @@ import { useAuthContext } from "@/states/contexts/AuthContext";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell, Shield, User } from "lucide-react";
-import { useState } from "react";
+import { Activity, useState } from "react";
 
 function RoleSwitcher() {
   const navigate = useNavigate();
@@ -75,7 +75,9 @@ export function DashboardHeader() {
       <SidebarTrigger className="hover:bg-primary/50 hover:dark:bg-primary" />
       <div className="flex items-center gap-3 mx-auto">
         {/*Role Switcher*/}
-        {user?.role === "admin" && <RoleSwitcher />}
+        <Activity mode={user?.role === "admin" ? "visible" : "hidden"}>
+          <RoleSwitcher />
+        </Activity>
         {/*notifications*/}
         <NotificationBadge />
       </div>
