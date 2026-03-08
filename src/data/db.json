@@ -30560,7 +30560,7 @@
       "profilePhoto": null,
       "phoneNumber": "+234 800 000 0001",
       "isActive": true,
-      "lastLogin": "2026-03-05T16:25:26.243Z",
+      "lastLogin": "2026-03-08T07:42:14.150Z",
       "createdAt": "2024-01-01T00:00:00.000Z"
     },
     {
@@ -30575,7 +30575,7 @@
       "profilePhoto": null,
       "phoneNumber": "+234 800 000 0003",
       "isActive": true,
-      "lastLogin": "2026-03-05T16:25:02.895Z",
+      "lastLogin": "2026-03-08T07:33:14.266Z",
       "createdAt": "2024-01-01T00:00:00.000Z"
     },
     {
@@ -43147,6 +43147,22 @@
       "respondedAt": "2025-11-17T00:00:00",
       "createdAt": "2025-11-15T00:00:00",
       "updatedAt": "2025-11-17T00:00:00"
+    },
+    {
+      "id": "leave_1772955278605",
+      "staffId": "staff_2",
+      "leaveTypeId": "lt_2",
+      "startDate": "2026-03-08",
+      "endDate": "2026-03-15",
+      "totalDays": 8,
+      "reason": "Emergency medical requirement",
+      "approverId": null,
+      "respondedAt": null,
+      "approverComments": null,
+      "status": "PENDING",
+      "appliedAt": "2026-03-08T07:34:38.605Z",
+      "createdAt": "2026-03-08T07:34:38.605Z",
+      "updatedAt": "2026-03-08T07:34:38.605Z"
     }
   ],
   "leaveTypes": [
