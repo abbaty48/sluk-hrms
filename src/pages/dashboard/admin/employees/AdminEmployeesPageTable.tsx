@@ -1,12 +1,14 @@
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AdminEmployeeTableSkeleton } from "./AdminEmployeeTableSkeleton";
 import { AdminEmployeesPageFeatures } from "./AdminEmployeesPageFeatures";
-import { QueryErrorBoundary } from "@sluk/src/components/ErrorBoundary";
-import { LucideMail, LucidePhone, LucideEllipsis } from "lucide-react";
 import { useAdminEmployeesPageHook } from "./AdminEmployeesPageHook";
-import { useStaffAPI } from "@sluk/src/hooks/api/useAdminStaffApi";
-import { Paginator } from "@sluk/src/components/Paginator";
-import { useDebounce } from "@sluk/src/hooks/use-debounce";
-import { Card } from "@sluk/src/components/ui/card";
+import { QueryErrorBoundary } from "@/components/ErrorBoundary";
+import { LucideMail, LucideEllipsis, View, Edit, Mail, UserStar } from "lucide-react";
+import { useStaffAPI } from "@/hooks/api/useAdminStaffApi";
+import { Paginator } from "@/components/Paginator";
+import { useDebounce } from "@/hooks/use-debounce";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Suspense, useState } from "react";
 
 type EmployeeTable = {
@@ -67,7 +69,7 @@ function EmployeeTable({
                 Join Date
               </th>
               <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4 hidden lg:table-cell">
-                Contact
+                Actions
               </th>
               <th className="text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4"></th>
             </tr>
@@ -123,22 +125,27 @@ function EmployeeTable({
                     }).format(new Date(staff.createdAt))}
                   </span>
                 </td>
-                {/* CONTACT USER*/}
-                <td className="py-3 px-4 hidden lg:table-cell">
-                  <div className="flex items-center gap-2">
-                    <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-7 w-7">
-                      <LucideMail />
-                    </button>
-                    <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-7 w-7">
-                      <LucidePhone />
-                    </button>
-                  </div>
-                </td>
                 {/* ACTION MENU */}
                 <td className="py-3 px-4 text-right">
-                  <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-7 w-7">
-                    <LucideEllipsis />
-                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <Button variant={'ghost'} className="h-7 w-7">
+                        <LucideEllipsis />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuGroup>
+                        <DropdownMenuLabel>Action</DropdownMenuLabel>
+                        <DropdownMenuItem><View /> View Profile</DropdownMenuItem>
+                        <DropdownMenuItem><Edit /> Edit Profile</DropdownMenuItem>
+                        <DropdownMenuItem><UserStar /> Change Status</DropdownMenuItem>
+                      </DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem >
+                        <Mail /> Email Staff
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </td>
               </tr>
             ))}
