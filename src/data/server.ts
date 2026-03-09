@@ -22,6 +22,8 @@ import type { TMonthlyAttendanceTrend } from "../types/attendance.types.ts";
 import { hrmsAPPOINTMENT_ENDPOINTS } from "./appointments-api-endpoints.ts";
 import { hrmsQUALIFICATION_ENDPOINTS } from "./qualification-api-endpoints.ts";
 import { hrmsRESPONSIBILITY_ENDPOINTS } from "./responsibility-api-endpoints.ts";
+import { hrmsDOCUMENT_ENDPOINTS } from "./document-api-endpoint.ts";
+import { hrmsEMPNOTIFICATION_ENDPOINTS } from "./Emp-notification-api-endpoint.ts";
 
 // Get current directory
 const filename =
@@ -354,7 +356,8 @@ hrmsAPPOINTMENT_ENDPOINTS(server, getDb, saveDb);
 hrmsNOTIFICATION_ENDPOINTS(server, getDb, saveDb);
 hrmsQUALIFICATION_ENDPOINTS(server, getDb, saveDb);
 hrmsRESPONSIBILITY_ENDPOINTS(server, getDb, saveDb);
-
+hrmsDOCUMENT_ENDPOINTS(server, getDb, saveDb)
+hrmsEMPNOTIFICATION_ENDPOINTS(server, getDb, saveDb);
 // Apply auth middleware to protected routes
 server.use("/api/*", authMiddleware);
 
