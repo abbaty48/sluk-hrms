@@ -158,20 +158,16 @@ function App() {
         {
           path: "documents",
           lazy: async () => {
-            const { default: Component } = await import(
-              "@/pages/dashboard/employee/EmployeeDocumentPage"
-            );
-            return { Component };
+          const mod = await import("@/pages/dashboard/employee/EmployeeDocumentPage")
+          return { Component: mod.Component }
           },
           errorElement: <RootErrorBoundary />,
         },
-        {
+              {
           path: "notifications",
           lazy: async () => {
-            const { default: Component } = await import(
-              "@/pages/dashboard/employee/EmployeeNotificationPage"
-            );
-            return { Component };
+          const mod = await import("@/pages/dashboard/employee/EmployeeNotificationPage")
+          return { Component: mod.Component }
           },
           errorElement: <RootErrorBoundary />,
         },
