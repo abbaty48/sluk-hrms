@@ -1,7 +1,7 @@
 import type { TLeaveBalance, TLeaveResponse } from "./leave-managementTypes";
 import type { TAttendance } from "./attendance.types";
-import type { TUser } from "./userTypes";
 import type { TDepartment } from "./departmentTypes";
+import type { TUser } from "./userTypes";
 import type { TRank } from "./rankTypes";
 
 export type TStaffWithDepartmentName = TStaff & { department: { name: string } };
@@ -42,6 +42,7 @@ export interface TStaff {
     staffCategory: TStaffCategory;
     maritalStatus: string;
     religion: string;
+    profilePhoto?: string;
     natureOfAppointment: string | null;
     conuassContiss: string | null;
     dateOfFirstAppointment: string | null;
@@ -146,3 +147,17 @@ export type TStaffStats = {
     };
     recentLeaves: TLeaveResponse[];
 }
+
+
+export interface TStaffUpdateStatusRequest {
+    staffId: string;
+    status: TStaffStatus;
+}
+
+export interface TStaffUpdateStatusResponse {
+    success: boolean;
+    message: string;
+    staff: TStaffDetails;
+}
+
+// Helper function to get initials

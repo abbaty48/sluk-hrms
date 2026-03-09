@@ -3,6 +3,8 @@ import type {
   TEnrichedStaff,
   TStaffStatistics,
   TStaffPerDepartment,
+  TStaffUpdateStatusRequest,
+  TStaffUpdateStatusResponse,
 } from "@/types/staffTypes";
 import type { Application, Response } from "express";
 import type { TAuthRequest, TDatabase } from "@/types/types";
@@ -127,11 +129,11 @@ export function hrmsSTAFF_ENDPOINTS(
       avgWorkHours:
         attendanceRecords.length > 0
           ? (
-              attendanceRecords.reduce(
-                (sum, a) => sum + (a.workHours || 0),
-                0,
-              ) / attendanceRecords.length
-            ).toFixed(2)
+            attendanceRecords.reduce(
+              (sum, a) => sum + (a.workHours || 0),
+              0,
+            ) / attendanceRecords.length
+          ).toFixed(2)
           : "0",
     };
 
@@ -714,13 +716,13 @@ export function hrmsSTAFF_ENDPOINTS(
         workHours:
           monthAttendance.length > 0
             ? Number(
-                (
-                  monthAttendance.reduce(
-                    (sum, a) => sum + (a.workHours || 0),
-                    0,
-                  ) / monthAttendance.length
-                ).toFixed(2),
-              )
+              (
+                monthAttendance.reduce(
+                  (sum, a) => sum + (a.workHours || 0),
+                  0,
+                ) / monthAttendance.length
+              ).toFixed(2),
+            )
             : 0,
       };
 
@@ -734,10 +736,10 @@ export function hrmsSTAFF_ENDPOINTS(
 
       const salary = latestPayroll
         ? {
-            netSalary: latestPayroll.netSalary,
-            month: latestPayroll.month,
-            status: latestPayroll.status,
-          }
+          netSalary: latestPayroll.netSalary,
+          month: latestPayroll.month,
+          status: latestPayroll.status,
+        }
         : null;
 
       // ── RECENT LEAVES ─────────────────────────────────
@@ -771,7 +773,7 @@ export function hrmsSTAFF_ENDPOINTS(
         leavePercent:
           totalLeaveBalance.totalAllowed > 0
             ? (totalLeaveBalance.totalUsed / totalLeaveBalance.totalAllowed) *
-              100
+            100
             : 0,
         attendance,
         salary,
@@ -828,5 +830,69 @@ export function hrmsSTAFF_ENDPOINTS(
 
       res.json(qualifications);
     },
+  );
+
+  // ========================================
+  // UPDATE EMPLOYEE STATUS
+  // ========================================
+  server.patch(
+    "/api/staff/:id/status",
+    (req: TAuthRequest, res: Response) => {
+      const db = getDb();
+      const { id } = req.params;
+      const { status } = req.body as TStaffUpdateStatusRequest;
+
+      // Validation
+      if (!status) {
+        res.status(400).json({
+          success: false,
+          message: "Status is required",
+        });
+        return;
+      }
+
+      const validStatuses = ["active", "inactive", "on-leave", "terminated"];
+      if (!validStatuses.includes(status)) {
+        res.status(400).json({
+          success: false,
+          message: "Invalid status value",
+        });
+        return;
+      }
+
+      // Find employee
+      const staff = db.staff?.find((e) => e.id === id);
+
+      if (!staff) {
+        res.status(404).json({
+          success: false,
+          message: "Employee not found",
+        });
+        return;
+      }
+
+      // Update status
+      staff.status = status;
+      saveDb(db);
+
+      // Build updated profile
+      const department = db.departments?.find((d) => d.id === staff.departmentId);
+      const rankDetails = db.ranks.find((r) => r.id === staff.rankId);
+      const user = db.users.find((u) => u.staffId === staff.id);
+
+
+      const response: TStaffUpdateStatusResponse = {
+        success: true,
+        message: "Employee status updated successfully",
+        staff: {
+          ...staff,
+          department,
+          rankDetails,
+          user,
+        }
+      };
+
+      res.json(response);
+    }
   );
 }

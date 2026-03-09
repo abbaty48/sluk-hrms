@@ -378,10 +378,11 @@ server.listen(PORT, () => {
   console.log("  GET    /api/staff/:id/details");
   console.log("  GET    /api/staff/:id/attendance/summary");
   console.log("  GET    /api/staff/:id/leave/balance");
-  console.log(
-    "  GET    /api/staff/search?q=name&department=dept_1&page=1&limit=20",
-  );
+  console.log("  GET    /api/staff/search?q=name&department=dept_1&page=1&limit=20");
   console.log("  GET    /api/staff/statistics");
+  console.log("\n📊 Employee Endpoints:");
+  console.log("  GET    /api/employees/:id/ profile - Fetch employee profile");
+  console.log("  PATCH  /api/employees/:id/ status - Update employee status");
   console.log("\n📊 Department Endpoints:");
   console.log("  GET    /api/departments");
   console.log("  GET    /api/departments/summary");

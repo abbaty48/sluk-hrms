@@ -1,6 +1,8 @@
-import type { TStaff } from "@/types/staffTypes";
 import type { TDepartment } from "@/types/departmentTypes";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import type { TStaff, TStaffUpdateStatusResponse } from "@/types/staffTypes";
 import { useMutation, useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import type { TStaffDetails, TStaffUpdateStatusRequest } from '@/types/staffTypes'
 
 type SearchStaffCriteria = Partial<{
   q: string;
@@ -101,6 +103,73 @@ export function useAddStaffAPI() {
       }
 
       return response.json();
+    },
+  });
+}
+
+// ========================================
+// GET STAFF PROFILE
+// ========================================
+export function useStaffProfile(staffId: string) {
+  return useSuspenseQuery({
+    queryKey: ["employee", "profile", staffId],
+    queryFn: async () => {
+      const response = await fetch(`/api/staff/${staffId}/details`);
+
+      if (response.status === 404) {
+        return null
+      }
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch employee profile");
+      }
+      return response.json() as Promise<TStaffDetails>;
+    },
+    // enabled: !!employeeId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+// ========================================
+// UPDATE EMPLOYEE STATUS
+// ========================================
+export function useStaffUpdateStaffStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: TStaffUpdateStatusRequest) => {
+      const response = await fetch(
+        `/api/staff/${data.staffId}/status`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: data.status }),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update employee status");
+      }
+
+      return response.json() as Promise<TStaffUpdateStatusResponse>;
+    },
+    onSuccess: (data, variables) => {
+      // Invalidate and refetch employee profile
+      queryClient.invalidateQueries({
+        queryKey: ["employee", "profile", variables.staffId],
+      });
+
+      // Update cache optimistically
+      queryClient.setQueryData<TStaffUpdateStatusResponse>(
+        ["employee", "profile", variables.staffId],
+        (old: any) => {
+          if (!old) return old;
+          return {
+            staff: data.staff,
+          };
+        }
+      );
     },
   });
 }

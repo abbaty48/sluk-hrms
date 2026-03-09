@@ -1,13 +1,14 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AdminEmployeeTableSkeleton } from "./AdminEmployeeTableSkeleton";
 import { AdminEmployeesPageFeatures } from "./AdminEmployeesPageFeatures";
+import { LucideEllipsis, View, Edit, Mail, UserStar } from "lucide-react";
 import { useAdminEmployeesPageHook } from "./AdminEmployeesPageHook";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
-import { LucideMail, LucideEllipsis, View, Edit, Mail, UserStar } from "lucide-react";
 import { useStaffAPI } from "@/hooks/api/useAdminStaffApi";
 import { Paginator } from "@/components/Paginator";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Suspense, useState } from "react";
 
@@ -26,6 +27,7 @@ function EmployeeTable({
   status,
   departmentId,
 }: EmployeeTable) {
+  const navigate = useNavigate();
   const [rowsPerPage, setRowsPerPage] = useState("5");
   const {
     data,
@@ -35,6 +37,31 @@ function EmployeeTable({
     fetchNextPage,
     fetchPreviousPage,
   } = useStaffAPI({ limit: rowsPerPage, q, status, cadre, sort, departmentId });
+
+
+  function Actions({ staffId }: { staffId: string }) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <Button variant={'ghost'} className="h-7 w-7">
+            <LucideEllipsis />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>Action</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => navigate(`/admin/employees/${staffId}/profile`)}><View /> View Profile</DropdownMenuItem>
+            <DropdownMenuItem><Edit /> Edit Profile</DropdownMenuItem>
+            <DropdownMenuItem><UserStar /> Change Status</DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem >
+            <Mail /> Email Staff
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
 
   return (
     <>
@@ -127,25 +154,7 @@ function EmployeeTable({
                 </td>
                 {/* ACTION MENU */}
                 <td className="py-3 px-4 text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <Button variant={'ghost'} className="h-7 w-7">
-                        <LucideEllipsis />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuGroup>
-                        <DropdownMenuLabel>Action</DropdownMenuLabel>
-                        <DropdownMenuItem><View /> View Profile</DropdownMenuItem>
-                        <DropdownMenuItem><Edit /> Edit Profile</DropdownMenuItem>
-                        <DropdownMenuItem><UserStar /> Change Status</DropdownMenuItem>
-                      </DropdownMenuGroup>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem >
-                        <Mail /> Email Staff
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Actions staffId={staff.id} />
                 </td>
               </tr>
             ))}
@@ -165,7 +174,7 @@ function EmployeeTable({
         }}
       />
     </>
-  );
+  )
 }
 
 export function AdminEmployeesPageTable() {

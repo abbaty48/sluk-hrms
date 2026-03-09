@@ -2,9 +2,10 @@ import type {
   TNotification,
   TNotificationConfig,
 } from "@/types/notificationsTypes";
-import { QueryClient } from "@tanstack/react-query";
-import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { clsx, type ClassValue } from "clsx";
+import { QueryClient } from "@tanstack/react-query";
+import type { TStaffDetails } from "../types/staffTypes";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -94,4 +95,47 @@ export function notificationConfig(
   };
 
   return configs[type] || configs.general;
+}
+
+
+// Helper function to format phone number
+export function formatPhoneNumber(phone: string): string {
+  // Remove all non-numeric characters
+  const cleaned = phone.replace(/\D/g, "");
+
+  // Format as +234 XXX XXX XXXX for Nigerian numbers
+  if (cleaned.startsWith("234")) {
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return `+${match[1]} ${match[2]} ${match[3]} ${match[4]}`;
+    }
+  }
+
+  return phone;
+}
+
+// Helper function to get status badge variant
+export function getStaffStatusVariant(
+  status: TStaffDetails["status"]
+): "success" | "warning" | "destructive" | "secondary" {
+  const variants: Record<TStaffDetails["status"], "success" | "warning" | "destructive" | "secondary"> = {
+    "Retired": "secondary",
+    "On Leave": "warning",
+    "Employed": "success",
+    "Resigned": "destructive",
+    "Terminated": "destructive",
+  };
+  return variants[status];
+}
+
+// Helper function to format status label
+export function getStaffStatusLabel(status: TStaffDetails["status"]): string {
+  const labels: Record<TStaffDetails["status"], string> = {
+    Employed: "Active",
+    Retired: "InActive",
+    Resigned: "Inactive",
+    "On Leave": "On Leave",
+    Terminated: "Terminated",
+  };
+  return labels[status];
 }

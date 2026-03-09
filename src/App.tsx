@@ -52,6 +52,17 @@ function App() {
           },
           errorElement: <RootErrorBoundary />,
         },
+        // In App.tsx or routes.config.tsx
+        {
+          path: "/admin/employees/:id/profile",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/admin/employees/AdminEmployeeViewProfile/AdminEmployeeViewProfilePage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
+        },
         {
           path: "leave",
           lazy: async () => {
