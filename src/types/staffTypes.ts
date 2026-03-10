@@ -149,6 +149,15 @@ export type TStaffStats = {
 }
 
 
+export type TStaffProfileUpdateRequest = {
+    name: string;
+    email: string;
+    rankId: string;
+    joinOn: string;
+    departmentId: string;
+    phone: string | null;
+}
+
 export interface TStaffUpdateStatusRequest {
     staffId: string;
     status: TStaffStatus;

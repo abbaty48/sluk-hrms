@@ -119,7 +119,7 @@ export function getStaffStatusVariant(
   status: TStaffDetails["status"]
 ): "success" | "warning" | "destructive" | "secondary" {
   const variants: Record<TStaffDetails["status"], "success" | "warning" | "destructive" | "secondary"> = {
-    "Retired": "secondary",
+    "Retired": "destructive",
     "On Leave": "warning",
     "Employed": "success",
     "Resigned": "destructive",
@@ -132,8 +132,8 @@ export function getStaffStatusVariant(
 export function getStaffStatusLabel(status: TStaffDetails["status"]): string {
   const labels: Record<TStaffDetails["status"], string> = {
     Employed: "Active",
-    Retired: "InActive",
-    Resigned: "Inactive",
+    Retired: "Retired",
+    Resigned: "Resigned",
     "On Leave": "On Leave",
     Terminated: "Terminated",
   };

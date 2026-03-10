@@ -136,7 +136,7 @@ export const AdminAddStaffAppointmentDetails = ({
           {errors.appointmentDateFirst && (
             <FieldError className="text-xs">
               {errors.appointmentDateFirst.message as string}
-            </FieldError>
+            </FieldError> 
           )}
         </FieldLabel>
 

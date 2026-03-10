@@ -57,7 +57,7 @@ function App() {
           path: "/admin/employees/:id/profile",
           lazy: async () => {
             const { default: Component } = await import(
-              "@/pages/dashboard/admin/employees/AdminEmployeeViewProfile/AdminEmployeeViewProfilePage"
+              "@/pages/dashboard/admin/employees/AdminEmployeeViewProfile/AdminEmployeeProfilePage"
             );
             return { Component };
           },

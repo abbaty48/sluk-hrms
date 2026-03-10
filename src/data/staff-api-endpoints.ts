@@ -5,6 +5,7 @@ import type {
   TStaffPerDepartment,
   TStaffUpdateStatusRequest,
   TStaffUpdateStatusResponse,
+  TStaff,
 } from "@/types/staffTypes";
 import type { Application, Response } from "express";
 import type { TAuthRequest, TDatabase } from "@/types/types";
@@ -481,6 +482,65 @@ export function hrmsSTAFF_ENDPOINTS(
         role: newUser.role,
       },
     });
+  });
+
+  // Update new staff
+  server.put("/api/staff/:id/details", (req: TAuthRequest, res: Response): void => {
+    const db = getDb();
+    const { name, email, phone, joinOn, rankId, departmentId } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !departmentId || !rankId) {
+      res.status(400).json({
+        error: "Missing required fields",
+        required: ["name", "email", "departmentId", "rankId"],
+      });
+      return;
+    }
+    // Check if staff number already exists
+    const existingStaff = db.staff.find((s) => s.staffNo === req.params.id);
+    if (existingStaff) {
+      res.status(400).json({ error: "Staff number already exists" });
+      return;
+    }
+    // Verify department exists
+    const department = db.departments.find((d) => d.id === departmentId);
+    if (!department) {
+      res.status(400).json({ error: "Invalid department ID" });
+      return;
+    }
+
+    // Verify rank exists
+    const rankDetails = db.ranks.find((r) => r.id === rankId);
+    if (!rankDetails) {
+      res.status(400).json({ error: "Invalid rank ID" });
+      return;
+    }
+
+    // Update the existing staff
+    const updatedStaff: TStaff = {
+      ...existingStaff!,
+      name,
+      email,
+      phone,
+      rankId,
+      departmentId,
+      rank: rankDetails.title,
+      dateOfFirstAppointment: joinOn,
+      updatedAt: new Date().toISOString(),
+    };
+
+
+    db.staff.map(staff => {
+      if (staff.id === req.params.id) {
+        return updatedStaff
+      }
+      return staff
+    })
+
+    saveDb(db);
+
+    res.status(200).json({ message: 'Staff profile updated successfully' });
   });
 
   // Leave balance for a staff member

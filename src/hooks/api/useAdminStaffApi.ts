@@ -1,6 +1,6 @@
 import type { TDepartment } from "@/types/departmentTypes";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import type { TStaff, TStaffUpdateStatusResponse } from "@/types/staffTypes";
+import type { TStaff, TStaffProfileUpdateRequest, TStaffUpdateStatusResponse } from "@/types/staffTypes";
 import { useMutation, useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import type { TStaffDetails, TStaffUpdateStatusRequest } from '@/types/staffTypes'
 
@@ -100,6 +100,27 @@ export function useAddStaffAPI() {
 
       if (!response.ok) {
         throw new Error("Failed to add staff");
+      }
+
+      return response.json();
+    },
+  });
+}
+/**
+ *
+ */
+export function useUpdateStaffProfileAPI() {
+  return useMutation({
+    mutationFn: async (data: { staffId: string } & TStaffProfileUpdateRequest) => {
+      // Replace with your actual API endpoint
+      const response = await fetch(`/api/staff/${data.staffId}/details`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update staff profile, reason: " + (await response.json()).error);
       }
 
       return response.json();

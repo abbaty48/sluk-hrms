@@ -6,7 +6,7 @@ export function RankSelectItems() {
 
   return ranks.map((rank) => (
     <SelectItem key={rank.id} value={rank.id}>
-      {rank.name}
+      {rank.title}
     </SelectItem>
   ));
 }

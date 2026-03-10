@@ -1,6 +1,6 @@
-import { AdminEmployeeViewProfile } from "./AdminEmployeeViewProfile";
-import { AEVPSkeleton } from "./AdminEmployeeViewProfilePageSkeleton";
+import { AEVPSkeleton } from "./AdminEmployeeProfilePageSkeleton";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
+import { AdminEmployeeProfile } from "./AdminEmployeeProfile";
 import { useNavigate, useParams } from "react-router-dom";
 import { Suspense } from "react";
 
@@ -19,7 +19,7 @@ export default function AdminEmployeeViewProfilePage() {
   return (
     <QueryErrorBoundary message="Failed to Load Employee Profile">
       <Suspense fallback={<AEVPSkeleton staffId={id} handleBack={handleBack} />}>
-        <AdminEmployeeViewProfile staffId={id} handleBack={handleBack} handleEdit={handleEdit} />
+        <AdminEmployeeProfile staffId={id} handleBack={handleBack} handleEdit={handleEdit} />
       </Suspense>
     </QueryErrorBoundary>
   );

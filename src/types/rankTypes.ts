@@ -15,7 +15,7 @@ export type TRanksListResponse = {
 
 export type TRank = {
     id: string;
-    name: string;
+    title: string;
     level: number;
     isActive: boolean;
     createdAt: string;
