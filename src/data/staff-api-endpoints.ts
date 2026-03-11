@@ -1,11 +1,11 @@
 import type {
+  TStaff,
   TStaffDetails,
   TEnrichedStaff,
   TStaffStatistics,
   TStaffPerDepartment,
   TStaffUpdateStatusRequest,
   TStaffUpdateStatusResponse,
-  TStaff,
 } from "@/types/staffTypes";
 import type { Application, Response } from "express";
 import type { TAuthRequest, TDatabase } from "@/types/types";
@@ -440,7 +440,7 @@ export function hrmsSTAFF_ENDPOINTS(
       lga: lga || null,
       departmentId,
       rankId,
-      rank: rank || rankDetails.name,
+      rank: rank || rankDetails.title,
       religion,
       maritalStatus,
       cadre: cadre || "Non-Teaching",
@@ -828,7 +828,7 @@ export function hrmsSTAFF_ENDPOINTS(
         staffId,
         name: staff.name,
         department: department?.name ?? null,
-        rank: rank?.name ?? staff.rank,
+        rank: rank?.title ?? staff.rank,
         leaveBalance: totalLeaveBalance,
         leavePercent:
           totalLeaveBalance.totalAllowed > 0
@@ -911,14 +911,6 @@ export function hrmsSTAFF_ENDPOINTS(
         return;
       }
 
-      const validStatuses = ["active", "inactive", "on-leave", "terminated"];
-      if (!validStatuses.includes(status)) {
-        res.status(400).json({
-          success: false,
-          message: "Invalid status value",
-        });
-        return;
-      }
 
       // Find employee
       const staff = db.staff?.find((e) => e.id === id);

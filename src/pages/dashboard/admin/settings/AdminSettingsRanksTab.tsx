@@ -63,7 +63,7 @@ export function AdminSettingsRanksTab() {
   const handleEdit = (rank: TRank) => {
     setEditingRank(rank);
     setFormData({
-      name: rank.name,
+      name: rank.title,
       level: rank.level,
       category: rank.category,
       salaryGrade: rank.salaryGrade || "",
@@ -138,7 +138,7 @@ export function AdminSettingsRanksTab() {
             <Card key={rank.id} className="stats-card p-4">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h3 className="font-semibold text-foreground">{rank.name}</h3>
+                  <h3 className="font-semibold text-foreground">{rank.title}</h3>
                   <p className="text-sm text-muted-foreground">
                     Level {rank.level} • {rank.category}
                   </p>
@@ -154,7 +154,7 @@ export function AdminSettingsRanksTab() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleDelete(rank.id, rank.name)}
+                    onClick={() => handleDelete(rank.id, rank.title)}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
@@ -176,11 +176,10 @@ export function AdminSettingsRanksTab() {
 
               <div className="mt-3">
                 <span
-                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    rank.isActive
+                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${rank.isActive
                       ? "bg-success/10 text-success"
                       : "bg-muted text-muted-foreground"
-                  }`}
+                    }`}
                 >
                   {rank.isActive ? "Active" : "Inactive"}
                 </span>

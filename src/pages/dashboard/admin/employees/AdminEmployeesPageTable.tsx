@@ -42,7 +42,7 @@ function EmployeeTable({
   function Actions({ staffId }: { staffId: string }) {
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
           <Button variant={'ghost'} className="h-7 w-7">
             <LucideEllipsis />
           </Button>

@@ -16,9 +16,10 @@ import {
     ArrowLeft,
 } from "lucide-react";
 import { AEVPDateInfoItem, AEVPDepartmentInfoItem, AEVPEmptyEmployee, AEVPInfoItem, AEVPRankInfoItem } from "./AdminEmployeeProfilePageComponents";
-import { useStaffProfile, useStaffUpdateStaffStatus, useUpdateStaffProfileAPI } from "@/hooks/api/useAdminStaffApi";
+import { useStaffProfile, useUpdateStaffProfileAPI } from "@/hooks/api/useAdminStaffApi";
 import type { TStaffDetails, TStaffProfileUpdateRequest } from "@/types/staffTypes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AEPDialog } from "./AdminEmployeeProfilePageDialog";
 import { Separator } from "@/components/ui/separator";
 import { Activity, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,6 @@ import { Badge } from "@/components/ui/badge";
 import { Motion } from "@/components/Motion";
 import { Card } from "@/components/ui/card";
 import { useForm } from "react-hook-form";
-import { format } from "date-fns";
 import { toast } from "sonner";
 
 type TPageProps = {
@@ -40,9 +40,9 @@ type TPageProps = {
  */
 function EmployeeProfile({ employee, handleBack }: { employee: TStaffDetails, handleBack: () => void }) {
 
-    const updateStatus = useStaffUpdateStaffStatus();
     const [isEditing, setIsEditing] = useState(false);
     const formRef = useRef<HTMLFormElement | null>(null)
+    const [openChangeStatus, setOpenChangeStatus] = useState(false)
     const { mutateAsync: updateProfile, isPending: isUpdating } = useUpdateStaffProfileAPI();
     const { handleSubmit, ...formHook } = useForm<TStaffProfileUpdateRequest>({
         defaultValues: {
@@ -55,25 +55,6 @@ function EmployeeProfile({ employee, handleBack }: { employee: TStaffDetails, ha
         }
     })
 
-    const handleStatusChange = () => {
-        if (!employee) return;
-
-        updateStatus.mutate(
-            {
-                staffId: employee.id,
-                status: "Terminated",
-            },
-            {
-                onSuccess: () => {
-                    toast.success(`Employee status updated to `);
-                },
-                onError: (error: any) => {
-                    toast.error(error.message || "Failed to update status");
-                },
-            }
-        );
-    };
-
     const handleSaveEdit = async () => {
 
         if (await formHook.trigger()) {
@@ -82,14 +63,15 @@ function EmployeeProfile({ employee, handleBack }: { employee: TStaffDetails, ha
                     staffId: employee.id,
                     ...formHook.getValues()
                 });
-                toast.success('Update successful', { description: 'Employee detail successful updated.' })
+                toast.success('Update successful', { description: 'Employee detail successful updated.' });
+                setIsEditing(false);
             } catch (error: any) {
                 toast.error('Update Failed ', { description: error.message || 'Failed to update employee profile.' })
             }
         }
     }
 
-    const getEmployeeInitials = `${employee?.name.split("")[0].toLocaleUpperCase()}${employee?.name.split("")[1]?.toLocaleUpperCase()}`
+    const getEmployeeInitials = `${employee?.name?.split("")[0]?.toLocaleUpperCase()}${employee?.name?.split("")[1]?.toLocaleUpperCase()}`
 
     return (
         <>
@@ -108,10 +90,9 @@ function EmployeeProfile({ employee, handleBack }: { employee: TStaffDetails, ha
                     {/* FOR VIEW MODE ONLY */}
                     <Activity mode={!isEditing ? 'visible' : 'hidden'}>
                         <Button
-                            variant="outline"
                             size="sm"
-                            onClick={handleStatusChange}
-                            disabled={updateStatus.isPending}
+                            variant="outline"
+                            onClick={() => setOpenChangeStatus(true)}
                         >
                             <Flag className="h-4 w-4 mr-1" />
                             Status
@@ -280,13 +261,17 @@ function EmployeeProfile({ employee, handleBack }: { employee: TStaffDetails, ha
                                     icon={Calendar}
                                     label="Join Date"
                                     isEditing={isEditing}
-                                    value={format(new Date(employee.createdAt), "d MMMM yyyy")}
+                                    value={employee.dateOfFirstAppointment!}
                                 />
                             </fieldset>
                         </Card>
                     </Motion>
                 </form>
             </div>
+
+            {/* Change Status Dialog */}
+            <AEPDialog employeeId={employee.id} employeeName={employee.name} employeeStatus={employee.status}
+                openChangeStatus={openChangeStatus} setOpenChangeStatus={setOpenChangeStatus} />
         </>
     )
 }

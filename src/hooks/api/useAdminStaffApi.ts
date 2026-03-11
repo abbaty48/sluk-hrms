@@ -1,8 +1,8 @@
 import type { TDepartment } from "@/types/departmentTypes";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import type { TStaff, TStaffProfileUpdateRequest, TStaffUpdateStatusResponse } from "@/types/staffTypes";
 import { useMutation, useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import type { TStaffDetails, TStaffUpdateStatusRequest } from '@/types/staffTypes'
+import type { TStaff, TStaffProfileUpdateRequest, TStaffUpdateStatusResponse } from "@/types/staffTypes";
 
 type SearchStaffCriteria = Partial<{
   q: string;
@@ -178,12 +178,14 @@ export function useStaffUpdateStaffStatus() {
     onSuccess: (data, variables) => {
       // Invalidate and refetch employee profile
       queryClient.invalidateQueries({
-        queryKey: ["employee", "profile", variables.staffId],
+        queryKey: ["employee", "profile", "admin",
+          , "staffs", variables.staffId],
       });
 
       // Update cache optimistically
       queryClient.setQueryData<TStaffUpdateStatusResponse>(
-        ["employee", "profile", variables.staffId],
+        ["employee", "profile", "admin",
+          , "staffs", variables.staffId],
         (old: any) => {
           if (!old) return old;
           return {

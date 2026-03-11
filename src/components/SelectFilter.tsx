@@ -10,6 +10,7 @@ import { Suspense, type ReactNode } from "react";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 
 type FilterProps = {
+  name?: string;
   value?: string | undefined;
   placeholder?: ReactNode;
   children: React.ReactNode;
@@ -19,20 +20,20 @@ type FilterProps = {
 };
 
 export function SelectFilter({
-  children,
+  name,
   value,
+  children,
   placeholder,
   defaultValue,
   onValueChange,
   triggerClassName,
-  ...props
 }: FilterProps) {
   return (
     <Select
+      name={name}
       value={value}
       defaultValue={defaultValue}
       onValueChange={onValueChange}
-      {...props}
     >
       <SelectTrigger className={triggerClassName}>
         <SelectValue placeholder={placeholder} />

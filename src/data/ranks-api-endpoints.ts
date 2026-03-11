@@ -22,7 +22,7 @@ export function hrmsRANK_ENDPOINTS(server: Application, getDb: () => TDatabase, 
             const searchTerm = (search as string).toLowerCase();
             ranks = ranks.filter(
                 (r) =>
-                    r.name.toLowerCase().includes(searchTerm) ||
+                    r.title.toLowerCase().includes(searchTerm) ||
                     (r.description && r.description.toLowerCase().includes(searchTerm)),
             );
         }
@@ -74,7 +74,7 @@ export function hrmsRANK_ENDPOINTS(server: Application, getDb: () => TDatabase, 
 
         const newRank: TRank = {
             id: `rank_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            name: data.name,
+            title: data.name,
             level: data.level,
             category: data.category,
             salaryGrade: data.salaryGrade,
