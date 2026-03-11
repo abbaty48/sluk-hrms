@@ -1,7 +1,4 @@
-import type {
-  TNotification,
-  TNotificationPreferences,
-} from "./notificationsTypes";
+import type { TNotification, TNotificationPreferences, } from "./notificationsTypes";
 import type { TLeaveRequest, TLeaveType } from "./leave-managementTypes";
 import type { TNatureOfAppointment } from "./appointmentTypes";
 import type { TResponsibility } from "./responsibilityTypes";
@@ -38,6 +35,77 @@ export type TEmploymentHistory = {
   isCurrent: boolean;
 };
 
+
+export type TDocument = {
+  id: string
+  staffId: string
+  staffName?: string        // added by server when fetching
+  title: string
+  category: string
+  fileName: string
+  fileSize: number        // raw bytes in db — server formats it to "1.2 MB" in responses
+  mimeType: string
+  uploadedBy: string
+  isVerified: boolean
+  verifiedBy: string | null
+  description: string | null
+  degree: string | null
+  institution: string | null
+  year: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+// what the server sends back in responses (formatted for display)
+export type TDocumentResponse = {
+  id: string
+  staffId: string
+  staffName?: string
+  title: string
+  category: string
+  fileType: string        // "PDF" | "JPG" | "PNG"
+  fileSize: string        // formatted — "1.2 MB" | "890 KB"
+  mimeType?: string
+  status: "Verified" | "Pending"
+  uploadedAt: string
+  description: string | null
+  degree: string | null
+  institution: string | null
+  year: string | null
+}
+
+export type TDocumentSummary = {
+  totalDocuments: number
+  verifiedDocuments: number
+  pendingDocuments: number
+  categoryDistribution: Record<string, number>
+}
+
+export type TAllDocumentsResponse = {
+  documents: TDocumentResponse[]
+  total: number
+  page: number
+  limit: number
+}
+
+export type TStaffDocumentsResponse = {
+  summary: TDocumentSummary | null
+  data: TDocumentResponse[]
+}
+
+export type TAddDocumentPayload = {
+  title: string
+  category: string
+  fileName: string
+  fileSize?: number
+  mimeType: string
+  description?: string
+  degree?: string
+  institution?: string
+  year?: string
+}
+
+
 export type TPayroll = {
   id: string;
   staffId: string;
@@ -59,18 +127,18 @@ export type TPayroll = {
   updatedAt: string;
 };
 
-export type TDocument = {
-  id: string;
-  staffId: string;
-  documentType: string;
-  fileName: string;
-  fileUrl: string;
-  uploadedBy: string;
-  uploadedAt: string;
-  expiryDate: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
+// export type TDocument = {
+//   id: string;
+//   staffId: string;
+//   documentType: string;
+//   fileName: string;
+//   fileUrl: string;
+//   uploadedBy: string;
+//   uploadedAt: string;
+//   expiryDate: string | null;
+//   createdAt: string;
+//   updatedAt: string;
+// };
 
 export type TAnnouncement = {
   id: string;
@@ -97,6 +165,7 @@ export type TDatabase = {
   attendance: TAttendance[];
   departments: TDepartment[];
   notifications: TNotification[];
+  // Empnotification: TNotification
   announcements: TAnnouncement[];
   passwordResets: IPasswordReset[];
   qualifications: TQualification[];

@@ -1,6 +1,6 @@
 import { ProfileSkeleton } from "@/pages/dashboard/employee/skeletons/EmployeeProfileSkeleton";
-import ProfileAvatar from "@/pages/dashboard/employee/profile/EmployeeProfileAvatar";
-import ProfileTabs from "@/pages/dashboard/employee/profile/EmployeeProfileTabs";
+import ProfileAvatar from "@sluk/src/pages/dashboard/employee/EmployeeProfile/EmployeeProfileAvatar";
+import ProfileTabs from "@sluk/src/pages/dashboard/employee/EmployeeProfile/EmployeeProfileTabs";
 import { useStaff } from "@/hooks/api/staff";
 import { Motion } from "@/components/Motion";
 import { Card } from "@/components/ui/card";

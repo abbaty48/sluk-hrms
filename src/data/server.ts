@@ -13,15 +13,17 @@ import { hrmsRANK_ENDPOINTS } from "./ranks-api-endpoints.ts";
 import { hrmsLEAVE_ENDPOINTS } from "./leave-api-endpoints.ts";
 import { hrmsSTAFF_ENDPOINTS } from "./staff-api-endpoints.ts";
 import { hrmsSETTINGS_ENDPOINTS } from "./settings-endpoints.ts";
+import { hrmsDOCUMENT_ENDPOINTS } from "./document-api-endpoint.ts";
 import { hrmsANALYTICS_ENDPOINTS } from "./analytic-api-endpoints.ts";
 import { hrmsATTENDANCE_ENDPOINTS } from "./attendance-api-endpoints.ts";
 import { hrmsCOMMITTEES_ENDPOINTS } from "./committees-api-endpoints.ts";
 import { hrmsDEPARTMENT_ENDPOINTS } from "./department-api-endpoints.ts";
 import { hrmsNOTIFICATION_ENDPOINTS } from "./notifications-endpoints.ts";
-import type { TMonthlyAttendanceTrend } from "../types/attendance.types.ts";
+import type { TMonthlyAttendanceTrend } from "@/types/attendance.types.ts";
 import { hrmsAPPOINTMENT_ENDPOINTS } from "./appointments-api-endpoints.ts";
 import { hrmsQUALIFICATION_ENDPOINTS } from "./qualification-api-endpoints.ts";
 import { hrmsRESPONSIBILITY_ENDPOINTS } from "./responsibility-api-endpoints.ts";
+import { hrmsEMPLOYEE_NOTIFICATION_ENDPOINTS } from "./Emp-notification-api-endpoint.ts";
 
 // Get current directory
 const filename =
@@ -347,6 +349,7 @@ hrmsRANK_ENDPOINTS(server, getDb, saveDb);
 hrmsLEAVE_ENDPOINTS(server, getDb, saveDb);
 hrmsSTAFF_ENDPOINTS(server, getDb, saveDb);
 hrmsSETTINGS_ENDPOINTS(server, getDb, saveDb);
+hrmsDOCUMENT_ENDPOINTS(server, getDb, saveDb)
 hrmsCOMMITTEES_ENDPOINTS(server, getDb, saveDb);
 hrmsATTENDANCE_ENDPOINTS(server, getDb, saveDb);
 hrmsDEPARTMENT_ENDPOINTS(server, getDb, saveDb);
@@ -354,7 +357,7 @@ hrmsAPPOINTMENT_ENDPOINTS(server, getDb, saveDb);
 hrmsNOTIFICATION_ENDPOINTS(server, getDb, saveDb);
 hrmsQUALIFICATION_ENDPOINTS(server, getDb, saveDb);
 hrmsRESPONSIBILITY_ENDPOINTS(server, getDb, saveDb);
-
+hrmsEMPLOYEE_NOTIFICATION_ENDPOINTS(server, getDb, saveDb);
 // Apply auth middleware to protected routes
 server.use("/api/*", authMiddleware);
 
