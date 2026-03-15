@@ -17,12 +17,12 @@ export default defineConfig({
     host: true,
     strictPort: true,
     allowedHosts: ["sluk-hrms.onrender.com"],
-    port: process.env.PORT ? Number(process.env.PORT) : 3500,
+    port: process.env.PORT ? Number(process.env.SERVER_PORT) : 3000,
     proxy: {
       "/api": {
         secure: false,
         changeOrigin: true,
-        target: "http://localhost:3000",
+        target: "http://0.0.0.0:3000",
         rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
     },
