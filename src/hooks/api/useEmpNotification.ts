@@ -25,7 +25,7 @@ export function useNotifications(
   if (filters?.endDate)   params.set("endDate",    filters.endDate)
 
   const { data } = useSuspenseQuery<TNotificationListResponse>({
-    queryKey: ["notifications", staffId, filters],
+    queryKey: [ "notifications", staffId, filters ],
     queryFn:  async () => {
       await sleep(800)
       const res = await fetch(
@@ -190,6 +190,6 @@ export function getNotificationConfig(
       borderColor: "border-l-primary",
     },
   }
-
+ 
   return configs[type] ?? configs.general
 }
