@@ -132608,7 +132608,24 @@
       "updatedAt": "2026-02-01T08:00:00.000Z"
     }
   ],
-  "documents": [],
+  "documents": [
+    {
+      "id": "doc_1",
+      "staffId": "staff_2",
+      "title": "Msc Certificate",
+      "category": "Certificates",
+      "fileName": "msc_certificate_pdf",
+      "fileSize": 0,
+      "mimeType": "application/pdf",
+      "uploadedBy": "staff_2",
+      "isVerified": false,
+      "verifiedBy": null,
+      "description": "",
+      "degree": "",
+      "institution": "Bayero university",
+      "year": "2004"
+    }
+  ],
   "announcements": [
     {
       "id": "ann_1",
@@ -150303,6 +150320,6 @@
     "theme": "system",
     "language": "en",
     "timezone": "Africa/Lagos",
-    "updatedAt": "2026-03-11T10:42:30.603Z"
+    "updatedAt": "2026-03-23T12:52:33.916Z"
   }
 }
