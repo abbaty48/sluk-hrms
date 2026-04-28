@@ -1,25 +1,48 @@
-import type { TUser, TUserRole } from "./userTypes";
+export type TUserRole = "dept_admin" | "hr_admin" | "staff";
 
-export interface ILoginCredentials {
+export const AuthUserRole = {
+  DEPT_ADMIN: "dept_admin",
+  HR_ADMIN: "hr_admin",
+  STAFF: "staff",
+} as const;
+// Entity Interfaces
+export interface TUserProfile {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: TUserRole;
+  staffId: string | null;
+  passwordHash: string;
+  departmentId: string | null;
+  profilePhoto: string | null;
+  phoneNumber: string | null;
+  isActive: boolean;
+  lastLogin: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type TAuthUser = {
+  sub: string;
+  email: string;
+  role: TUserRole;
+};
+
+export type TAccessToken = TAuthUser & {
+  jti: string;
+  type: string;
+};
+
+export interface IAuthCredentials {
   email: string;
   password: string;
-  role: TUserRole;
-  rememberMe?: boolean;
 }
 
 export interface IAuthResponse {
-  success: boolean;
-  message: string;
-  user: TUser;
-  token: string;
-  expiresIn: number; // milliseconds
-}
-
-export interface ILoginRequest {
-  email: string;
-  password: string;
-  role: TUserRole;
-  rememberMe?: boolean;
+  user: TAuthUser;
+  accessToken: string;
+  expiresIn: string | undefined; // milliseconds
 }
 
 export interface ILogoutResponse {
@@ -64,7 +87,7 @@ export interface IVerifyTokenRequest {
 
 export interface IVerifyTokenResponse {
   valid: boolean;
-  user?: TUser;
+  user?: TAuthUser;
 }
 
 export interface IPasswordReset {
@@ -75,12 +98,18 @@ export interface IPasswordReset {
 }
 
 export interface IAuthContextType {
-  user: TUser | null;
-  isAuthenticated: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
-  login: (credentials: ILoginCredentials) => Promise<void>;
+  user: TAuthUser | null;
+  isAuthenticated: boolean;
   logout: () => Promise<void>;
-  updateUser: (user: TUser) => void;
+  updateUser: (user: TAuthUser) => void;
+  login: (credentials: IAuthCredentials) => Promise<void>;
+}
+
+export interface IAuthRefreshResponse {
+  accessToken: string;
+  expiresIn: string;
 }
 
 // Role configuration
@@ -92,31 +121,31 @@ export interface IRoleConfig {
   permissions: string[];
 }
 
-export const ROLE_CONFIGS: Record<TUserRole, IRoleConfig> = {
-  admin: {
-    id: "admin",
-    label: "HR Admin",
-    description: "Full system access",
-    icon: "Shield",
-    permissions: [
-      "manage_staff",
-      "manage_leave",
-      "manage_payroll",
-      "view_reports",
-      "manage_settings",
-      "manage_departments",
-    ],
-  },
-  staff: {
-    id: "staff",
-    label: "Staff",
-    description: "Personal access",
-    icon: "User",
-    permissions: [
-      "view_own_profile",
-      "request_leave",
-      "view_own_payroll",
-      "view_own_attendance",
-    ],
-  },
-};
+// export const ROLE_CONFIGS: Record<TUserRole, IRoleConfig> = {
+//   admin: {
+//     id: "admin",
+//     label: "HR Admin",
+//     description: "Full system access",
+//     icon: "Shield",
+//     permissions: [
+//       "manage_staff",
+//       "manage_leave",
+//       "manage_payroll",
+//       "view_reports",
+//       "manage_settings",
+//       "manage_departments",
+//     ],
+//   },
+//   staff: {
+//     id: "staff",
+//     label: "Staff",
+//     description: "Personal access",
+//     icon: "User",
+//     permissions: [
+//       "view_own_profile",
+//       "request_leave",
+//       "view_own_payroll",
+//       "view_own_attendance",
+//     ],
+//   },
+// };

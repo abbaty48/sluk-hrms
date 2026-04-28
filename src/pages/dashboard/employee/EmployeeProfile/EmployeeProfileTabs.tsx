@@ -20,7 +20,7 @@ export default function EmployeeProfileTabs() {
         type="single"
         value={section}
         onValueChange={(val) => val && setSection(val)}
-        className="bg-muted p-1 rounded-lg w-fit"
+        className="bg-muted p-0 rounded-lg w-fit"
       >
         <ToggleGroupItem value="personal">
           Personal Info

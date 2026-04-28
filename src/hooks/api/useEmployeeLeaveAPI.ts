@@ -1,81 +1,74 @@
 import type {
-  TLeaveRequest,
+  TLeaveList,
   TLeaveApplication,
-  TLeaveBalance,
+  TLeaveBalanceList,
 } from "@sluk/src/types/leave-managementTypes";
 import {
-  useSuspenseQuery,
   useMutation,
+  useSuspenseQuery,
   useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
-import type { TPagination } from "@/types/types";
-import { queryClient } from "@/lib/utils";
+import { apiFetch, queryClient } from "@/lib/api.utils";
 
-export function useLeaveBalancesAPI(staffId: string) {
+export function useLeaveBalancesAPI() {
   const { data } = useSuspenseQuery({
-    queryKey: ["leave-balances", staffId],
-    queryFn: async () => {
-      const res = await fetch(`/api/staff/${staffId}/leave-balances`);
-      if (!res.ok) throw new Error("Failed to fetch balances");
-      return res.json() as Promise<TLeaveBalance[]>;
-    },
+    queryKey: ["leave-balances"],
+    queryFn: async () =>
+      await apiFetch<TLeaveBalanceList>(`/api/staffs/leave-balances`),
   });
-  return data;
+  return data.data;
 }
 
-export function useLeaveHistoryAPI(staffId: string) {
+export function useLeaveHistoryAPI({
+  key,
+  limit,
+}: Partial<{
+  key: number;
+  limit: string;
+}>) {
   const { data, isFetching, fetchNextPage, fetchPreviousPage } =
     useSuspenseInfiniteQuery({
-      queryKey: ["leave-history", staffId],
+      queryKey: ["leave-history", key, limit],
       initialPageParam: 1,
-      maxPages: 5,
-      queryFn: async ({ pageParam }) => {
-        const res = await fetch(
-          `/api/staff/${staffId}/leaves?page=${pageParam}&limit=3`,
+      maxPages: Number(limit || 5),
+      queryFn: async () => {
+        return await apiFetch<TLeaveList>(
+          `/api/leaves/staff?page=${key}&limit=${limit || "5"}`,
         );
-        if (!res.ok) throw new Error("Failed to fetch leaves");
-        return (await res.json()) as {
-          data: TLeaveRequest[];
-          pagination: TPagination;
-        };
       },
       getPreviousPageParam: (firstPage) =>
-        firstPage?.pagination.hasPrevPage
+        firstPage?.pagination?.hasPrevPage
           ? firstPage.pagination.page - 1
           : undefined,
       getNextPageParam: (lastPage) =>
-        lastPage?.pagination.hasNextPage
+        lastPage?.pagination?.hasNextPage
           ? lastPage?.pagination.page + 1
           : undefined,
     });
+
+  const currentPage = data.pages[data.pages.length - 1];
 
   return {
     isFetching,
     fetchNextPage,
     fetchPreviousPage,
-    data: data?.pages.flatMap((p) => p.data) ?? [],
-    pagination: data?.pages[0].pagination,
+    data: currentPage.data,
+    pagination: currentPage.pagination,
   };
 }
 
 export function useApplyLeaveAPI() {
   return useMutation({
     mutationFn: async (data: TLeaveApplication) => {
-      const res = await fetch("/api/leaves", {
+      return await apiFetch("/api/leaves", {
         method: "POST",
         body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
       });
-
-      if (!res.ok) throw new Error("Failed to apply leave");
-
-      return res.json();
     },
-
     onSuccess: () => {
       // refetch leave history + balances
-      queryClient.invalidateQueries({ queryKey: ["leaveHistory"] });
-      queryClient.invalidateQueries({ queryKey: ["leaveBalances"] });
+      queryClient.invalidateQueries({ queryKey: ["leave-history"] });
+      queryClient.invalidateQueries({ queryKey: ["leave-balances"] });
     },
   });
 }

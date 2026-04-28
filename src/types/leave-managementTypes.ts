@@ -1,23 +1,49 @@
 // types/leave-management.types.ts
-import type { TPagination } from "./types";
+import type { TPagination } from "./types.ts";
 
 export type TLeaveStatus = "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
 
-export type TLeaveResponse = {
+export type TLeave = {
   id: string;
-  staff: {
-    name: string;
-    staffNo: string;
-    department: string;
-  }
-  startDate: string;
-  endDate: string;
-  reason: string;
-  duration: string;
+  staffId: string;
+  leaveTypeId: string;
+  startDate: Date;
+  endDate: Date;
+  totalDays: number;
+  reason: string | null;
   status: TLeaveStatus;
-  allowedDays: number;
+  staff: TStaffSnippet;
+  approver: {
+    id: string;
+    rank: string;
+    name: string;
+  } | null;
   leaveType: string;
-}
+  approverComments: string | null;
+  studyLeaveDetails: TLeaveStudyDetails | null;
+  appliedAt: Date;
+  respondedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type TLeaveStudyDetails = {
+  institution: string;
+  programme: string;
+  degreeType: "PHD" | "MSC" | "PGD" | "BSC";
+  studyMode: "FULL_TIME" | "PART_TIME";
+  durationYear: number;
+  country: string | null;
+  sponsorshipType:
+    | "Self"
+    | "StateGovernment"
+    | "UniversityBase"
+    | "TedFund"
+    | "Others";
+  leaveCategory: "Study" | "Medical" | "Maternity" | "Paternity" | "Other";
+  payStatus: "WithPayment" | "WithoutPayment" | null;
+  guarantor_NextOfKin: string | null;
+};
 
 export type TLeaveType = {
   id: string;
@@ -26,26 +52,36 @@ export type TLeaveType = {
   carryForward: boolean;
   maxCarryForward: number;
   paidLeave: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 export type TLeaveRequest = {
   id: string;
   staffId: string;
   leaveTypeId: string;
-  startDate: string;
-  endDate: string;
-  totalDays: number,
-  reason: string,
-  status: TLeaveStatus,
-  approverId: string | null,
-  approverComments: string | null,
-  appliedAt: string;
-  respondedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
+  startDate: Date;
+  endDate: Date;
+  totalDays: number;
+  reason: string | null;
+  status: TLeaveStatus;
+  approverId: string | null;
+  approverComments: string | null;
+  studyLeaveDetails: TLeaveStudyDetails | null;
+  appliedAt: Date;
+  respondedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 };
+
+// export type TLeavePending = TLeaveRequest & {
+//   staff: {
+//     id: string;
+//     name: string;
+//     staffNo: string;
+//     department: string;
+//   };
+// };
 
 export type TLeaveStats = {
   total: number;
@@ -55,20 +91,32 @@ export type TLeaveStats = {
 };
 
 export type TLeaveFilters = {
-  leaves: TLeaveResponse[];
+  leaves: TLeave[];
   search: string;
   status: string;
   type: string;
   limit: string;
-  fromDate?: Date;
-  toDate?: Date;
+  fromDate: Date | null;
+  toDate: Date | null;
 };
 
-
-export type TLeaveRequestResponse = {
-  data: TLeaveRequest[];
-  pagination: TPagination;
+export type TStaffSnippet = {
+  id: string;
+  name: string;
+  staffNo: string;
+  department: string | null;
 };
+
+export type TLeaveItem = Omit<TLeave, "staff"> & {
+  staff: TStaffSnippet | null;
+};
+
+export type TLeaveList = {
+  data: TLeaveItem[];
+  pagination: TPagination | null;
+};
+
+export type TLeaveTypeList = TLeaveType[];
 
 export type TLeaveTypeFormData = {
   name: string;
@@ -80,8 +128,8 @@ export type TLeaveRequestFormData = {
   employeeId: string;
   leaveTypeId: string;
   startDate: string;
-  endDate: string;
-  reason?: string;
+  endDate: Date;
+  reason: string | null;
 };
 
 export type TApprovalAction = {
@@ -90,36 +138,36 @@ export type TApprovalAction = {
   comment?: string;
 };
 
-export type TLeaveTypeDistribution = {
+export type TChartLeaveTypeDistribution = {
   name: string;
   value: number;
   percentage: number;
-  color: string;
-}
+  color: string | undefined;
+};
 
 export type TLeaveApplication = {
-  staffId: string;
   leaveTypeId: string;
-  startDate: string;
-  endDate: string;
-  reason: string;
-  attachment?: string;
-}
+  startDate: Date;
+  endDate: Date;
+  reason: string | null;
+  attachment: string | null;
+  studyLeaveDetails: TLeaveStudyDetails | null;
+};
 
 export type TLeaveApproval = {
   status: TLeaveStatus;
   comments: string;
   approverId: string;
-}
+};
 
 export type TLeaveCalendarEntry = {
-  date: string;
+  date: Date;
   staffId: string;
   staffName: string;
   leaveType: string;
   totalDays: number;
   status: TLeaveStatus;
-}
+};
 
 export type TLeaveConflict = {
   conflictCount: number;
@@ -128,9 +176,9 @@ export type TLeaveConflict = {
     staffId: string;
     name: string;
     leaveType: string;
-    dates: string;
+    dates: Date;
   }[];
-}
+};
 
 export type TLeaveTrend = {
   month: string;
@@ -138,40 +186,45 @@ export type TLeaveTrend = {
   approvals: number;
   rejections: number;
   pending: number;
-}
+};
 
-export type TLeaveUtilization = {
+export type TChartLeaveUtilization = {
   department: string;
   departmentId: string;
   totalAllowed: number;
   utilized: number;
   remaining: number;
   utilizationRate: number;
-}
+};
 
 export type TLeaveEligibility = {
   eligible: boolean;
   remainingDays: number;
-  reason?: string;
-  warnings?: string[];
-}
+  reason: string | null;
+  warnings: string[] | null;
+};
 
 export type TLeaveValidation = {
   valid: boolean;
   errors: string[];
   warnings: string[];
   conflicts: string[];
-}
+};
 
 export type TLeaveBalance = {
   leaveTypeId: string;
   remaining: number;
   allowed: number;
   used: number;
-  name: string
-}
+  name: string;
+};
 
-export type TLeavePending = TLeaveResponse & {
+export type TLeaveBalanceList = {
+  data: TLeaveBalance[];
+  pagination: TPagination;
+};
+
+export type TLeavePending = TLeave & {
   staff: Partial<{
     id: string;
     name: string;
@@ -179,4 +232,32 @@ export type TLeavePending = TLeaveResponse & {
     role: string;
   }>;
   leaveType?: string;
+};
+
+export type TLeavePendingList = {
+  data: TLeavePending[];
+  pagination: ReturnType<typeof __pagination> | null;
+};
+
+export type TChartAttendanceCurrentWeek = {
+  weekData: {
+    date: string;
+    day: string;
+    present: number;
+    late: number;
+    absent: number;
+    onLeave: number;
+    halfDay: number;
+    total: number;
+    attendanceRate: number;
+  }[];
+  weekSummary: {
+    totalPresent: number;
+    totalLate: number;
+    totalAbsent: number;
+    totalOnLeave: number;
+    avgAttendanceRate: number;
+    weekStart: string | undefined;
+    weekEnd: string | undefined;
+  };
 };

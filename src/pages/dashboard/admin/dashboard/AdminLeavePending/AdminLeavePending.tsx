@@ -1,10 +1,16 @@
-import { Check, LoaderPinwheel, LucideMoreHorizontal, X } from "lucide-react";
-import { useAdminLeavePendingHook } from "./useAdminLeavePendingHook";
-import { CardContent, CardHeader, Card } from "@/components/ui/card";
-import type { TLeaveResponse } from "@sluk/src/types/leave-managementTypes";
-import { QueryErrorBoundary } from "@/components/ErrorBoundary";
-import { Button } from "@/components/ui/button";
+import {
+  X,
+  Check,
+  ArrowRight,
+  LoaderPinwheel,
+  LucideMoreHorizontal,
+} from "lucide-react";
 import { Suspense } from "react";
+import { Button } from "@/components/ui/button";
+import { QueryErrorBoundary } from "@/components/ErrorBoundary";
+import type { TLeavePending } from "@/types/leave-managementTypes";
+import { CardContent, CardHeader, Card } from "@/components/ui/card";
+import { useAdminLeavePendingHook } from "./useAdminLeavePendingHook";
 
 function ShimmerCard() {
   return <Card className="shimmer h-16 w-full rounded"></Card>;
@@ -49,20 +55,36 @@ function PendingLeavesList({ departmentId }: { departmentId?: string }) {
     fetchNextPage,
     isFetchingNextPage,
   } = useAdminLeavePendingHook(departmentId);
+
   return (
     <div className="space-y-4">
       <div className="space-y-4 min-h-[50vh] max-h-60 overflow-hidden overflow-y-auto">
-        {optimisticData.map((leave: TLeaveResponse) => (
+        {optimisticData.map((leave: TLeavePending) => (
           <article
             key={leave.id}
-            className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+            className="relative flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
           >
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-card-foreground truncate">
                 {leave.staff.name}
               </p>
-              <p className="text-xs text-muted-foreground">
-                {leave.leaveType}: {leave.startDate} to {leave.endDate}
+              <p className="text-xs text-muted-foreground flex flex-col">
+                <span className="absolute top-2 right-2 rounded border p-1 bg-primary text-primary-foreground font-bold text-xs">
+                  {leave.leaveType}
+                </span>
+                <span>
+                  {Intl.DateTimeFormat("en-CA", { dateStyle: "full" }).format(
+                    new Date(leave.startDate),
+                  )}{" "}
+                </span>
+                <span className="flex items-center gap-1">
+                  to <ArrowRight size={"1em"} color="green" />
+                </span>
+                <span>
+                  {Intl.DateTimeFormat("en-CA", { dateStyle: "full" }).format(
+                    new Date(leave.endDate),
+                  )}
+                </span>
               </p>
             </div>
             <div className="flex items-center gap-1.5 ml-3">

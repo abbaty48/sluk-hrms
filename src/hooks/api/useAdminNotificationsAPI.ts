@@ -1,12 +1,12 @@
 import type {
+  TNotificationList,
   TNotificationStats,
-  TNotificationPreferences,
   TNotificationQueryParams,
-  TNotificationListResponse,
+  TNotificationPreferences,
   TMarkNotificationAsReadRequest,
   TMarkNotificationAsReadResponse,
 } from "@/types/notificationsTypes";
-import { queryClient } from "@/lib/utils";
+import { apiFetch, queryClient } from "@/lib/api.utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 // 1. Get Notifications List
@@ -22,11 +22,8 @@ export function useNotifications(params?: TNotificationQueryParams) {
 
   return useQuery({
     queryKey: ["notifications", params],
-    queryFn: async () => {
-      const response = await fetch(`/api/notifications?${queryParams}`);
-      if (!response.ok) throw new Error("Failed to fetch notifications");
-      return response.json() as Promise<TNotificationListResponse>;
-    },
+    queryFn: async () =>
+      await apiFetch<TNotificationList>(`/api/notifications?${queryParams}`),
     refetchInterval: 30000, // Refetch every 30 seconds
     staleTime: 10000, // Consider fresh for 10 seconds
   });
@@ -36,11 +33,8 @@ export function useNotifications(params?: TNotificationQueryParams) {
 export function useNotification(id: string) {
   return useQuery({
     queryKey: ["notification", id],
-    queryFn: async () => {
-      const response = await fetch(`/api/notifications/${id}`);
-      if (!response.ok) throw new Error("Failed to fetch notification");
-      return response.json() as Promise<Notification>;
-    },
+    queryFn: async () =>
+      await apiFetch<Notification>(`/api/notifications/${id}`),
     enabled: !!id,
   });
 }
@@ -49,11 +43,8 @@ export function useNotification(id: string) {
 export function useNotificationStats() {
   return useQuery({
     queryKey: ["notifications", "stats"],
-    queryFn: async () => {
-      const response = await fetch("/api/notifications/stats");
-      if (!response.ok) throw new Error("Failed to fetch stats");
-      return response.json() as Promise<TNotificationStats>;
-    },
+    queryFn: async () =>
+      await apiFetch<TNotificationStats>("/api/notifications/stats"),
     refetchInterval: 60000, // Refetch every minute
   });
 }
@@ -63,16 +54,16 @@ export function useMarkAsRead() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (notificationIds: string[]) => {
-      const response = await fetch("/api/notifications/mark-read", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notificationIds } as TMarkNotificationAsReadRequest),
-      });
-
-      if (!response.ok) throw new Error("Failed to mark as read");
-      return response.json() as Promise<TMarkNotificationAsReadResponse>;
-    },
+    mutationFn: async (notificationIds: string[]) =>
+      await apiFetch<TMarkNotificationAsReadResponse>(
+        "/api/notifications/mark-read",
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            notificationIds,
+          } as TMarkNotificationAsReadRequest),
+        },
+      ),
     onSuccess: () => {
       // Invalidate all notification queries
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
@@ -85,14 +76,14 @@ export function useMarkAllAsRead() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      const response = await fetch("/api/notifications/mark-all-read", {
-        method: "PATCH",
-      });
-
-      if (!response.ok) throw new Error("Failed to mark all as read");
-      return response.json() as Promise<TMarkNotificationAsReadResponse>;
-    },
+    mutationFn: async () =>
+      await apiFetch<TMarkNotificationAsReadResponse>(
+        "/api/notifications/mark-all-read",
+        {
+          method: "PATCH",
+          body: JSON.stringify({}),
+        },
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
@@ -105,15 +96,10 @@ export function useMarkAsUnread() {
 
   return useMutation({
     mutationFn: async (notificationId: string) => {
-      const response = await fetch(
-        `/api/notifications/${notificationId}/mark-unread`,
-        {
-          method: "PATCH",
-        },
-      );
-
-      if (!response.ok) throw new Error("Failed to mark as unread");
-      return response.json();
+      return await fetch(`/api/notifications/${notificationId}/mark-unread`, {
+        method: "PATCH",
+        body: JSON.stringify({}),
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
@@ -124,14 +110,10 @@ export function useMarkAsUnread() {
 // 7. Delete Notification
 export function useDeleteNotification() {
   return useMutation({
-    mutationFn: async (notificationId: string) => {
-      const response = await fetch(`/api/notifications/${notificationId}`, {
+    mutationFn: async (notificationId: string) =>
+      await apiFetch(`/api/notifications/${notificationId}`, {
         method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete notification");
-      return response.json();
-    },
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
@@ -143,14 +125,10 @@ export function useDeleteAllRead() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      const response = await fetch("/api/notifications/delete-read", {
+    mutationFn: async () =>
+      await apiFetch("/api/notifications/delete-read", {
         method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete read notifications");
-      return response.json();
-    },
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
@@ -163,14 +141,10 @@ export function useCreateNotification() {
 
   return useMutation({
     mutationFn: async (notification: Partial<Notification>) => {
-      const response = await fetch("/api/notifications", {
+      return await apiFetch("/api/notifications", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(notification),
       });
-
-      if (!response.ok) throw new Error("Failed to create notification");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
@@ -182,11 +156,10 @@ export function useCreateNotification() {
 export function useNotificationPreferences() {
   return useQuery({
     queryKey: ["notifications", "preferences"],
-    queryFn: async () => {
-      const response = await fetch("/api/notifications/preferences");
-      if (!response.ok) throw new Error("Failed to fetch preferences");
-      return response.json() as Promise<TNotificationPreferences>;
-    },
+    queryFn: async () =>
+      await apiFetch<TNotificationPreferences>(
+        "/api/notifications/preferences",
+      ),
   });
 }
 
@@ -195,14 +168,10 @@ export function useUpdateNotificationPreferences() {
 
   return useMutation({
     mutationFn: async (preferences: Partial<TNotificationPreferences>) => {
-      const response = await fetch("/api/notifications/preferences", {
+      return await apiFetch("/api/notifications/preferences", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(preferences),
       });
-
-      if (!response.ok) throw new Error("Failed to update preferences");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -214,24 +183,24 @@ export function useUpdateNotificationPreferences() {
 
 // 11. Get Unread Count Only (for badge)
 export function useUnreadCount() {
-  return useQuery({
+  const { data } = useQuery({
     queryKey: ["notifications", "unread-count"],
     queryFn: async () => {
-      const response = await fetch("/api/notifications?read=false&limit=1");
-      if (!response.ok) throw new Error("Failed to fetch unread count");
-      const data = (await response.json()) as TNotificationListResponse;
-      return data.pagination.unreadCount;
+      return await apiFetch<TNotificationList>(
+        "/api/notifications?read=false&limit=1",
+      );
     },
     refetchInterval: 30000, // Refetch every 30 seconds
   });
+  return data?.pagination.unreadCount || 0;
 }
 
 // 12. Combined hook for notification page
 export function useNotificationsPage(params?: TNotificationQueryParams) {
-  const notifications = useNotifications(params);
-  const stats = useNotificationStats();
   const markAsRead = useMarkAsRead();
+  const stats = useNotificationStats();
   const markAllAsRead = useMarkAllAsRead();
+  const notifications = useNotifications(params);
   const deleteNotification = useDeleteNotification();
 
   return {

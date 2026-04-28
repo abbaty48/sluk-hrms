@@ -3,9 +3,9 @@ import type {
   TDepartmentCreateRequest,
 } from "@sluk/src/types/departmentTypes";
 import {
+  useDepartments,
   useCreateDepartment,
   useDeleteDepartment,
-  useDepartments,
   useUpdateDepartment,
 } from "@/hooks/api/useAdminDepartment";
 import {
@@ -26,7 +26,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Paginator } from "@/components/Paginator";
 import { Plus, Edit, Trash2, Building2 } from "lucide-react";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
-import { DepartmentsTabSkeleton, EmptyState } from "./AdminSettingsPageSkeleton";
+import {
+  EmptyState,
+  DepartmentsTabSkeleton,
+} from "./AdminSettingsPageSkeleton";
+import type { ErrorResponseType } from "@sluk/src/types/errorResponseType";
+import { SelectFilter } from "@sluk/src/components/SelectFilter";
+import { StaffSelectItems } from "@sluk/src/components/StaffSelectItems";
 
 export function AdminSettingsDepartmentTab() {
   return (
@@ -49,18 +55,18 @@ function DepartmentsTab() {
   const [formData, setFormData] = useState<TDepartmentCreateRequest>({
     name: "",
     code: "",
+    headId: "",
     isActive: false,
     description: "",
-    headOfDepartment: "",
   });
   const [limit, setLimit] = useState("10");
   const [page, setPage] = useState("1");
   const {
     data: departments,
+    pagination,
     isFetching,
     fetchNextPage,
     fetchPreviousPage,
-    pagination,
   } = useDepartments({ limit, page });
 
   const handleCreate = () => {
@@ -68,8 +74,8 @@ function DepartmentsTab() {
     setFormData({
       name: "",
       code: "",
+      headId: "",
       description: "",
-      headOfDepartment: "",
       isActive: false,
     });
     setIsDialogOpen(true);
@@ -80,9 +86,9 @@ function DepartmentsTab() {
     setFormData({
       name: dept.name,
       code: dept.code,
+      headId: dept.id || "",
       isActive: dept.isActive || false,
       description: dept.description || "",
-      headOfDepartment: dept.headOfDepartment || "",
     });
     setIsDialogOpen(true);
   };
@@ -100,10 +106,8 @@ function DepartmentsTab() {
         toast.success("Department created successfully");
       }
       setIsDialogOpen(false);
-    } catch {
-      toast.error(
-        `Failed to ${editingDepartment ? "update" : "create"} department`,
-      );
+    } catch (err) {
+      toast.error((err as ErrorResponseType).errorMessage);
     }
   };
 
@@ -113,8 +117,8 @@ function DepartmentsTab() {
     try {
       await deleteDepartment.mutateAsync(id);
       toast.success("Department deleted successfully");
-    } catch {
-      toast.error("Failed to delete department");
+    } catch (err) {
+      toast.error((err as ErrorResponseType).errorMessage);
     }
   };
 
@@ -217,25 +221,27 @@ function DepartmentsTab() {
                 ))}
               </tbody>
             </table>
-            <div className="py-2 px-4 border-t">
-              <Paginator
-                value={limit}
-                currentPage={+page}
-                isFetching={isFetching}
-                fetchNextPage={() => {
-                  fetchNextPage();
-                  setPage(`${+page + 1}`);
-                }}
-                totalPages={pagination.totalPages}
-                hasNextPage={pagination.hasNextPage}
-                fetchPreviousPage={() => {
-                  fetchPreviousPage();
-                  setPage(`${+page - 1}`);
-                }}
-                hasPreviousPage={pagination.hasPrevPage}
-                onRowsPerPageChange={(value) => setLimit(value)}
-              />
-            </div>
+            {pagination && (
+              <div className="py-2 px-4 border-t">
+                <Paginator
+                  value={limit}
+                  currentPage={+page}
+                  isFetching={isFetching}
+                  fetchNextPage={() => {
+                    fetchNextPage();
+                    setPage(`${+page + 1}`);
+                  }}
+                  totalPages={pagination.totalPages}
+                  hasNextPage={pagination.hasNextPage}
+                  fetchPreviousPage={() => {
+                    fetchPreviousPage();
+                    setPage(`${+page - 1}`);
+                  }}
+                  hasPreviousPage={pagination.hasPrevPage}
+                  onRowsPerPageChange={(value) => setLimit(value)}
+                />
+              </div>
+            )}
           </div>
         </Card>
       )}
@@ -283,7 +289,7 @@ function DepartmentsTab() {
               <Label htmlFor="description">Description (Optional)</Label>
               <Textarea
                 id="description"
-                value={formData.description}
+                value={formData.description!}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
@@ -292,16 +298,34 @@ function DepartmentsTab() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="hod">Head of Department (Optional)</Label>
+              <Label htmlFor="hod">Head of Department</Label>
+              <SelectFilter
+                value={formData.headId!}
+                defaultValue={formData.headId!}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, headId: value! })
+                }
+              >
+                <StaffSelectItems
+                  render={({ title, firstName, lastName, rank }) => (
+                    <p className="py-2 border-b">
+                      {title} {[firstName, lastName].join(" ")} - ({rank})
+                    </p>
+                  )}
+                ></StaffSelectItems>
+              </SelectFilter>
+            </div>
+            {/*<div className="space-y-2">
+              <Label htmlFor="hod">Head of Department</Label>
               <Input
                 id="hod"
-                value={formData.headOfDepartment}
+                value={formData.headId!}
                 placeholder="e.g., Prof. John Doe"
                 onChange={(e) =>
-                  setFormData({ ...formData, headOfDepartment: e.target.value })
+                  setFormData({ ...formData, headId: e.target.value })
                 }
               />
-            </div>
+            </div>*/}
             <div className="flex items-center gap-2">
               <Input
                 type="checkbox"

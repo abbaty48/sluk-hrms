@@ -53,32 +53,135 @@ export const AdminAddStaffLocationDetails = ({
           )}
         </FieldLabel>
 
-        {/* Country */}
+        {/* Nationality */}
         <FieldLabel className="flex flex-col items-start space-y-2 w-full">
-          <span className="text-sm font-medium">Country</span>
+          <span className="text-sm font-medium">Nationality</span>
           <Controller
-            name="locationCountry"
+            name="locationNationality"
             control={control}
-            rules={{ required: "Country is required" }}
+            rules={{ required: "Nationality is required" }}
             render={({ field }) => (
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <SelectTrigger className="h-10 w-full">
-                  <SelectValue placeholder="Select a country" />
+                  <SelectValue placeholder="Select Nationality" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="nigeria">Nigeria</SelectItem>
-                  <SelectItem value="ghana">Ghana</SelectItem>
-                  <SelectItem value="cameroon">Cameroon</SelectItem>
-                  <SelectItem value="benin">Benin</SelectItem>
-                  <SelectItem value="togo">Togo</SelectItem>
                   <SelectItem value="others">Others</SelectItem>
                 </SelectContent>
               </Select>
             )}
           />
-          {errors.locationCountry && (
+          {errors.locationNationality && (
             <FieldError className="text-xs">
-              {errors.locationCountry.message as string}
+              {errors.locationNationality.message as string}
+            </FieldError>
+          )}
+        </FieldLabel>
+
+        {/* State */}
+        <FieldLabel className="flex flex-col items-start space-y-2 w-full">
+          <span className="text-sm font-medium">State</span>
+          <Controller
+            name="locationState"
+            control={control}
+            rules={{ required: "State is required" }}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger className="h-10 w-full">
+                  <SelectValue placeholder="Select State" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="akwa-ibom">Akwa Ibom</SelectItem>
+                  <SelectItem value="abia">Abia</SelectItem>
+                  <SelectItem value="adamawa">Adamawa</SelectItem>
+                  <SelectItem value="abuja">FCT Abuja</SelectItem>
+                  <SelectItem value="bauchi">Bauchi</SelectItem>
+                  <SelectItem value="bayelsa">Bayelsa</SelectItem>
+                  <SelectItem value="benue">Benue</SelectItem>
+                  <SelectItem value="borno">Borno</SelectItem>
+                  <SelectItem value="crossriver">Cross River</SelectItem>
+                  <SelectItem value="delta">Delta</SelectItem>
+                  <SelectItem value="ebonyi">Ebonyi</SelectItem>
+                  <SelectItem value="edo">Edo</SelectItem>
+                  <SelectItem value="ekiti">Ekiti</SelectItem>
+                  <SelectItem value="enugu">Enugu</SelectItem>
+                  <SelectItem value="gombe">Gombe</SelectItem>
+                  <SelectItem value="imo">Imo</SelectItem>
+                  <SelectItem value="jigawa">Jigawa</SelectItem>
+                  <SelectItem value="kaduna">Kaduna</SelectItem>
+                  <SelectItem value="kano">Kano</SelectItem>
+                  <SelectItem value="katsina">Katsina</SelectItem>
+                  <SelectItem value="kebbi">Kebbi</SelectItem>
+                  <SelectItem value="kogi">Kogi</SelectItem>
+                  <SelectItem value="kwara">Kwara</SelectItem>
+                  <SelectItem value="lagos">Lagos</SelectItem>
+                  <SelectItem value="nasarawa">Nasarawa</SelectItem>
+                  <SelectItem value="niger">Niger</SelectItem>
+                  <SelectItem value="ogun">Ogun</SelectItem>
+                  <SelectItem value="ondo">Ondo</SelectItem>
+                  <SelectItem value="osun">Osun</SelectItem>
+                  <SelectItem value="oyo">Oyo</SelectItem>
+                  <SelectItem value="plateau">Plateau</SelectItem>
+                  <SelectItem value="rivers">Rivers</SelectItem>
+                  <SelectItem value="sokoto">Sokoto</SelectItem>
+                  <SelectItem value="taraba">Taraba</SelectItem>
+                  <SelectItem value="yobe">Yobe</SelectItem>
+                  <SelectItem value="zamfara">Zamfara</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.locationState && (
+            <FieldError className="text-xs">
+              {errors.locationState.message as string}
+            </FieldError>
+          )}
+        </FieldLabel>
+
+        {/* Local Government */}
+        <FieldLabel className="flex flex-col items-start space-y-2 w-full">
+          <span className="text-sm font-medium">Local Government</span>
+          <Controller
+            name="locationLocalGovernment"
+            control={control}
+            rules={{ required: "Local government is required" }}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger className="h-10 w-full">
+                  <SelectValue placeholder="Select Local Government" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="localGov1">Local Government 1</SelectItem>
+                  <SelectItem value="localGov2">Local Government 2</SelectItem>
+                  <SelectItem value="localGov3">Local Government 3</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.locationLocalGovernment && (
+            <FieldError className="text-xs">
+              {errors.locationLocalGovernment.message as string}
+            </FieldError>
+          )}
+        </FieldLabel>
+
+        {/* Staff City */}
+        <FieldLabel className="flex flex-col items-start space-y-2 w-full">
+          <span className="text-sm font-medium">City</span>
+          <Input
+            placeholder="Staff City"
+            className="h-10 w-full"
+            {...register("locationCity", {
+              maxLength: {
+                value: 200,
+                message: "City name must be less than 200 characters",
+              },
+            })}
+          />
+          {errors.locationCity && (
+            <FieldError className="text-xs">
+              {errors.locationCity.message as string}
             </FieldError>
           )}
         </FieldLabel>
@@ -96,11 +199,13 @@ export const AdminAddStaffLocationDetails = ({
                   <SelectValue placeholder="Select Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="retired">Retired</SelectItem>
-                  <SelectItem value="onleave">On Leave</SelectItem>
-                  <SelectItem value="deceased">Deceased</SelectItem>
-                  <SelectItem value="suspended">Suspended</SelectItem>
+                  <SelectItem value="Employed">Active</SelectItem>
+                  <SelectItem value="Retired">Retired</SelectItem>
+                  <SelectItem value="OnLeave">On Leave</SelectItem>
+                  <SelectItem value="Terminated">Terminated</SelectItem>
+                  <SelectItem value="Resigned">Resigned</SelectItem>
+                  <SelectItem value="Deceased">Deceased</SelectItem>
+                  <SelectItem value="Suspended">Suspended</SelectItem>
                 </SelectContent>
               </Select>
             )}

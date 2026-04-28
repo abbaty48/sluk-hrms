@@ -4,8 +4,16 @@ import type {
 } from "@/types/notificationsTypes";
 import { twMerge } from "tailwind-merge";
 import { clsx, type ClassValue } from "clsx";
-import { QueryClient } from "@tanstack/react-query";
-import type { TStaffDetails } from "../types/staffTypes";
+import type { TStaff, TStaffDetails } from "@/types/staffTypes";
+
+// Minimum 8 chars, 1 uppercase, 1 digit, 1 special character
+export const PASSWORD_REGEX =
+  /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|\\:;"'<>,.?/~`]).{8,}$/;
+
+// password check
+export function isValidPassword(password: string): boolean {
+  return PASSWORD_REGEX.test(password);
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -15,32 +23,34 @@ export async function sleep(duration = 1000) {
   await new Promise((resolve) => setTimeout(resolve, duration));
 }
 
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 30000, // 30 seconds
-      retry: (failureCount, error) => {
-        // Don't retry for 4xx errors
-        if (
-          error &&
-          typeof error === "object" &&
-          "status" in error &&
-          typeof error.status === "number" &&
-          error.status >= 400 &&
-          error.status < 500
-        ) {
-          return false;
-        }
-        // Retry up to 3 times for other errors
-        return failureCount < 3;
-      },
-      refetchOnWindowFocus: true,
-    },
-    mutations: {
-      retry: 1,
-    },
-  },
-});
+export const formatDate = (
+  date: Date | number | undefined,
+  dateStyle: "full" | "long" | "medium" | "short" = "long",
+  locale = "en-CA",
+) => Intl.DateTimeFormat(locale, { dateStyle }).format(date);
+
+export const formatTime = (
+  date: Date | number | undefined,
+  timeStyle: "full" | "long" | "medium" | "short" = "long",
+  locale = "en-CA",
+) => Intl.DateTimeFormat(locale, { timeStyle }).format(date);
+
+export const dateFromString = <R extends Date | string>(date: Date): R => {
+  return date.toISOString().split("T")[0] as R;
+};
+
+// utils/getInitials.ts
+export function nameTitle(name: string) {
+  if (!name) return "";
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+
+  return parts[0][0].toUpperCase() + parts[parts.length - 1][0].toUpperCase();
+}
+
+export function name(staff: TStaff) {
+  return [staff.firstName, staff.lastName].join(" ");
+}
 
 // Notification configuration helper
 export function notificationConfig(
@@ -97,7 +107,6 @@ export function notificationConfig(
   return configs[type] || configs.general;
 }
 
-
 // Helper function to format phone number
 export function formatPhoneNumber(phone: string): string {
   // Remove all non-numeric characters
@@ -116,14 +125,20 @@ export function formatPhoneNumber(phone: string): string {
 
 // Helper function to get status badge variant
 export function getStaffStatusVariant(
-  status: TStaffDetails["status"]
+  status: TStaffDetails["status"],
 ): "success" | "warning" | "destructive" | "secondary" {
-  const variants: Record<TStaffDetails["status"], "success" | "warning" | "destructive" | "secondary"> = {
-    "Retired": "destructive",
-    "On Leave": "warning",
-    "Employed": "success",
-    "Resigned": "destructive",
-    "Terminated": "destructive",
+  const variants: Record<
+    TStaffDetails["status"],
+    "success" | "warning" | "destructive" | "secondary"
+  > = {
+    Retired: "destructive",
+    OnLeave: "warning",
+    Employed: "success",
+    Suspended: "warning",
+    Resigned: "destructive",
+    Deceased: "destructive",
+    Terminated: "destructive",
+    Contract_Ended: "secondary",
   };
   return variants[status];
 }
@@ -134,8 +149,11 @@ export function getStaffStatusLabel(status: TStaffDetails["status"]): string {
     Employed: "Active",
     Retired: "Retired",
     Resigned: "Resigned",
-    "On Leave": "On Leave",
+    OnLeave: "On Leave",
     Terminated: "Terminated",
+    Deceased: "Deceased",
+    Suspended: "Suspended",
+    Contract_Ended: "Contract_Ended",
   };
   return labels[status];
 }

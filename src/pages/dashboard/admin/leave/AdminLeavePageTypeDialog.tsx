@@ -15,10 +15,9 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import type { TLeaveType } from "@/types/leave-managementTypes";
 import { useLeaveTypeUPSERTAPI } from "@/hooks/api/useAdminLeave";
 
-
 type LeaveTypeDialogProps = {
   open: boolean;
-  leaveType?: TLeaveType
+  leaveType?: TLeaveType;
   onOpenChange: (open: boolean) => void;
 };
 
@@ -27,14 +26,14 @@ export function LeaveTypeDialog({
   leaveType,
   onOpenChange,
 }: LeaveTypeDialogProps) {
-
   const defaultValues = leaveType
     ? {
-      name: leaveType.name,
-      allowedDays: leaveType.allowedDays,
-      carryForward: leaveType.carryForward,
-      maxCarryForward: leaveType.maxCarryForward,
-    }
+        id: leaveType.id,
+        name: leaveType.name,
+        allowedDays: leaveType.allowedDays,
+        carryForward: leaveType.carryForward,
+        maxCarryForward: leaveType.maxCarryForward,
+      }
     : { name: "", allowedDays: 1, carryForward: false, maxCarryForward: 0 };
 
   const {
@@ -49,33 +48,42 @@ export function LeaveTypeDialog({
    */
   const [allowCarryForward, setAllowCarryForward] = useState(false);
   /** */
-  const { mutateAsync: upsertMutateAsync, isPending: isAdding } = useLeaveTypeUPSERTAPI()
+  const { mutateAsync: upsertMutateAsync, isPending: isAdding } =
+    useLeaveTypeUPSERTAPI();
   /**
    *
    */
   const onSubmit = async (data: TLeaveType) => {
-
     const { action, error, success, payload } = {
       payload: data,
-      action: leaveType ? 'UPDATE' : 'CREATE',
-      error: { title: 'Failed Adding/Update', description: 'Failed to add/update the leave type: ' },
-      success: { title: 'Successful Added/Update', description: 'Successful added/updated the new leave type.' },
-    }
-    // we're posting a new type
-    await upsertMutateAsync({ action: action as 'CREATE' | 'UPDATE', payload, id: payload.id }, {
-      onSuccess: () => {
-        toast.success(success.title, { description: success.description });
-        reset();
-        onOpenChange(false);
+      action: leaveType ? "UPDATE" : "CREATE",
+      error: {
+        title: "Failed Adding/Update",
+        description: "Failed to add/update the leave type: ",
       },
-      onError: (err) => {
-        toast.error(error.title, {
-          description: error.description + err.message,
-          duration: 10000
-        });
-      }
-    })
+      success: {
+        title: "Successful Added/Update",
+        description: "Successful added/updated the new leave type.",
+      },
+    };
 
+    // we're posting a new type
+    await upsertMutateAsync(
+      { action: action as "CREATE" | "UPDATE", payload, id: leaveType?.id },
+      {
+        onSuccess: () => {
+          toast.success(success.title, { description: success.description });
+          reset();
+          onOpenChange(false);
+        },
+        onError: (err) => {
+          toast.error(error.title, {
+            description: error.description + err.message,
+            duration: 10000,
+          });
+        },
+      },
+    );
   };
   /**
    *
@@ -103,7 +111,8 @@ export function LeaveTypeDialog({
           <div className="grid gap-4 py-4">
             {/* Leave Type Name */}
             <Field>
-              <FieldLabel className="grid gap-2">Leave Type Name
+              <FieldLabel className="grid gap-2">
+                Leave Type Name
                 <Input
                   disabled={isAdding}
                   defaultValue={defaultValues.name}
@@ -118,13 +127,16 @@ export function LeaveTypeDialog({
                 />
               </FieldLabel>
               {errors.name && !isAdding && (
-                <p className="text-xs text-destructive">{errors.name.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.name.message}
+                </p>
               )}
             </Field>
 
             {/* Allocated Days */}
             <Field>
-              <FieldLabel className="grid gap-2">Allocated Days
+              <FieldLabel className="grid gap-2">
+                Allocated Days
                 <Input
                   type="number"
                   placeholder="e.g. 30"
@@ -145,7 +157,9 @@ export function LeaveTypeDialog({
                 />
               </FieldLabel>
               {errors.allowedDays && !isAdding && (
-                <p className="text-xs text-destructive">{errors.allowedDays.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.allowedDays.message}
+                </p>
               )}
             </Field>
 
@@ -153,13 +167,18 @@ export function LeaveTypeDialog({
             <Field>
               <FieldLabel className="flex flex-col items-start">
                 <span className="flex items-center gap-2">
-                  <Input type="checkbox" name="carryForward" disabled={isAdding}
-                    defaultChecked={defaultValues.carryForward} className="w-5 h-5"
-                    onChange={() => setAllowCarryForward(prev => !prev)} />
+                  <Input
+                    type="checkbox"
+                    name="carryForward"
+                    disabled={isAdding}
+                    defaultChecked={defaultValues.carryForward}
+                    className="w-5 h-5"
+                    onChange={() => setAllowCarryForward((prev) => !prev)}
+                  />
                   Allocated Days
                 </span>
               </FieldLabel>
-              {allowCarryForward &&
+              {allowCarryForward && (
                 <FieldLabel>
                   Maximum Carry Forward
                   <Input
@@ -181,12 +200,17 @@ export function LeaveTypeDialog({
                     })}
                   />
                 </FieldLabel>
-              }
+              )}
             </Field>
           </div>
-
+          <input type="hidden" name="id" value={leaveType?.id} />
           <DialogFooter>
-            <Button type="button" variant="outline" disabled={isAdding} onClick={handleClose}>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isAdding}
+              onClick={handleClose}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={isAdding}>

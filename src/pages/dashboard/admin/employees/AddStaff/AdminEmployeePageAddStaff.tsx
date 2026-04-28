@@ -1,4 +1,3 @@
-import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sheet,
   SheetTitle,
@@ -18,6 +17,7 @@ import { type ReactNode, type PropsWithChildren, useState } from "react";
 import { User, Save, Briefcase, LucideMapPin, Loader2 } from "lucide-react";
 import { AdminAddStaffPersonalDetails } from "./AdminAddStaffPersonalDetails";
 import { AdminAddStaffLocationDetails } from "./AdminAddStaffLocationDetails";
+import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { AdminAddStaffAppointmentDetails } from "./AdminAddStaffAppointmentDetails";
 
 type Props = PropsWithChildren & {
@@ -41,6 +41,8 @@ export function AdminEmployeePageAddStaff({ triggerButton }: Props) {
   );
 }
 
+// TODO: Mark all required field with a red asterik after the label name
+
 function AdminEmployeePageAddStaffContent({
   onSuccess,
 }: {
@@ -56,33 +58,35 @@ function AdminEmployeePageAddStaffContent({
   const { mutate: submitMutate, isPending } = useAddStaffAPI();
   const onSubmit = (data: TStaffFormData) => {
     const payload = {
+      // PEROSNAL
       staffNo: data.personalStaffNumber,
-      name: data.personalStaffName,
+      title: data.personalTitle,
       email: data.personalEmail,
       phone: data.personalPhone,
-      dateOfBirth: data.personalDateOfBirth,
       gender: data.personalGender,
-      address: data.locationPermanentAddress,
-      city: data.locationCountry,
-      state: data.personalState,
-      lga: data.personalLocalGovernment,
-      departmentId: data.appointmentUnitDepartment,
-      rankId: data.appointmentRank,
-      rank: data.appointmentRank,
-      cadre: data.appointmentCadre,
-      staffCategory: data.personalStaffCategory,
-      natureOfAppointment: data.appointmentNature,
-      dateOfFirstAppointment: data.appointmentDateFirst,
-      dateOfLastPromotion: data.appointmentDatePresent,
-      status: data.locationStaffStatus,
-      // NOT INCLUDED IN THE MAIN DATABASE
-      maritalStatus: data.personalMaritalStatus,
-      nationality: data.personalNationality,
       religion: data.personalReligion,
-      town: data.locationTown,
-      country: data.locationCountry,
-      statusComment: data.locationStaffStatusComment,
+      lastName: data.personalLastName,
+      firstName: data.personalFirstName,
+      dateOfBirth: data.personalDateOfBirth,
       placeOfBirth: data.personalPlaceOfBirth,
+      maritalStatus: data.personalMaritalStatus,
+      // LOCATIONS
+      city: data.locationCity,
+      town: data.locationTown,
+      state: data.locationState,
+      status: data.locationStaffStatus,
+      lga: data.locationLocalGovernment,
+      nationality: data.locationNationality,
+      address: data.locationPermanentAddress,
+      statusComment: data.locationStaffStatusComment,
+      // APPOINTMENT
+      cadre: data.appointmentCadre,
+      rankId: data.appointmentRank,
+      staffCategory: data.appointmentLevel,
+      natureOfAppointment: data.appointmentNature,
+      departmentId: data.appointmentUnitDepartment,
+      dateOfLastPromotion: data.appointmentDatePresent,
+      dateOfFirstAppointment: data.appointmentDateFirst,
     }; // 19 datas
 
     submitMutate(payload, {

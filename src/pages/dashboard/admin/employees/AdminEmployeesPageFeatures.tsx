@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
+import type { TStaff } from "@/types/staffTypes";
 import { ExportEmployees } from "./AdminEmployeesExport";
 import { ImportEmployees } from "./AdminEmployeesImport";
-import type { TStaffWithDepartmentName } from "@/types/staffTypes";
 
 type Align = "right" | "left" | "center";
 
@@ -28,7 +28,7 @@ export function AdminEmployeesPageFeatures({
   allPages,
   currentPageData,
   onImportComplete,
-}: AdminEmployeesPageFeaturesProps<TStaffWithDepartmentName>) {
+}: AdminEmployeesPageFeaturesProps<TStaff>) {
   return (
     <menu className={cn("flex items-center gap-2 list-none", placement(align))}>
       <ImportEmployees onImportComplete={onImportComplete} />

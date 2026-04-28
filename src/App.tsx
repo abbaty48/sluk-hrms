@@ -5,7 +5,7 @@ import {
   EmployeeRoute,
 } from "@/components/ProtectedRoute";
 import { Toaster } from "sonner";
-import { queryClient } from "@/lib/utils";
+import { queryClient } from "@/lib/api.utils";
 import { AnimatePresence } from "framer-motion";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { DashBoardPage } from "@/pages/dashboard/DashboardPage";
@@ -97,7 +97,17 @@ function App() {
           path: "notifications",
           lazy: async () => {
             const { default: Component } = await import(
-              "@/pages/dashboard/admin/notifications/AdminNotificationsPage"
+              "@sluk/src/pages/dashboard/notifications/NotificationsPage"
+            );
+            return { Component };
+          },
+          errorElement: <RootErrorBoundary />,
+        },
+        {
+          path: "academic-division",
+          lazy: async () => {
+            const { default: Component } = await import(
+              "@/pages/dashboard/admin/academic_division/AcademicDivisionPage"
             );
             return { Component };
           },
@@ -140,7 +150,7 @@ function App() {
           path: "profile",
           lazy: async () => {
             const { default: Component } = await import(
-              "@/pages/dashboard/employee/EmployeeProfilePage"
+              "@/pages/dashboard/employee/EmployeeProfile/EmployeeProfilePage"
             );
             return { Component };
           },
@@ -160,7 +170,7 @@ function App() {
           path: "attendance",
           lazy: async () => {
             const { default: Component } = await import(
-              "@/pages/dashboard/employee/EmployeeAttendancePage"
+              "@sluk/src/pages/dashboard/employee/EmployeeAttedance/EmployeeAttendancePage"
             );
             return { Component };
           },
@@ -169,16 +179,20 @@ function App() {
         {
           path: "documents",
           lazy: async () => {
-          const mod = await import("@/pages/dashboard/employee/EmployeeDocumentPage")
-          return { Component: mod.Component }
+            const mod = await import(
+              "@sluk/src/pages/dashboard/employee/EmployeeDocument/EmployeeDocumentPage"
+            );
+            return { Component: mod.Component };
           },
           errorElement: <RootErrorBoundary />,
         },
-              {
+        {
           path: "notifications",
           lazy: async () => {
-          const mod = await import("@/pages/dashboard/employee/EmployeeNotificationPage")
-          return { Component: mod.Component }
+            const { default: Component } = await import(
+              "@sluk/src/pages/dashboard/notifications/NotificationsPage"
+            );
+            return { Component };
           },
           errorElement: <RootErrorBoundary />,
         },

@@ -6,10 +6,14 @@ import {
   type ReactNode,
   useEffectEvent,
 } from "react";
+import {
+  AuthUserRole,
+  type TAuthUser,
+  type IAuthCredentials,
+  type IAuthContextType,
+} from "@/types/authTypes";
 import { useNavigate } from "react-router-dom";
-import type { TUser } from "@/types/userTypes";
 import { useLogin, useLogout } from "@/hooks/api/useAuthAPI";
-import type { ILoginCredentials, IAuthContextType } from "@/types/authTypes";
 
 const AuthContext = createContext<IAuthContextType | undefined>(undefined);
 
@@ -18,7 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginMutation = useLogin();
   const logoutMutation = useLogout();
 
-  const [user, setUser] = useState<TUser | null>(null);
+  const [user, setUser] = useState<TAuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const userEffect = useEffectEvent(() => {
@@ -31,8 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const userData = JSON.parse(userString);
           setUser(userData);
         })();
-      } catch (error) {
-        console.error("Failed to parse user data:", error);
+      } catch {
         localStorage.removeItem("auth_token");
         localStorage.removeItem("user");
       }
@@ -46,12 +49,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userEffect();
   }, []);
 
-  const login = async (credentials: ILoginCredentials) => {
-    const response = await loginMutation.mutateAsync(credentials);
-    setUser(response.user);
+  const login = async (credentials: IAuthCredentials) => {
+    const { user } = await loginMutation.mutateAsync(credentials);
+    setUser(user);
 
     // Navigate based on role
-    if (credentials.role === "admin") {
+    if (
+      user.role === AuthUserRole.DEPT_ADMIN ||
+      user.role === AuthUserRole.HR_ADMIN
+    ) {
       navigate("/admin");
     } else {
       navigate("/employee");
@@ -64,18 +70,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate("/auth/login");
   };
 
-  const updateUser = (updatedUser: TUser) => {
+  const updateUser = (updatedUser: TAuthUser) => {
     setUser(updatedUser);
     localStorage.setItem("user", JSON.stringify(updatedUser));
   };
 
   const value: IAuthContextType = {
     user,
-    isAuthenticated: !!user,
-    isLoading,
     login,
     logout,
+    isLoading,
     updateUser,
+    isAuthenticated: !!user,
+    isAdmin: user?.role.includes("admin") || false,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

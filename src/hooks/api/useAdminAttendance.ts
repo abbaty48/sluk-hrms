@@ -1,66 +1,72 @@
-import type { TAttendanceResponse, TAttendanceResponseList, TAttendanceStats, TAttendanceWeeklyChart } from "@/types/attendance.types";
-import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
+import type {
+  TAttendanceStats,
+  TAttendanceResponse,
+  TAttendanceWeeklyChart,
+  TAttendanceResponseList,
+} from "@/types/attendance.types";
+import {
+  useSuspenseQuery,
+  useSuspenseInfiniteQuery,
+} from "@tanstack/react-query";
 import type { TPagination } from "@/types/types";
+import { apiFetch } from "@sluk/src/lib/api.utils";
+import { dateFromString } from "@sluk/src/lib/utils";
 
 /**
  *
  */
 export function useAdminAttendanceDashboardStatsAPI() {
-    const { data, isLoading } = useSuspenseQuery<TAttendanceStats | null>({
-        queryKey: ["adminAttendanceDashboardStats"],
-        queryFn: async () => {
-            const response = await fetch("/api/attendance/stats");
-            if (!response.ok) throw new Error("Failed to fetch attendance stats");
-            return response.json();
-        },
-    });
-    return { data, isLoading };
+  const { data, isLoading } = useSuspenseQuery<TAttendanceStats | null>({
+    queryKey: ["adminAttendanceDashboardStats"],
+    queryFn: async () =>
+      await apiFetch<TAttendanceStats | null>("/api/attendance/stats"),
+  });
+  return { data, isLoading };
 }
 
 /**
  *
  */
 export function useAdminAttendanceWeeklyAPI() {
-    const { data } = useSuspenseQuery<TAttendanceWeeklyChart>({
-        queryKey: ["adminAttendanceWeekly"],
-        queryFn: async () => {
-            const response = await fetch("/api/charts/current-week-attendance");
-            if (!response.ok) throw new Error("Failed to fetch weekly attendance");
-            return response.json();
-        },
-    });
-    return data;
+  const { data } = useSuspenseQuery<TAttendanceWeeklyChart>({
+    queryKey: ["adminAttendanceWeekly"],
+    queryFn: async () => await apiFetch("/api/charts/attendance-current-week"),
+  });
+  return data;
 }
 
 /**
  *
  */
 export function useAdminAttendanceTodayAPI(pagePerRow: string) {
-    const { data, isFetching, fetchNextPage, fetchPreviousPage } = useSuspenseInfiniteQuery<TAttendanceResponseList>({
-        queryKey: ["adminAttendanceToday"],
-        maxPages: 5,
-        initialPageParam: 1,
-        queryFn: async () => {
-            const today = new Date().toISOString().split("T")[0];
-            const response = await fetch(`/api/attendance?startDate=${today}&limit=${pagePerRow}`);
-            if (!response.ok) throw new Error("Failed to fetch attendance.");
-            return response.json();
-        },
-        getNextPageParam: (lastPage) => lastPage?.pagination.hasNextPage ?
-            lastPage.pagination.page + 1 : undefined
-        ,
-        getPreviousPageParam: (firstPage) => firstPage?.pagination.hasPrevPage ?
-            firstPage.pagination.page - 1 : undefined,
+  const { data, isFetching, fetchNextPage, fetchPreviousPage } =
+    useSuspenseInfiniteQuery<TAttendanceResponseList>({
+      queryKey: ["adminAttendanceToday"],
+      maxPages: 5,
+      initialPageParam: 1,
+      queryFn: async () => {
+        const today = dateFromString<string>(new Date());
+        return await apiFetch<TAttendanceResponseList>(
+          `/api/attendance?startDate=${today}&limit=${pagePerRow}`,
+        );
+      },
+      getNextPageParam: (lastPage) =>
+        lastPage?.pagination?.hasNextPage
+          ? lastPage.pagination.page + 1
+          : undefined,
+      getPreviousPageParam: (firstPage) =>
+        firstPage?.pagination?.hasPrevPage
+          ? firstPage.pagination.page - 1
+          : undefined,
     });
 
+  const currentPage = data.pages[data.pages.length - 1];
 
-    const currentPage = data.pages[data.pages.length - 1];
-
-    return {
-        isFetching,
-        fetchNextPage,
-        fetchPreviousPage,
-        pagination: currentPage.pagination as TPagination,
-        data: currentPage.data as (TAttendanceResponse[])
-    }
+  return {
+    isFetching,
+    fetchNextPage,
+    fetchPreviousPage,
+    data: currentPage.data,
+    pagination: currentPage.pagination,
+  };
 }

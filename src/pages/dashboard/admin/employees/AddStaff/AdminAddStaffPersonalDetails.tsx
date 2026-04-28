@@ -52,28 +52,77 @@ export function AdminAddStaffPersonalDetails({
             </FieldError>
           )}
         </FieldLabel>
-
-        {/* Staff Name */}
+        {/* Title */}
         <FieldLabel className="flex flex-col items-start space-y-2 w-full">
-          <span className="text-sm font-medium">Staff Name</span>
-          <Input
-            placeholder="Full Name"
-            className="h-10 w-full"
-            {...register("personalStaffName", {
-              required: "Staff name is required",
-              minLength: {
-                value: 3,
-                message: "Name must be at least 3 characters",
-              },
-            })}
+          <span className="text-sm font-medium">Title</span>
+          <Controller
+            name="personalTitle"
+            control={control}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger className="h-10 w-full">
+                  <SelectValue placeholder="Select Title" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Mr">Mr</SelectItem>
+                  <SelectItem value="Mrs">Mrs</SelectItem>
+                  <SelectItem value="Ms">Ms</SelectItem>
+                  <SelectItem value="Dr">Dr</SelectItem>
+                  <SelectItem value="Prof">Prof</SelectItem>
+                  <SelectItem value="Miss">Miss</SelectItem>
+                  <SelectItem value="Sir">Sir</SelectItem>
+                  <SelectItem value="Madam">Madam</SelectItem>
+                  <SelectItem value="Others">Others</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           />
-          {errors.personalStaffName && (
+          {errors.personalTitle && (
             <FieldError className="text-xs">
-              {errors.personalStaffName.message as string}
+              {errors.personalTitle.message as string}
             </FieldError>
           )}
         </FieldLabel>
-
+        {/* Staff First Name */}
+        <FieldLabel className="flex flex-col items-start space-y-2 w-full">
+          <span className="text-sm font-medium">First Name</span>
+          <Input
+            placeholder="Staff First Name"
+            className="h-10 w-full"
+            {...register("personalFirstName", {
+              required: "Staff first name is required",
+              minLength: {
+                value: 3,
+                message: "FirstName must be at least 3 characters",
+              },
+            })}
+          />
+          {errors.personalFirstName && (
+            <FieldError className="text-xs">
+              {errors.personalFirstName.message as string}
+            </FieldError>
+          )}
+        </FieldLabel>
+        {/* Staff Last Name */}
+        <FieldLabel className="flex flex-col items-start space-y-2 w-full">
+          <span className="text-sm font-medium">Last Name</span>
+          <Input
+            placeholder="Staff Last Name"
+            className="h-10 w-full"
+            {...register("personalLastName", {
+              required: "Last name is required",
+              minLength: {
+                value: 3,
+                message: "LastName must be at least 3 characters",
+              },
+            })}
+          />
+          {errors.personalLastName && (
+            <FieldError className="text-xs">
+              {errors.personalLastName.message as string}
+            </FieldError>
+          )}
+        </FieldLabel>
         {/* Staff Category */}
         <FieldLabel className="flex flex-col items-start space-y-2 w-full">
           <span className="text-sm font-medium">Staff Category</span>
@@ -102,7 +151,6 @@ export function AdminAddStaffPersonalDetails({
             </FieldError>
           )}
         </FieldLabel>
-
         {/* Gender */}
         <FieldLabel className="flex flex-col items-start space-y-2 w-full">
           <span className="text-sm font-medium">Gender</span>
@@ -116,9 +164,9 @@ export function AdminAddStaffPersonalDetails({
                   <SelectValue placeholder="Select Gender" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                  <SelectItem value="others">Others</SelectItem>
+                  <SelectItem value="Male">Male</SelectItem>
+                  <SelectItem value="Female">Female</SelectItem>
+                  <SelectItem value="Others">Others</SelectItem>
                 </SelectContent>
               </Select>
             )}
@@ -129,7 +177,6 @@ export function AdminAddStaffPersonalDetails({
             </FieldError>
           )}
         </FieldLabel>
-
         {/* Marital Status */}
         <FieldLabel className="flex flex-col items-start space-y-2 w-full">
           <span className="text-sm font-medium">Marital Status</span>
@@ -143,10 +190,10 @@ export function AdminAddStaffPersonalDetails({
                   <SelectValue placeholder="Select Marital Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="single">Single</SelectItem>
-                  <SelectItem value="married">Married</SelectItem>
-                  <SelectItem value="divorced">Divorced</SelectItem>
-                  <SelectItem value="widowed">Widowed</SelectItem>
+                  <SelectItem value="Single">Single</SelectItem>
+                  <SelectItem value="Married">Married</SelectItem>
+                  <SelectItem value="Divorced">Divorced</SelectItem>
+                  <SelectItem value="Widowed">Widowed</SelectItem>
                 </SelectContent>
               </Select>
             )}
@@ -157,7 +204,6 @@ export function AdminAddStaffPersonalDetails({
             </FieldError>
           )}
         </FieldLabel>
-
         {/* Date of Birth */}
         <FieldLabel className="flex flex-col items-start space-y-2 w-full">
           <span className="text-sm font-medium">Date of Birth</span>
@@ -180,7 +226,6 @@ export function AdminAddStaffPersonalDetails({
             </FieldError>
           )}
         </FieldLabel>
-
         {/* Phone Number */}
         <FieldLabel className="flex flex-col items-start space-y-2 w-full">
           <span className="text-sm font-medium">Phone Number</span>
@@ -201,7 +246,6 @@ export function AdminAddStaffPersonalDetails({
             </FieldError>
           )}
         </FieldLabel>
-
         {/* Email */}
         <FieldLabel className="flex flex-col items-start space-y-2 w-full">
           <span className="text-sm font-medium">Email</span>
@@ -223,7 +267,6 @@ export function AdminAddStaffPersonalDetails({
             </FieldError>
           )}
         </FieldLabel>
-
         {/* Place of Birth */}
         <FieldLabel className="flex flex-col items-start space-y-2 w-full">
           <span className="text-sm font-medium">Place of Birth</span>
@@ -245,120 +288,6 @@ export function AdminAddStaffPersonalDetails({
             </FieldError>
           )}
         </FieldLabel>
-
-        {/* Nationality */}
-        <FieldLabel className="flex flex-col items-start space-y-2 w-full">
-          <span className="text-sm font-medium">Nationality</span>
-          <Controller
-            name="personalNationality"
-            control={control}
-            rules={{ required: "Nationality is required" }}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="h-10 w-full">
-                  <SelectValue placeholder="Select Nationality" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="nigeria">Nigeria</SelectItem>
-                  <SelectItem value="others">Others</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.personalNationality && (
-            <FieldError className="text-xs">
-              {errors.personalNationality.message as string}
-            </FieldError>
-          )}
-        </FieldLabel>
-
-        {/* State */}
-        <FieldLabel className="flex flex-col items-start space-y-2 w-full">
-          <span className="text-sm font-medium">State</span>
-          <Controller
-            name="personalState"
-            control={control}
-            rules={{ required: "State is required" }}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="h-10 w-full">
-                  <SelectValue placeholder="Select State" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="akwa-ibom">Akwa Ibom</SelectItem>
-                  <SelectItem value="abia">Abia</SelectItem>
-                  <SelectItem value="adamawa">Adamawa</SelectItem>
-                  <SelectItem value="abuja">FCT Abuja</SelectItem>
-                  <SelectItem value="bauchi">Bauchi</SelectItem>
-                  <SelectItem value="bayelsa">Bayelsa</SelectItem>
-                  <SelectItem value="benue">Benue</SelectItem>
-                  <SelectItem value="borno">Borno</SelectItem>
-                  <SelectItem value="crossriver">Cross River</SelectItem>
-                  <SelectItem value="delta">Delta</SelectItem>
-                  <SelectItem value="ebonyi">Ebonyi</SelectItem>
-                  <SelectItem value="edo">Edo</SelectItem>
-                  <SelectItem value="ekiti">Ekiti</SelectItem>
-                  <SelectItem value="enugu">Enugu</SelectItem>
-                  <SelectItem value="gombe">Gombe</SelectItem>
-                  <SelectItem value="imo">Imo</SelectItem>
-                  <SelectItem value="jigawa">Jigawa</SelectItem>
-                  <SelectItem value="kaduna">Kaduna</SelectItem>
-                  <SelectItem value="kano">Kano</SelectItem>
-                  <SelectItem value="katsina">Katsina</SelectItem>
-                  <SelectItem value="kebbi">Kebbi</SelectItem>
-                  <SelectItem value="kogi">Kogi</SelectItem>
-                  <SelectItem value="kwara">Kwara</SelectItem>
-                  <SelectItem value="lagos">Lagos</SelectItem>
-                  <SelectItem value="nasarawa">Nasarawa</SelectItem>
-                  <SelectItem value="niger">Niger</SelectItem>
-                  <SelectItem value="ogun">Ogun</SelectItem>
-                  <SelectItem value="ondo">Ondo</SelectItem>
-                  <SelectItem value="osun">Osun</SelectItem>
-                  <SelectItem value="oyo">Oyo</SelectItem>
-                  <SelectItem value="plateau">Plateau</SelectItem>
-                  <SelectItem value="rivers">Rivers</SelectItem>
-                  <SelectItem value="sokoto">Sokoto</SelectItem>
-                  <SelectItem value="taraba">Taraba</SelectItem>
-                  <SelectItem value="yobe">Yobe</SelectItem>
-                  <SelectItem value="zamfara">Zamfara</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.personalState && (
-            <FieldError className="text-xs">
-              {errors.personalState.message as string}
-            </FieldError>
-          )}
-        </FieldLabel>
-
-        {/* Local Government */}
-        <FieldLabel className="flex flex-col items-start space-y-2 w-full">
-          <span className="text-sm font-medium">Local Government</span>
-          <Controller
-            name="personalLocalGovernment"
-            control={control}
-            rules={{ required: "Local government is required" }}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="h-10 w-full">
-                  <SelectValue placeholder="Select Local Government" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="localGov1">Local Government 1</SelectItem>
-                  <SelectItem value="localGov2">Local Government 2</SelectItem>
-                  <SelectItem value="localGov3">Local Government 3</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.personalLocalGovernment && (
-            <FieldError className="text-xs">
-              {errors.personalLocalGovernment.message as string}
-            </FieldError>
-          )}
-        </FieldLabel>
-
         {/* Religion */}
         <FieldLabel className="flex flex-col items-start space-y-2 w-full">
           <span className="text-sm font-medium">Religion</span>

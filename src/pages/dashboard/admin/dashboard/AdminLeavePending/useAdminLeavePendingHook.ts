@@ -1,4 +1,8 @@
-import { useLeavePending, useLeaveApproval, useLeaveRejection } from "@sluk/src/hooks/api/useAdminLeave";
+import {
+  useLeavePending,
+  useLeaveApproval,
+  useLeaveRejection,
+} from "@sluk/src/hooks/api/useAdminLeave";
 import { useOptimistic, useTransition } from "react";
 
 export const useAdminLeavePendingHook = (departmentId?: string) => {
@@ -7,7 +11,7 @@ export const useAdminLeavePendingHook = (departmentId?: string) => {
 
   const [optimisticData, setOptimisticData] = useOptimistic(
     data,
-    (states, payload) => {
+    (states, payload: any) => {
       if (typeof payload === "string") {
         return states.filter((state) => state.id !== payload);
       } else return [payload, ...states];

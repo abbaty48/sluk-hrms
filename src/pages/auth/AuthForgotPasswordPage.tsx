@@ -1,4 +1,5 @@
 import { GraduationCap, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { AuthProvider } from "@sluk/src/states/contexts/AuthContext";
 import { useForgotPassword } from "@/hooks/api/useAuthAPI";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +9,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function ForgotPasswordPage() {
+function PasswordPage() {
   const forgotPassword = useForgotPassword();
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
@@ -151,5 +152,13 @@ export default function ForgotPasswordPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <AuthProvider>
+      <PasswordPage />
+    </AuthProvider>
   );
 }

@@ -1,4 +1,4 @@
-import type { TStaffWithDepartmentName as Staff } from "@/types/staffTypes";
+import type { TStaffDetails as Staff } from "@/types/staffTypes";
 import { useCSVExporter, type CSVColumn } from "@/hooks/use-csv";
 import { LucideDownload, LucideLoader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
+import { formatDate } from "@sluk/src/lib/utils";
 
 // Staff-specific wrapper (backward compatible)
 interface ExportEmployeesProps {
@@ -30,11 +31,15 @@ export function ExportEmployees({
   // Define columns for staff export
   const columns: CSVColumn<Staff>[] = [
     { header: "Staff No", accessor: (staff) => staff.staffNo },
-    { header: "Name", accessor: (staff) => staff.name },
+    { header: "FirstName", accessor: (staff) => staff.firstName },
+    { header: "LastName", accessor: (staff) => staff.lastName },
     { header: "Email", accessor: (staff) => staff.email },
     { header: "Phone", accessor: (staff) => staff.phone },
     { header: "Gender", accessor: (staff) => staff.gender },
-    { header: "Date of Birth", accessor: (staff) => staff.dateOfBirth },
+    {
+      header: "Date of Birth",
+      accessor: (staff) => formatDate(new Date(staff.dateOfBirth!)),
+    },
     { header: "Department", accessor: (staff) => staff.department?.name },
     { header: "Rank", accessor: (staff) => staff.rank },
     { header: "Cadre", accessor: (staff) => staff.cadre },

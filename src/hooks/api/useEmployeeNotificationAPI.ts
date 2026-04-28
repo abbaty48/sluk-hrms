@@ -1,43 +1,47 @@
 import type {
   TNotification,
   TNotificationStats,
+  TNotificationList,
   TNotificationConfig,
   TNotificationQueryParams,
-  TNotificationListResponse,
   TMarkNotificationAsReadRequest,
   TMarkNotificationAsReadResponse,
-} from "@/types/notificationsTypes"
-import { sleep } from "@/lib/utils"
-import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+} from "@/types/notificationsTypes";
+import { sleep } from "@/lib/utils";
+import {
+  useSuspenseQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 // ── GET NOTIFICATIONS ─────────────────────────────────────────────
 export function useNotifications(
   staffId: string,
-  filters?: TNotificationQueryParams
+  filters?: TNotificationQueryParams,
 ) {
-  const params = new URLSearchParams()
-  if (filters?.page) params.set("page", filters.page)
-  if (filters?.limit) params.set("limit", filters.limit)
-  if (filters?.read) params.set("read", filters.read)
-  if (filters?.type) params.set("type", filters.type)
-  if (filters?.priority) params.set("priority", filters.priority)
-  if (filters?.startDate) params.set("startDate", filters.startDate)
-  if (filters?.endDate) params.set("endDate", filters.endDate)
+  const params = new URLSearchParams();
+  if (filters?.page) params.set("page", filters.page);
+  if (filters?.limit) params.set("limit", filters.limit);
+  if (filters?.read) params.set("read", filters.read);
+  if (filters?.type) params.set("type", filters.type);
+  if (filters?.priority) params.set("priority", filters.priority);
+  if (filters?.startDate) params.set("startDate", filters.startDate);
+  if (filters?.endDate) params.set("endDate", filters.endDate);
 
-  const { data } = useSuspenseQuery<TNotificationListResponse>({
+  const { data } = useSuspenseQuery<TNotificationList>({
     queryKey: ["notifications", staffId, filters],
     queryFn: async () => {
       const res = await fetch(
-        `/api/staff/${staffId}/notifications?${params.toString()}`
-      )
-      if (!res.ok) throw new Error("Failed to fetch notifications")
-      return res.json() as Promise<TNotificationListResponse>;
+        `/api/staff/${staffId}/notifications?${params.toString()}`,
+      );
+      if (!res.ok) throw new Error("Failed to fetch notifications");
+      return res.json() as Promise<TNotificationList>;
     },
     refetchInterval: 3000,
     staleTime: 30000,
-  })
+  });
 
-  return data
+  return data;
 }
 
 // ── GET NOTIFICATION STATS ────────────────────────────────────────
@@ -45,39 +49,39 @@ export function useNotificationStats(staffId: string) {
   const { data } = useSuspenseQuery<TNotificationStats>({
     queryKey: ["notification-stats", staffId],
     queryFn: async () => {
-      await sleep(500)
-      const res = await fetch(`/api/staff/${staffId}`)
-      if (!res.ok) throw new Error("Failed to fetch notification stats")
-      return res.json()
+      await sleep(500);
+      const res = await fetch(`/api/staff/${staffId}`);
+      if (!res.ok) throw new Error("Failed to fetch notification stats");
+      return res.json();
     },
     staleTime: 30000,
-  })
+  });
 
-  return data
+  return data;
 }
 
 // ── MARK ONE AS READ ──────────────────────────────────────────────
 export function useMarkAsRead() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation<TNotification, Error, string>({
     mutationFn: async (notifyId: string) => {
       const res = await fetch(`/api/notifications/${notifyId}/read`, {
         method: "PATCH",
-      })
-      if (!res.ok) throw new Error("Failed to mark as read")
-      return res.json()
+      });
+      if (!res.ok) throw new Error("Failed to mark as read");
+      return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] })
-      queryClient.invalidateQueries({ queryKey: ["notification-stats"] })
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notification-stats"] });
     },
-  })
+  });
 }
 
 // ── MARK MULTIPLE AS READ ─────────────────────────────────────────
 export function useMarkMultipleAsRead() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation<
     TMarkNotificationAsReadResponse,
@@ -89,59 +93,58 @@ export function useMarkMultipleAsRead() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      })
-      if (!res.ok) throw new Error("Failed to mark notifications as read")
-      return res.json()
+      });
+      if (!res.ok) throw new Error("Failed to mark notifications as read");
+      return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] })
-      queryClient.invalidateQueries({ queryKey: ["notification-stats"] })
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notification-stats"] });
     },
-  })
+  });
 }
 
 // ── MARK ALL AS READ ──────────────────────────────────────────────
 export function useMarkAllAsRead(staffId: string) {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation<{ message: string; count: number }, Error, void>({
     mutationFn: async () => {
-      const res = await fetch(
-        `/api/staff/${staffId}/notifications/read-all`,
-        { method: "PATCH" }
-      )
-      if (!res.ok) throw new Error("Failed to mark all as read")
-      return res.json()
+      const res = await fetch(`/api/staff/${staffId}/notifications/read-all`, {
+        method: "PATCH",
+      });
+      if (!res.ok) throw new Error("Failed to mark all as read");
+      return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] })
-      queryClient.invalidateQueries({ queryKey: ["notification-stats"] })
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notification-stats"] });
     },
-  })
+  });
 }
 
 // ── DELETE NOTIFICATION ───────────────────────────────────────────
 export function useDeleteNotification() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation<{ message: string }, Error, string>({
     mutationFn: async (notifyId: string) => {
       const res = await fetch(`/api/notifications/${notifyId}`, {
         method: "DELETE",
-      })
-      if (!res.ok) throw new Error("Failed to delete notification")
-      return res.json()
+      });
+      if (!res.ok) throw new Error("Failed to delete notification");
+      return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] })
-      queryClient.invalidateQueries({ queryKey: ["notification-stats"] })
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notification-stats"] });
     },
-  })
+  });
 }
 
 // ── NOTIFICATION CONFIG HELPER ────────────────────────────────────
 export function getNotificationConfig(
-  type: TNotification["type"]
+  type: TNotification["type"],
 ): TNotificationConfig {
   const configs: Record<TNotification["type"], TNotificationConfig> = {
     leave_approved: {
@@ -189,7 +192,7 @@ export function getNotificationConfig(
       color: "text-primary",
       borderColor: "border-l-primary",
     },
-  }
+  };
 
-  return configs[type] ?? configs.general
+  return configs[type] ?? configs.general;
 }

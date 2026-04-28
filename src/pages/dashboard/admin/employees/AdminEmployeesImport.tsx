@@ -71,8 +71,10 @@ export function ImportEmployees({ onImportComplete }: ImportEmployeesProps) {
     const keyMap: Record<string, string> = {
       "Staff No": "staffNo",
       staffNo: "staffNo",
-      Name: "name",
-      name: "name",
+      FirstName: "FirstName",
+      firstname: "firstname",
+      LastName: "LastName",
+      lastname: "lastname",
       Email: "email",
       email: "email",
       Phone: "phone",
@@ -109,7 +111,8 @@ export function ImportEmployees({ onImportComplete }: ImportEmployeesProps) {
   // CSV Template headers
   const templateHeaders = [
     "staffNo",
-    "name",
+    "firstname",
+    "lastname",
     "email",
     "phone",
     "gender",
@@ -128,7 +131,7 @@ export function ImportEmployees({ onImportComplete }: ImportEmployeesProps) {
   const downloadTemplate = () => {
     const csvContent = [
       templateHeaders.join(","),
-      "SP/XXXX,John Doe,john.doe@example.com,08012345678,Male,1990-01-15,dept_1,rank_5,Lecturer II,Teaching,Senior,Employed,Jigawa,Kafin Hausa",
+      "SP/XXXX,John, Doe,john.doe@example.com,08012345678,Male,1990-01-15,dept_1,rank_5,Lecturer II,Teaching,Senior,Employed,Jigawa,Kafin Hausa",
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });

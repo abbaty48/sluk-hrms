@@ -27,7 +27,10 @@ export function SettingsSidebarSkeleton() {
     <Card className="stats-card lg:w-64 shrink-0 p-2">
       <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="flex items-center gap-3 rounded-lg px-3 py-2.5">
+          <div
+            key={i}
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5"
+          >
             <div className="h-4 w-4 bg-muted rounded shimmer" />
             <div className="h-4 w-24 bg-muted rounded shimmer" />
           </div>
@@ -174,38 +177,6 @@ export function ListTabSkeleton() {
           </Card>
         ))}
       </div>
-    </div>
-  );
-}
-
-export function EmptyState({
-  title,
-  description,
-  icon: Icon,
-  actionLabel,
-  onAction,
-}: {
-  title: string;
-  description: string;
-  icon: React.ComponentType<any>;
-  actionLabel?: string;
-  onAction?: () => void;
-}) {
-  return (
-    <div className="text-center py-12">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
-        <Icon className="h-8 w-8 text-muted-foreground" />
-      </div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground mb-6">{description}</p>
-      {actionLabel && onAction && (
-        <button
-          onClick={onAction}
-          className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-9 px-4 text-sm font-medium hover:bg-primary/90"
-        >
-          {actionLabel}
-        </button>
-      )}
     </div>
   );
 }

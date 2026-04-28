@@ -7,10 +7,10 @@ import {
   TrendingDown,
 } from "lucide-react";
 import { Suspense } from "react";
-import { StatsShimmerGrid } from "./DashboardShimmer";
 import { Card, CardContent } from "@/components/ui/card";
 import { useDashboardStatsAPI } from "@/hooks/api/useAdminApi";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
+import { StatsShimmerGrid } from "@/components/DashboardShimmer";
 
 export function AdminDashboardStats() {
   return (
@@ -23,7 +23,7 @@ export function AdminDashboardStats() {
 }
 
 export function DashboardStats() {
-  const { stats } = useDashboardStatsAPI();
+  const { data: stats } = useDashboardStatsAPI();
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
@@ -54,7 +54,7 @@ export function DashboardStats() {
               Active Staff
             </p>
             <p className="mt-2 text-3xl font-bold text-card-foreground">
-              {new Intl.NumberFormat().format(stats?.activeStaff || 0)}
+              {new Intl.NumberFormat().format(stats?.totalActiveStaff || 0)}
             </p>
             <div className="mt-2 flex items-center gap-1 text-xs">
               <TrendingUp className="stroke-success!" />
@@ -74,7 +74,7 @@ export function DashboardStats() {
               On Leave
             </p>
             <p className="mt-2 text-3xl font-bold text-card-foreground">
-              {new Intl.NumberFormat().format(stats?.onLeaveToday || 0)}
+              {new Intl.NumberFormat().format(stats?.totalOnLeaveStaff || 0)}
             </p>
             <div className="mt-2 flex items-center gap-1 text-xs">
               <TrendingDown className="stroke-destructive!" />
@@ -94,7 +94,7 @@ export function DashboardStats() {
               Avg. Attendance
             </p>
             <p className="mt-2 text-3xl font-bold text-card-foreground">
-              {new Intl.NumberFormat().format(stats?.avgWorkHours || 0)}%
+              {new Intl.NumberFormat().format(+stats?.attendanceRate || 0)}%
             </p>
             <div className="mt-2 flex items-center gap-1 text-xs">
               <TrendingUp className="stroke-success!" />

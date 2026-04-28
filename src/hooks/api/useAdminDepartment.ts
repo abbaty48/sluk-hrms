@@ -1,35 +1,31 @@
 import {
-  useMutation,
   useQuery,
-  useQueryClient,
+  useMutation,
   useSuspenseQuery,
   useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
 import type {
   TDepartment,
-  TDepartmentsListResponse,
+  TDepartmentsList,
   TDepartmentCreateRequest,
   TDepartmentUpdateRequest,
 } from "@sluk/src/types/departmentTypes";
-import { queryClient } from "@/lib/utils";
-import type { TRank } from "@sluk/src/types/rankTypes";
+import type { TRanksList } from "@sluk/src/types/rankTypes";
+import { apiFetch, queryClient } from "@sluk/src/lib/api.utils";
 
 /**
  *
  * @returns Department[]
  */
 export const useAdminDepartment = () => {
-  const { data } = useSuspenseQuery<TDepartment[]>({
+  return useSuspenseQuery({
     queryKey: ["departments"],
     queryFn: async () => {
-      const resp = await fetch("/api/departments");
-      if (!resp.ok) return [];
-
-      return await resp.json();
+      return await apiFetch<TDepartment[]>("/api/departments", {
+        method: "GET",
+      });
     },
   });
-
-  return { data };
 };
 
 /**
@@ -37,18 +33,10 @@ export const useAdminDepartment = () => {
  * @returns Rank[]
  */
 export const useAdminRank = () => {
-  const { data } = useSuspenseQuery<{ data: TRank[] }>({
+  return useSuspenseQuery<TRanksList>({
     queryKey: ["ranks"],
-    queryFn: async () => {
-      return fetch("/api/ranks")
-        .then((res) => res.json())
-        .catch((error) => {
-          throw error;
-        });
-    },
+    queryFn: async () => apiFetch<TRanksList>("/api/ranks/all"),
   });
-
-  return { ranks: data.data };
 };
 
 export function useDepartments({
@@ -64,16 +52,16 @@ export function useDepartments({
       staleTime: 2 * 60 * 1000, // 2 minutes
       queryFn: async () => {
         const params = `?page=${page}&limit=${limit}${activeOnly ? "&active=true" : ""}`;
-        const response = await fetch(`/api/settings/departments${params}`);
-        if (!response.ok) throw new Error("Failed to fetch departments");
-        return response.json() as Promise<TDepartmentsListResponse>;
+        return await apiFetch<TDepartmentsList>(
+          `/api/settings/departments${params}`,
+        );
       },
       getNextPageParam: (lastPage) =>
-        lastPage?.pagination.hasNextPage
+        lastPage?.pagination?.hasNextPage
           ? lastPage.pagination.page + 1
           : undefined,
       getPreviousPageParam: (firstPage) =>
-        firstPage?.pagination.hasPrevPage
+        firstPage?.pagination?.hasPrevPage
           ? firstPage.pagination.page - 1
           : undefined,
     });
@@ -91,11 +79,8 @@ export function useDepartments({
 export function useDepartment(id: string) {
   return useQuery({
     queryKey: ["settings", "departments", id],
-    queryFn: async () => {
-      const response = await fetch(`/api/settings/departments/${id}`);
-      if (!response.ok) throw new Error("Failed to fetch department");
-      return response.json() as Promise<TDepartment>;
-    },
+    queryFn: async () =>
+      await apiFetch<TDepartment>(`/api/settings/departments/${id}`),
     enabled: !!id,
   });
 }
@@ -103,14 +88,10 @@ export function useDepartment(id: string) {
 export function useCreateDepartment() {
   return useMutation({
     mutationFn: async (data: TDepartmentCreateRequest) => {
-      const response = await fetch("/api/settings/departments", {
+      return await apiFetch("/api/settings/departments", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error("Failed to create department");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "departments"] });
@@ -119,8 +100,6 @@ export function useCreateDepartment() {
 }
 
 export function useUpdateDepartment() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async ({
       id,
@@ -129,14 +108,10 @@ export function useUpdateDepartment() {
       id: string;
       data: TDepartmentUpdateRequest;
     }) => {
-      const response = await fetch(`/api/settings/departments/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+      return await apiFetch(`/api/settings/departments/${id}`, {
+        method: "PUT",
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error("Failed to update department");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "departments"] });
@@ -147,12 +122,9 @@ export function useUpdateDepartment() {
 export function useDeleteDepartment() {
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/settings/departments/${id}`, {
+      return await apiFetch(`/api/settings/departments/${id}`, {
         method: "DELETE",
       });
-
-      if (!response.ok) throw new Error("Failed to delete department");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "departments"] });

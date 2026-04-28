@@ -5,20 +5,19 @@ import { type ReactNode } from "react";
 interface ProtectedRouteProps {
   children?: ReactNode;
   redirectTo?: string;
-  requiredRole?: "admin" | "staff" | "both";
+  requiredRole?: "staff" | "admin";
 }
 
 // Root redirect component - redirects to appropriate dashboard based on role
 export function RootRedirect() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to="/auth/login" replace />;
   }
-
   // Admins default to /admin, but they can navigate to /employee too
   // Regular staff go to /employee only
-  const defaultRoute = user?.role === "admin" ? "/admin" : "/employee";
+  const defaultRoute = isAdmin ? "/admin" : "/employee";
   return <Navigate to={defaultRoute} replace />;
 }
 
@@ -29,7 +28,7 @@ export function ProtectedRoute({
   redirectTo = "/auth/login",
 }: ProtectedRouteProps) {
   const location = useLocation();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, role, isAdmin } = useAuth();
 
   // Not authenticated - redirect to login
   if (!isAuthenticated) {
@@ -39,13 +38,13 @@ export function ProtectedRoute({
   // Check role requirements if specified
   if (requiredRole === "admin") {
     // Only admins can access
-    if (user?.role !== "admin") {
+    if (!isAdmin) {
       return <Navigate to="/employee" replace />;
     }
   } else if (requiredRole === "staff") {
     // Both admins and staff can access
     // (Admins are also employees, so they can see employee routes)
-    if (user?.role !== "admin" && user?.role !== "staff") {
+    if (!isAdmin && role !== "staff") {
       return <Navigate to="/auth/login" replace />;
     }
   }
@@ -82,11 +81,10 @@ export function PublicRoute({
   children?: ReactNode;
   redirectTo?: string;
 }) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
 
   if (isAuthenticated) {
-    const defaultRoute =
-      redirectTo || (user?.role === "admin" ? "/admin" : "/employee");
+    const defaultRoute = redirectTo || (isAdmin ? "/admin" : "/employee");
     return <Navigate to={defaultRoute} replace />;
   }
 

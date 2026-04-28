@@ -63,24 +63,26 @@ const renderLabel = ({
 };
 
 // Custom legend with colors
-const CustomLegend = ({ payload }: any) => (
-  <div className="flex flex-row flex-wrap justify-center gap-4 mt-6 w-full">
-    {payload.map((entry: any, index: number) => (
-      <div key={`legend-${index}`} className="flex items-center gap-2">
-        <div
-          className="w-4 h-4 rounded-full"
-          style={{ backgroundColor: entry.payload.color }}
-        />
-        <span className={"text-[.65rem] font-medium text-primary "}>
-          {entry.value}
-        </span>
-        <span className={`text-[.65rem] text-primary`}>
-          ({entry.payload.percentage}%)
-        </span>
-      </div>
-    ))}
-  </div>
-);
+const CustomLegend = ({ payload }: any) => {
+  return (
+    <div className="flex flex-row flex-wrap justify-center gap-4 mt-6 w-full">
+      {payload.map((entry: any, index: number) => (
+        <div key={`legend-${index}`} className="flex items-center gap-2">
+          <div
+            className="w-4 h-4 rounded-full"
+            style={{ backgroundColor: entry.payload.color }}
+          />
+          <span className={"text-[.65rem] font-medium text-primary "}>
+            {entry.value}
+          </span>
+          <span className={`text-[.65rem] text-primary`}>
+            ({entry.payload.percentage}%)
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default function LeaveDistributionChart() {
   const { data } = useLeaveTypeDistributionAPI();

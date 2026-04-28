@@ -3,10 +3,11 @@ import { useAdminAttendanceTodayAPI } from "@/hooks/api/useAdminAttendance";
 import type { TAttendanceResponse } from "@/types/attendance.types";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 import { Paginator } from "@/components/Paginator";
-import { Card } from "@/components/ui/card";
+import { formatDate } from "@sluk/src/lib/utils";
+import { Logs, LogsIcon } from "lucide-react";
 import { Suspense, useState } from "react";
-import { Logs } from "lucide-react";
-
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@sluk/src/components/EmptyState";
 
 type AttendanceTableProps = {
   data: TAttendanceResponse[];
@@ -19,14 +20,18 @@ export function AdminAttendancePageTable() {
         <AttendancePageTable />
       </Suspense>
     </QueryErrorBoundary>
-  )
+  );
 }
 
 function AttendancePageTable() {
-
-  const [pagePerRow, setPagePerRow] = useState("5")
-  const { data: todayAttendance, pagination, fetchNextPage,
-    fetchPreviousPage, isFetching } = useAdminAttendanceTodayAPI(pagePerRow)
+  const [pagePerRow, setPagePerRow] = useState("5");
+  const {
+    data: todayAttendance,
+    pagination,
+    fetchNextPage,
+    fetchPreviousPage,
+    isFetching,
+  } = useAdminAttendanceTodayAPI(pagePerRow);
 
   return (
     <Card className="overflow-hidden">
@@ -35,30 +40,29 @@ function AttendancePageTable() {
           Today's Attendance Log
         </h3>
       </div>
-      {
-        todayAttendance.length <= 0 && pagination.total === 0 ?
-          (
-            <div className="flex items-center justify-center my-5 gap-3">
-              <Logs size={"3rem"} /> No Attendance for today.
-            </div>
-          ) : (
-            <>
-              <AttendanceTable data={todayAttendance} />
-              <Paginator
-                isFetching={isFetching}
-                currentPage={pagination.page}
-                fetchNextPage={fetchNextPage}
-                totalPages={pagination.totalPages}
-                hasNextPage={pagination.hasNextPage}
-                fetchPreviousPage={fetchPreviousPage}
-                hasPreviousPage={pagination.hasPrevPage}
-                onRowsPerPageChange={(value) => setPagePerRow(value!)}
-              />
-            </>
-          )
-      }
+      {todayAttendance.length <= 0 && pagination?.total === 0 ? (
+        <div className="flex items-center justify-center my-5 gap-3">
+          <Logs size={"3rem"} /> No Attendance for today.
+        </div>
+      ) : (
+        <>
+          <AttendanceTable data={todayAttendance} />
+          {pagination && (
+            <Paginator
+              isFetching={isFetching}
+              currentPage={pagination.page}
+              fetchNextPage={fetchNextPage}
+              totalPages={pagination.totalPages}
+              hasNextPage={pagination.hasNextPage}
+              fetchPreviousPage={fetchPreviousPage}
+              hasPreviousPage={pagination.hasPrevPage}
+              onRowsPerPageChange={(value) => setPagePerRow(value!)}
+            />
+          )}
+        </>
+      )}
     </Card>
-  )
+  );
 }
 
 export function AttendanceTable({ data }: AttendanceTableProps) {
@@ -94,50 +98,57 @@ export function AttendanceTable({ data }: AttendanceTableProps) {
     }
   };
 
-
   return (
     <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-border">
-            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
-              Employee
-            </th>
-            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4 hidden md:table-cell">
-              Department
-            </th>
-            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
-              Check-in
-            </th>
-            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
-              Status
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((record) => (
-            <tr
-              key={record.id}
-              className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors"
-            >
-              <td className="py-3 px-4 text-sm font-medium text-card-foreground">
-                {record.employeeName}
-              </td>
-              <td className="py-3 px-4 text-sm text-muted-foreground hidden md:table-cell">
-                {record.department}
-              </td>
-              <td className="py-3 px-4 text-sm text-card-foreground">
-                {record.checkIn || "—"}
-              </td>
-              <td className="py-3 px-4">
-                <span className={getStatusBadgeClass(record.status)}>
-                  {getStatusLabel(record.status)}
-                </span>
-              </td>
+      {data.length <= 0 ? (
+        <EmptyState
+          title="Attendace Logs"
+          icon={LogsIcon}
+          description={`No Attendance logs today ${formatDate(new Date())}`}
+        />
+      ) : (
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-border">
+              <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+                Employee
+              </th>
+              <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4 hidden md:table-cell">
+                Department
+              </th>
+              <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+                Check-in
+              </th>
+              <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+                Status
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((record) => (
+              <tr
+                key={record.id}
+                className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors"
+              >
+                <td className="py-3 px-4 text-sm font-medium text-card-foreground">
+                  {record.employeeName}
+                </td>
+                <td className="py-3 px-4 text-sm text-muted-foreground hidden md:table-cell">
+                  {record.department}
+                </td>
+                <td className="py-3 px-4 text-sm text-card-foreground">
+                  {record.checkIn || "—"}
+                </td>
+                <td className="py-3 px-4">
+                  <span className={getStatusBadgeClass(record.status)}>
+                    {getStatusLabel(record.status)}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

@@ -33,10 +33,51 @@ import {
   LayoutDashboardIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useLogout } from "@/hooks/api/useAuthAPI";
+import { AuthUserRole } from "@/types/authTypes";
 import { ThemeButton } from "@/components/ThemeButton";
 import { Link, NavLink, useLocation } from "react-router";
 import { useAuthContext } from "@/states/contexts/AuthContext";
+import { useLogout, useUserProfile } from "@/hooks/api/useAuthAPI";
+
+function UserProfile() {
+  const { data: user, isLoading, isError } = useUserProfile();
+
+  if (isLoading && !user) {
+    return (
+      <div className="w-full flex gap-2 py-1 items-center">
+        <div className="shimmer w-6 h-6 rounded-full"></div>
+        <div className="shimmer h-6 rounded-md text-xs text-muted-foreground flex-1 leading-snug px-2 py-1">
+          Getting profile...
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !user) {
+    return <div>Error loading user profile</div>;
+  }
+
+  return (
+    <div className="flex items-center gap-2 py-4 -m-1">
+      {user?.profilePhoto ? (
+        <img
+          src={user.profilePhoto}
+          alt={user.firstName + " " + user.lastName}
+          className="rounded-full bg-primary/50 border-2"
+        />
+      ) : (
+        <UserCircle className="rounded-full w-6 h-6" />
+      )}
+      <p className="flex flex-col max-w-prose text-xs">
+        <span className="font-black mask-x-to-chart-4 text-ellipsis">
+          {user?.firstName + " " + user?.lastName}
+        </span>
+        <span>{user?.email}</span>
+      </p>
+    </div>
+  );
+}
+
 /**
  * Admin Sidebar Component
  */
@@ -65,6 +106,15 @@ function AdminSidebar() {
       icon: <Bell />,
     },
   ];
+
+  if (user?.role === AuthUserRole.HR_ADMIN) {
+    links.push({
+      to: "/admin/academic-division",
+      label: "Academic Division",
+      icon: <GraduationCap />,
+    });
+  }
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -121,23 +171,7 @@ function AdminSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <div className="flex items-center gap-2 py-4 -m-1">
-                    {user?.profilePhoto ? (
-                      <img
-                        src={user.profilePhoto}
-                        alt={user.firstName + " " + user.lastName}
-                        className="rounded-full bg-primary/50 border-2"
-                      />
-                    ) : (
-                      <UserCircle className="rounded-full w-6 h-6" />
-                    )}
-                    <p className="flex flex-col max-w-prose text-xs">
-                      <span className="font-black mask-x-to-chart-4 text-ellipsis">
-                        {user?.firstName + " " + user?.lastName}
-                      </span>
-                      <span>{user?.email}</span>
-                    </p>
-                  </div>
+                  <UserProfile />
                   <ChevronsUpDown className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -168,7 +202,6 @@ function AdminSidebar() {
 function EmployeeSidebar() {
   const pathname = useLocation().pathname;
   const logout = useLogout().mutate;
-  const { user } = useAuthContext();
 
   const links = [
     {
@@ -183,13 +216,14 @@ function EmployeeSidebar() {
       icon: <Calendar />,
     },
     { to: "/employee/attendance", label: "My Attendance", icon: <Clock /> },
-    { to: "/employee/documents", label: "Reports", icon: <FileText /> },
+    { to: "/employee/documents", label: "Documents", icon: <FileText /> },
     {
       to: "/employee/notifications",
       label: "Notifications",
       icon: <Bell />,
     },
   ];
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="flex flex-row items-center justify-center gap-3 py-2.5 border-b border-primary/10">
@@ -241,21 +275,7 @@ function EmployeeSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <div className="flex items-center gap-2 py-4 -m-1">
-                    {user?.profilePhoto ? (
-                      <img
-                        src={user.profilePhoto}
-                        alt={user.firstName + " " + user.lastName}
-                        className="rounded-full bg-primary/50 border-2"
-                      />
-                    ) : (
-                      <UserCircle className="rounded-full w-6 h-6" />
-                    )}
-                    <p className="flex flex-col max-w-prose">
-                      <span>{user?.firstName + " " + user?.lastName}</span>
-                      <span>{user?.email}</span>
-                    </p>
-                  </div>
+                  <UserProfile />
                   <ChevronsUpDown className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

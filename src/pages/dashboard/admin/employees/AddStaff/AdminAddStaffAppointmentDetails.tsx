@@ -48,11 +48,10 @@ export const AdminAddStaffAppointmentDetails = ({
                   <SelectValue placeholder="Select Cadre" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="academic">Academic</SelectItem>
-                  <SelectItem value="senior_non_academic">
-                    Senior Non-Academic
-                  </SelectItem>
-                  <SelectItem value="junior_staff">Junior Staff</SelectItem>
+                  <SelectItem value="Teaching">Teaching</SelectItem>
+                  <SelectItem value="Technical">Technical</SelectItem>
+                  <SelectItem value="Non-Teaching">Non-Teaching</SelectItem>
+                  <SelectItem value="Administrative">Administrative</SelectItem>
                 </SelectContent>
               </Select>
             )}
@@ -88,7 +87,34 @@ export const AdminAddStaffAppointmentDetails = ({
           )}
         </FieldLabel>
 
+        {/* Level */}
+        <FieldLabel className="flex flex-col items-start space-y-2 w-full">
+          <span className="text-sm font-medium">Level of Category</span>
+          <Controller
+            name="appointmentLevel"
+            control={control}
+            rules={{ required: "Level of category is required" }}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger className="h-10 w-full">
+                  <SelectValue placeholder="Select Level of Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Senior">Senior</SelectItem>
+                  <SelectItem value="Junior">Junior</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.appointmentLevel && (
+            <FieldError className="text-xs">
+              {errors.appointmentLevel.message as string}
+            </FieldError>
+          )}
+        </FieldLabel>
+
         {/* Nature of Appointment */}
+
         <FieldLabel className="flex flex-col items-start space-y-2 w-full">
           <span className="text-sm font-medium">Nature of Appointment</span>
           <Controller
@@ -136,7 +162,7 @@ export const AdminAddStaffAppointmentDetails = ({
           {errors.appointmentDateFirst && (
             <FieldError className="text-xs">
               {errors.appointmentDateFirst.message as string}
-            </FieldError> 
+            </FieldError>
           )}
         </FieldLabel>
 

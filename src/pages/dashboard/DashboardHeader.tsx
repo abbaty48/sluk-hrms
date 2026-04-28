@@ -50,7 +50,7 @@ function RoleSwitcher() {
 }
 
 function NotificationBadge() {
-  const { data: unreadCount } = useUnreadCount();
+  const unreadCount = useUnreadCount();
 
   if (!unreadCount || unreadCount === 0) return null;
 
@@ -68,14 +68,14 @@ function NotificationBadge() {
 }
 
 export function DashboardHeader() {
-  const { user } = useAuthContext();
+  const { isAdmin } = useAuthContext();
 
   return (
     <header className="sticky top-0 z-30 flex flex-1 items-center gap-4 border-b pl-1 pr-4 py-3 w-full bg-card">
       <SidebarTrigger className="hover:bg-primary/50 hover:dark:bg-primary" />
       <div className="flex items-center gap-3 mx-auto">
         {/*Role Switcher*/}
-        <Activity mode={user?.role === "admin" ? "visible" : "hidden"}>
+        <Activity mode={isAdmin ? "visible" : "hidden"}>
           <RoleSwitcher />
         </Activity>
         {/*notifications*/}

@@ -1,13 +1,13 @@
 import {
   NotificationsEmptyState,
   NotificationsPageSkeleton,
-} from "./AdminNotificationsPageSkeleton";
+} from "./NotificationsPageSkeleton";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Motion } from "@sluk/src/components/Motion";
-import { NotificationItem } from "./AdminNotificationItem";
+import { NotificationItem } from "./NotificationItem";
 import type { TNotification } from "@/types/notificationsTypes";
 import { useNotificationsPage } from "@/hooks/api/useAdminNotificationsAPI";
 
@@ -77,10 +77,14 @@ export default function NotificationsPage() {
       <div className="page-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="page-title">Notifications</h2>
-          <p className="page-subtitle">
-            {notifications.data?.pagination.unreadCount || 0} unread
-            notification
-            {notifications.data?.pagination.unreadCount !== 1 ? "s" : ""}
+          <p className="page-subtitle space-x-2">
+            <span>
+              {notifications.data?.pagination.unreadCount || 0} unread
+              notification
+              {notifications.data?.pagination.unreadCount !== 1 ? "s" : ""}
+            </span>
+            <span>/</span>
+            <span>{notifications.data?.pagination.total}</span>
           </p>
         </div>
         {hasNotifications &&

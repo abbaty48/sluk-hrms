@@ -263,7 +263,7 @@ server.get(
     const stats: TDashboardStats = {
       totalStaff,
       totalStaffChange,
-      activeStaff,
+      totalActiveStaff,
       activeStaffChange,
       presentToday,
       onLeaveToday,

@@ -1,11 +1,11 @@
-import { Motion } from "@sluk/src/components/Motion";
+import { Motion } from "@/components/Motion";
 import { AdminLeavePending } from "./AdminLeavePending/AdminLeavePending";
 import { AdminDashboardStats } from "./AdminDashboardStats/AdminDashboardStats";
 import { AdminLeaveDistributionChart } from "./AdminLeaveDistributionChart/AdminLeaveDistributionChart";
 import { AdminStaffPerDepartmentChart } from "./AdminStaffPerDepartmentChart/AdminStaffPerDepartmentChart";
 import { AdminMonthlyAttendanceTrendChart } from "./AdminMonthlyAttendanceTrendChart/AdminMonthlyAttendanceTrendChart";
 
-export default function AdminDashboardView() {
+export default function AdminDashboard() {
   return (
     <Motion element="article" className="p-4 lg:p-6 overflow-auto w-full">
       <div className="mb-6">

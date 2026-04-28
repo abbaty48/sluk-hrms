@@ -1,13 +1,10 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AdminEmployeeTableSkeleton } from "./AdminEmployeeTableSkeleton";
 import { AdminEmployeesPageFeatures } from "./AdminEmployeesPageFeatures";
-import { LucideEllipsis, View, Edit, Mail, UserStar } from "lucide-react";
 import { useAdminEmployeesPageHook } from "./AdminEmployeesPageHook";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 import { useStaffAPI } from "@/hooks/api/useAdminStaffApi";
 import { Paginator } from "@/components/Paginator";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Suspense, useState } from "react";
@@ -27,7 +24,6 @@ function EmployeeTable({
   status,
   departmentId,
 }: EmployeeTable) {
-  const navigate = useNavigate();
   const [rowsPerPage, setRowsPerPage] = useState("5");
   const {
     data,
@@ -38,31 +34,7 @@ function EmployeeTable({
     fetchPreviousPage,
   } = useStaffAPI({ limit: rowsPerPage, q, status, cadre, sort, departmentId });
 
-
-  function Actions({ staffId }: { staffId: string }) {
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant={'ghost'} className="h-7 w-7">
-            <LucideEllipsis />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuGroup>
-            <DropdownMenuLabel>Action</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigate(`/admin/employees/${staffId}/profile`)}><View /> View Profile</DropdownMenuItem>
-            <DropdownMenuItem><Edit /> Edit Profile</DropdownMenuItem>
-            <DropdownMenuItem><UserStar /> Change Status</DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem >
-            <Mail /> Email Staff
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    )
-  }
-
+  const navigate = useNavigate();
   return (
     <>
       {/* Features bar with import/export */}
@@ -95,30 +67,33 @@ function EmployeeTable({
               <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4 hidden xl:table-cell">
                 Join Date
               </th>
-              <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4 hidden lg:table-cell">
-                Actions
-              </th>
-              <th className="text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4"></th>
             </tr>
           </thead>
           <tbody>
             {data.map((staff) => (
               <tr
                 key={staff.id}
-                className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors"
+                onClick={() => navigate(`/admin/employees/${staff.id}/profile`)}
+                className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors hover:cursor-pointer"
               >
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-3">
                     <span className="relative flex shrink-0 overflow-hidden rounded-full h-9 w-9">
                       <span className="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold">
-                        {staff.name.split(" ").map((namePart, index) => (
-                          <span key={index}>{namePart[0]?.toUpperCase()}</span>
-                        ))}
+                        {/*{staff.}*/}
+                        {[staff.firstName, staff.lastName]
+                          .join(" ")
+                          .split(" ")
+                          .map((namePart, index) => (
+                            <span key={index}>
+                              {namePart[0]?.toUpperCase()}
+                            </span>
+                          ))}
                       </span>
                     </span>
                     <div>
                       <p className="text-sm font-medium text-card-foreground">
-                        {staff.name}
+                        {staff.firstName} {staff.lastName}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {staff.email}
@@ -129,7 +104,7 @@ function EmployeeTable({
                 {/* Department Name*/}
                 <td className="py-3 px-4 hidden md:table-cell">
                   <span className="text-sm text-card-foreground">
-                    {staff.department.name}
+                    {staff.department?.name}
                   </span>
                 </td>
                 {/* Staff Role*/}
@@ -147,14 +122,10 @@ function EmployeeTable({
                 {/* JOIN DATE*/}
                 <td className="py-3 px-4 hidden xl:table-cell">
                   <span className="text-sm text-muted-foreground">
-                    {new Intl.DateTimeFormat("en-US", {
-                      dateStyle: "long",
+                    {new Intl.DateTimeFormat("en-CA", {
+                      dateStyle: "medium",
                     }).format(new Date(staff.createdAt))}
                   </span>
-                </td>
-                {/* ACTION MENU */}
-                <td className="py-3 px-4 text-right">
-                  <Actions staffId={staff.id} />
                 </td>
               </tr>
             ))}
@@ -174,7 +145,7 @@ function EmployeeTable({
         }}
       />
     </>
-  )
+  );
 }
 
 export function AdminEmployeesPageTable() {

@@ -19,7 +19,7 @@ export function hrmsSETTINGS_ENDPOINTS(server: Application, getDb: () => TDataba
         dateFormat: "DD/MM/YYYY",
         fiscalYearStart: "January",
         leaveApprovalLevels: 2,
-        emailNotifications: true,
+        emailNotifications: false,
         smsNotifications: false,
         theme: "system",
         language: "en",

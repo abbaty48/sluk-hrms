@@ -5,16 +5,18 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Motion } from "@/components/Motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useEmployeeDashboard } from "@/hooks/api/useEmployeeDashboard";
+import { formatDate } from "@sluk/src/lib/utils";
+import { useEmployeeDashboard } from "@/hooks/api/useEmployeeAPI";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { EmployeeDashboardSkeleton } from "./skeletons/EmployeeDashboardSkeleton";
 
-export default function EmployeeDashboardPage() {
-  const { data, isLoading, isError } = useEmployeeDashboard("staff_1");
+const Component = function EmployeeDashboardPage() {
+  const { data, isLoading, isError } = useEmployeeDashboard();
 
   if (isLoading) return <EmployeeDashboardSkeleton />;
   if (isError)
@@ -53,10 +55,10 @@ export default function EmployeeDashboardPage() {
 
           <CardContent>
             <div className="text-2xl font-bold">
-              {data?.leaveBalance.totalRemaining}
+              {data?.leaveBalances.totalRemaining}
               <span className="text-sm text-muted-foreground">
                 {" "}
-                / {data?.leaveBalance.totalAllowed} days
+                / {data?.leaveBalances.totalAllowed} days
               </span>
             </div>
 
@@ -68,7 +70,7 @@ export default function EmployeeDashboardPage() {
             </div>
 
             <p className="text-xs text-muted-foreground mt-2">
-              {data?.leaveBalance.totalUsed} days used this year
+              {data?.leaveBalances.totalUsed} days used this year
             </p>
           </CardContent>
         </Card>
@@ -100,7 +102,7 @@ export default function EmployeeDashboardPage() {
             <DollarSign className="w-5 h-5 text-orange-500" />
           </CardHeader>
 
-          <CardContent>
+          {/*<CardContent>
             {data?.salary ? (
               <>
                 <div className="text-2xl font-bold">
@@ -126,7 +128,7 @@ export default function EmployeeDashboardPage() {
                 No payroll available
               </p>
             )}
-          </CardContent>
+          </CardContent>*/}
         </Card>
       </div>
 
@@ -144,7 +146,8 @@ export default function EmployeeDashboardPage() {
                 <div>
                   <p className="font-medium">{leave.leaveType}</p>
                   <p className="text-xs text-muted-foreground">
-                    {leave.startDate} – {leave.endDate}
+                    {formatDate(new Date(leave.startDate))} –{" "}
+                    {formatDate(new Date(leave.endDate))}
                   </p>
                 </div>
 
@@ -162,8 +165,10 @@ export default function EmployeeDashboardPage() {
               </div>
             ))}
 
-            <Button variant="outline" className="w-full">
-              View All Leave History
+            <Button variant={"outline"} asChild>
+              <Link className="w-full" to={"/employee/leave"}>
+                View All Leave History
+              </Link>
             </Button>
           </CardContent>
         </Card>
@@ -193,4 +198,6 @@ export default function EmployeeDashboardPage() {
       </div>
     </Motion>
   );
-}
+};
+
+export default Component;

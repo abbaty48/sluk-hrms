@@ -1,11 +1,20 @@
-import type { TDepartment } from "@/types/departmentTypes";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import type {
+  TStaffDetails,
+  TStaffList,
+  TStaffUpdateStatusRequest,
+} from "@/types/staffTypes";
+import type {
+  TStaff,
+  TStaffProfileUpdateRequest,
+  TStaffUpdateStatusResponse,
+} from "@/types/staffTypes";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { apiFetch, queryClient } from "@sluk/src/lib/api.utils";
 import { useMutation, useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import type { TStaffDetails, TStaffUpdateStatusRequest } from '@/types/staffTypes'
-import type { TStaff, TStaffProfileUpdateRequest, TStaffUpdateStatusResponse } from "@/types/staffTypes";
 
 type SearchStaffCriteria = Partial<{
   q: string;
+  all: boolean;
   page: string;
   sort: string;
   cadre: string;
@@ -53,7 +62,9 @@ export function useStaffAPI(searchCriteria?: SearchStaffCriteria) {
         });
       }
 
-      return await (await fetch(`/api/staff/search?${params}`)).json();
+      return await apiFetch<TStaffList>(
+        searchCriteria?.all ? `/api/staffs/all` : `/api/staffs?${params}`,
+      );
     },
     getPreviousPageParam: (firstPage) => {
       return firstPage?.pagination.hasPrevPage
@@ -79,9 +90,7 @@ export function useStaffAPI(searchCriteria?: SearchStaffCriteria) {
     fetchPreviousPage,
     allPages: data.pages,
     pagination: currentPage.pagination,
-    data: currentPage.data as (TStaff & {
-      department: TDepartment;
-    })[],
+    data: currentPage.data as TStaff[],
   };
 }
 
@@ -90,20 +99,11 @@ export function useStaffAPI(searchCriteria?: SearchStaffCriteria) {
  */
 export function useAddStaffAPI() {
   return useMutation({
-    mutationFn: async (data: any) => {
-      // Replace with your actual API endpoint
-      const response = await fetch("/api/staff", {
+    mutationFn: async (data: any) =>
+      await apiFetch("/api/staffs", {
         method: "POST",
         body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add staff");
-      }
-
-      return response.json();
-    },
+      }),
   });
 }
 /**
@@ -111,20 +111,13 @@ export function useAddStaffAPI() {
  */
 export function useUpdateStaffProfileAPI() {
   return useMutation({
-    mutationFn: async (data: { staffId: string } & TStaffProfileUpdateRequest) => {
-      // Replace with your actual API endpoint
-      const response = await fetch(`/api/staff/${data.staffId}/details`, {
+    mutationFn: async (
+      data: { staffId: string } & TStaffProfileUpdateRequest,
+    ) =>
+      await apiFetch(`/api/staffs/${data.staffId}/details`, {
         method: "PUT",
         body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update staff profile, reason: " + (await response.json()).error);
-      }
-
-      return response.json();
-    },
+      }),
   });
 }
 
@@ -133,19 +126,9 @@ export function useUpdateStaffProfileAPI() {
 // ========================================
 export function useStaffProfile(staffId: string) {
   return useSuspenseQuery({
-    queryKey: ["employee", "profile", staffId],
-    queryFn: async () => {
-      const response = await fetch(`/api/staff/${staffId}/details`);
-
-      if (response.status === 404) {
-        return null
-      }
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch employee profile");
-      }
-      return response.json() as Promise<TStaffDetails>;
-    },
+    queryKey: ["employeeProfile", staffId],
+    queryFn: async () =>
+      await apiFetch<TStaffDetails>(`/api/staffs/${staffId}/details`),
     // enabled: !!employeeId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -155,43 +138,27 @@ export function useStaffProfile(staffId: string) {
 // UPDATE EMPLOYEE STATUS
 // ========================================
 export function useStaffUpdateStaffStatus() {
-  const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: async (data: TStaffUpdateStatusRequest) => {
-      const response = await fetch(
-        `/api/staff/${data.staffId}/status`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: data.status }),
-        }
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to update employee status");
-      }
-
-      return response.json() as Promise<TStaffUpdateStatusResponse>;
-    },
+    mutationFn: async (data: TStaffUpdateStatusRequest) =>
+      await apiFetch(`/api/staffs/${data.staffId}/${data.status}`, {
+        method: "PATCH",
+        body: JSON.stringify({}),
+      }),
     onSuccess: (data, variables) => {
       // Invalidate and refetch employee profile
       queryClient.invalidateQueries({
-        queryKey: ["employee", "profile", "admin",
-          , "staffs", variables.staffId],
+        queryKey: ["employeeProfile", variables.staffId],
       });
 
       // Update cache optimistically
       queryClient.setQueryData<TStaffUpdateStatusResponse>(
-        ["employee", "profile", "admin",
-          , "staffs", variables.staffId],
+        ["employeeProfile", variables.staffId],
         (old: any) => {
           if (!old) return old;
           return {
             staff: data.staff,
           };
-        }
+        },
       );
     },
   });

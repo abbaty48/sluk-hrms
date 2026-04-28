@@ -1,16 +1,18 @@
-import type {
-  ILoginRequest,
-  IAuthResponse,
-  IVerifyTokenRequest,
-  IVerifyTokenResponse,
-  IResetPasswordRequest,
-  IResetPasswordResponse,
-  IChangePasswordRequest,
-  IForgotPasswordRequest,
-  IForgotPasswordResponse,
-  IChangePasswordResponse,
+import {
+  type TAuthUser,
+  type TUserProfile,
+  type IAuthResponse,
+  type IAuthCredentials,
+  type IVerifyTokenRequest,
+  type IVerifyTokenResponse,
+  type IResetPasswordRequest,
+  type IResetPasswordResponse,
+  type IChangePasswordRequest,
+  type IForgotPasswordRequest,
+  type IForgotPasswordResponse,
+  type IChangePasswordResponse,
 } from "@/types/authTypes";
-import type { TUser } from "@/types/userTypes";
+import { apiFetch } from "@sluk/src/lib/api.utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // ========================================
@@ -21,25 +23,15 @@ export function useLogin() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (credentials: ILoginRequest) => {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+    mutationFn: async (credentials: IAuthCredentials) =>
+      await apiFetch<IAuthResponse>("/api/auth/login", {
         body: JSON.stringify(credentials),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Login failed");
-      }
-
-      return response.json() as Promise<IAuthResponse>;
-    },
+        method: "POST",
+      }),
     onSuccess: (data) => {
       // Store token in localStorage
-      localStorage.setItem("auth_token", data.token);
+      localStorage.setItem("auth_token", data.accessToken);
       localStorage.setItem("user", JSON.stringify(data.user));
-
       // Update query cache
       queryClient.setQueryData(["auth", "user"], data.user);
     },
@@ -55,7 +47,7 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: async () => {
-      const response = await fetch("/api/auth/logout", {
+      const response = await fetch("/api/auth/logout-all", {
         method: "POST",
       });
 
@@ -135,7 +127,7 @@ export function useCurrentUser() {
         throw new Error("Failed to fetch user");
       }
 
-      return response.json() as Promise<TUser>;
+      return response.json() as Promise<TAuthUser>;
     },
     enabled: !!localStorage.getItem("auth_token"),
     retry: false,
@@ -225,12 +217,46 @@ export function useAuth() {
   const token = localStorage.getItem("auth_token");
   const userString = localStorage.getItem("user");
 
-  const user = userString ? (JSON.parse(userString) as TUser) : null;
+  const user = userString ? (JSON.parse(userString) as TAuthUser) : null;
   const isAuthenticated = !!token && !!user;
 
   return {
     user,
     token,
     isAuthenticated,
+    role: user?.role,
+    isAdmin: user?.role.includes("admin"),
   };
+}
+
+// ========================================
+// 9. USER PROFILE
+// ========================================
+
+export function useUserProfile() {
+  return useQuery<TUserProfile>({
+    queryKey: ["auth", "profile"],
+    queryFn: async () => {
+      const token = localStorage.getItem("auth_token");
+
+      if (!token) {
+        throw new Error("Not authenticated");
+      }
+
+      const response = await fetch("/api/auth/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user profile");
+      }
+
+      return (await response.json()) as TUserProfile;
+    },
+    retry: true,
+    staleTime: 1000, // 5 minutes
+    enabled: !!localStorage.getItem("auth_token"),
+  });
 }

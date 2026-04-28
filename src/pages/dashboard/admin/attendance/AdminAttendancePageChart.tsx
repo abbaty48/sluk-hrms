@@ -15,7 +15,6 @@ import type { TAttendanceWeeklyChart } from "@/types/attendance.types";
 import { useAdminAttendanceWeeklyAPI } from "@/hooks/api/useAdminAttendance";
 import { AdminAttendancePageChartSkeleton } from "./AdminAttendancePageSkeletons";
 
-
 export function AdminAttendancePageChart() {
   return (
     <QueryErrorBoundary>
@@ -23,22 +22,23 @@ export function AdminAttendancePageChart() {
         <AttendancePageChart />
       </Suspense>
     </QueryErrorBoundary>
-  )
+  );
 }
 
 function AttendancePageChart() {
-  const data = useAdminAttendanceWeeklyAPI()
+  const { weekSummary, weekData } = useAdminAttendanceWeeklyAPI();
 
   return (
     <Card className="p-4 mb-6">
       <h3 className="text-sm font-semibold text-card-foreground mb-4">
-        This Week's Attendance: ({data.summary.weekStart} - {data.summary.weekEnd})
+        This Week's Attendance: ({weekSummary.weekStart} - {weekSummary.weekEnd}
+        )
       </h3>
       <div className="flex items-center justify-center h-75">
-        <AttendanceChart data={data} />
+        <AttendanceChart data={{ weekSummary, weekData }} />
       </div>
     </Card>
-  )
+  );
 }
 
 function AttendanceChart({ data }: { data: TAttendanceWeeklyChart }) {
@@ -53,10 +53,7 @@ function AttendanceChart({ data }: { data: TAttendanceWeeklyChart }) {
           bottom: 0,
         }}
       >
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke="var(--border)"
-        />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
         <XAxis
           dataKey="day"
           fontSize={12}
@@ -117,6 +114,6 @@ function AttendanceChart({ data }: { data: TAttendanceWeeklyChart }) {
           fill="var(--warning)"
         />
       </BarChart>
-    </ResponsiveContainer >
+    </ResponsiveContainer>
   );
 }

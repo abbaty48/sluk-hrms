@@ -19,7 +19,8 @@ function LeaveBalanceShimmer() {
 }
 
 function LeaveBalance() {
-  const data = useLeaveBalancesAPI("staff_2");
+  const data = useLeaveBalancesAPI();
+
   return (
     <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 px-2">
       {data.map((b) => {

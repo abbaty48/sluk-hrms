@@ -2,36 +2,34 @@ import type {
   TSystemPreferences,
   TUpdatePreferencesRequest,
 } from "@/types/settingsTypes";
+import { apiFetch } from "@sluk/src/lib/api.utils";
 import type {
+  TAppointmentsList,
   TNatureOfAppointment,
-  TAppointmentsListResponse,
   TCreateAppointmentRequest,
 } from "@sluk/src/types/appointmentTypes";
 import type {
   TCommittee,
-  TCommitteesListResponse,
+  TCommitteesList,
   TCreateCommitteeRequest,
 } from "@sluk/src/types/committeeTypes";
 import type {
   TRank,
+  TRanksList,
   TCreateRankRequest,
-  TRanksListResponse,
 } from "@sluk/src/types/rankTypes";
 import type {
   TResponsibility,
+  TResponsibilitiesList,
   TCreateResponsibilityRequest,
-  TResponsibilitiesListResponse,
 } from "@sluk/src/types/responsibilityTypes";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useSystemPreferences() {
   return useQuery({
     queryKey: ["settings", "preferences"],
-    queryFn: async () => {
-      const response = await fetch("/api/settings/preferences");
-      if (!response.ok) throw new Error("Failed to fetch preferences");
-      return response.json() as Promise<TSystemPreferences>;
-    },
+    queryFn: async () =>
+      await apiFetch<TSystemPreferences>("/api/settings/preferences"),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
@@ -41,14 +39,10 @@ export function useUpdatePreferences() {
 
   return useMutation({
     mutationFn: async (data: TUpdatePreferencesRequest) => {
-      const response = await fetch("/api/settings/preferences", {
+      return await apiFetch("/api/settings/preferences", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error("Failed to update preferences");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "preferences"] });
@@ -65,11 +59,8 @@ export function useCommittees(activeOnly = false) {
 
   return useQuery({
     queryKey: ["settings", "committees", activeOnly],
-    queryFn: async () => {
-      const response = await fetch(`/api/settings/committees${params}`);
-      if (!response.ok) throw new Error("Failed to fetch committees");
-      return response.json() as Promise<TCommitteesListResponse>;
-    },
+    queryFn: async () =>
+      await apiFetch<TCommitteesList>(`/api/settings/committees${params}`),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -79,14 +70,10 @@ export function useCreateCommittee() {
 
   return useMutation({
     mutationFn: async (data: TCreateCommitteeRequest) => {
-      const response = await fetch("/api/settings/committees", {
+      return await apiFetch("/api/settings/committees", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error("Failed to create committee");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "committees"] });
@@ -105,14 +92,10 @@ export function useUpdateCommittee() {
       id: string;
       data: Partial<TCommittee>;
     }) => {
-      const response = await fetch(`/api/settings/committees/${id}`, {
+      return await apiFetch(`/api/settings/committees/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error("Failed to update committee");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "committees"] });
@@ -125,12 +108,9 @@ export function useDeleteCommittee() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/settings/committees/${id}`, {
+      return await apiFetch(`/api/settings/committees/${id}`, {
         method: "DELETE",
       });
-
-      if (!response.ok) throw new Error("Failed to delete committee");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "committees"] });
@@ -152,11 +132,10 @@ export function useResponsibilities(filters?: {
 
   return useQuery({
     queryKey: ["settings", "responsibilities", filters],
-    queryFn: async () => {
-      const response = await fetch(`/api/settings/responsibilities?${params}`);
-      if (!response.ok) throw new Error("Failed to fetch responsibilities");
-      return response.json() as Promise<TResponsibilitiesListResponse>;
-    },
+    queryFn: async () =>
+      await apiFetch<TResponsibilitiesList>(
+        `/api/settings/responsibilities?${params}`,
+      ),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -166,14 +145,10 @@ export function useCreateResponsibility() {
 
   return useMutation({
     mutationFn: async (data: TCreateResponsibilityRequest) => {
-      const response = await fetch("/api/settings/responsibilities", {
+      return await apiFetch("/api/settings/responsibilities", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error("Failed to create responsibility");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -194,14 +169,10 @@ export function useUpdateResponsibility() {
       id: string;
       data: Partial<TResponsibility>;
     }) => {
-      const response = await fetch(`/api/settings/responsibilities/${id}`, {
+      return await apiFetch(`/api/settings/responsibilities/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error("Failed to update responsibility");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -215,14 +186,10 @@ export function useDeleteResponsibility() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      const response = await fetch(`/api/settings/responsibilities/${id}`, {
+    mutationFn: async (id: string) =>
+      await apiFetch(`/api/settings/responsibilities/${id}`, {
         method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete responsibility");
-      return response.json();
-    },
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["settings", "responsibilities"],
@@ -245,11 +212,8 @@ export function useRanks(filters?: {
 
   return useQuery({
     queryKey: ["settings", "ranks", filters],
-    queryFn: async () => {
-      const response = await fetch(`/api/settings/ranks?${params}`);
-      if (!response.ok) throw new Error("Failed to fetch ranks");
-      return response.json() as Promise<TRanksListResponse>;
-    },
+    queryFn: async () =>
+      await apiFetch<TRanksList>(`/api/settings/ranks?${params}`),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -259,14 +223,10 @@ export function useCreateRank() {
 
   return useMutation({
     mutationFn: async (data: TCreateRankRequest) => {
-      const response = await fetch("/api/settings/ranks", {
+      return await apiFetch("/api/settings/ranks", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error("Failed to create rank");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "ranks"] });
@@ -279,14 +239,10 @@ export function useUpdateRank() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<TRank> }) => {
-      const response = await fetch(`/api/settings/ranks/${id}`, {
+      return await apiFetch(`/api/settings/ranks/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error("Failed to update rank");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "ranks"] });
@@ -298,14 +254,10 @@ export function useDeleteRank() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      const response = await fetch(`/api/settings/ranks/${id}`, {
+    mutationFn: async (id: string) =>
+      await fetch(`/api/settings/ranks/${id}`, {
         method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete rank");
-      return response.json();
-    },
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "ranks"] });
     },
@@ -321,11 +273,8 @@ export function useAppointments(activeOnly = false) {
 
   return useQuery({
     queryKey: ["settings", "appointments", activeOnly],
-    queryFn: async () => {
-      const response = await fetch(`/api/settings/appointments${params}`);
-      if (!response.ok) throw new Error("Failed to fetch appointments");
-      return response.json() as Promise<TAppointmentsListResponse>;
-    },
+    queryFn: async () =>
+      await apiFetch<TAppointmentsList>(`/api/settings/appointments${params}`),
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -335,14 +284,10 @@ export function useCreateAppointment() {
 
   return useMutation({
     mutationFn: async (data: TCreateAppointmentRequest) => {
-      const response = await fetch("/api/settings/appointments", {
+      return await apiFetch("/api/settings/appointments", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error("Failed to create appointment");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "appointments"] });
@@ -361,14 +306,10 @@ export function useUpdateAppointment() {
       id: string;
       data: Partial<TNatureOfAppointment>;
     }) => {
-      const response = await fetch(`/api/settings/appointments/${id}`, {
+      return await apiFetch(`/api/settings/appointments/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error("Failed to update appointment");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "appointments"] });
@@ -380,14 +321,10 @@ export function useDeleteAppointment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      const response = await fetch(`/api/settings/appointments/${id}`, {
+    mutationFn: async (id: string) =>
+      await fetch(`/api/settings/appointments/${id}`, {
         method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete appointment");
-      return response.json();
-    },
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings", "appointments"] });
     },

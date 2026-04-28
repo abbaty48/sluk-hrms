@@ -1,110 +1,19 @@
-import type { TNotification, TNotificationPreferences, } from "./notificationsTypes";
-import type { TLeaveRequest, TLeaveType } from "./leave-managementTypes";
-import type { TNatureOfAppointment } from "./appointmentTypes";
-import type { TResponsibility } from "./responsibilityTypes";
-import type { TSystemPreferences } from "./settingsTypes";
-import type { TAttendance } from "./attendance.types";
-import type { TDepartment } from "./departmentTypes";
-import type { TCommittee } from "./committeeTypes";
-import type { IPasswordReset } from "./authTypes";
-import type { TStaff } from "./staffTypes";
-import type { TUser } from "./userTypes";
-import type { TRank } from "./rankTypes";
-import type { Request } from "express";
-
-export type TQualification = {
-  id: string;
-  staffId: string;
-  degree: string;
-  institution: string;
-  year: string;
-  level: string;
-  isHighest: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
-export type TEmploymentHistory = {
-  id: string;
-  staffId: string;
-  position: string;
-  department: string;
-  subject: string | null;
-  startDate: string;
-  endDate: string; // "Present" or "MMM YYYY"
-  isCurrent: boolean;
-};
-
-
-export type TDocument = {
-  id: string
-  staffId: string
-  staffName?: string        // added by server when fetching
-  title: string
-  category: string
-  fileName: string
-  fileSize: number        // raw bytes in db — server formats it to "1.2 MB" in responses
-  mimeType: string
-  uploadedBy: string
-  isVerified: boolean
-  verifiedBy: string | null
-  description: string | null
-  degree: string | null
-  institution: string | null
-  year: string | null
-  createdAt: string
-  updatedAt: string
-}
-
-// what the server sends back in responses (formatted for display)
-export type TDocumentResponse = {
-  id: string
-  staffId: string
-  staffName?: string
-  title: string
-  category: string
-  fileType: string        // "PDF" | "JPG" | "PNG"
-  fileSize: string        // formatted — "1.2 MB" | "890 KB"
-  mimeType?: string
-  status: "Verified" | "Pending"
-  uploadedAt: string
-  description: string | null
-  degree: string | null
-  institution: string | null
-  year: string | null
-}
-
-export type TDocumentSummary = {
-  totalDocuments: number
-  verifiedDocuments: number
-  pendingDocuments: number
-  categoryDistribution: Record<string, number>
-}
-
-export type TAllDocumentsResponse = {
-  documents: TDocumentResponse[]
-  total: number
-  page: number
-  limit: number
-}
-
-export type TStaffDocumentsResponse = {
-  summary: TDocumentSummary | null
-  data: TDocumentResponse[]
-}
-
-export type TAddDocumentPayload = {
-  title: string
-  category: string
-  fileName: string
-  fileSize?: number
-  mimeType: string
-  description?: string
-  degree?: string
-  institution?: string
-  year?: string
-}
-
+import type {
+  TNotification,
+  TNotificationPreferences,
+} from "./notificationsTypes.ts";
+import type { TLeaveRequest, TLeaveType } from "./leave-managementTypes.ts";
+import type { TNatureOfAppointment } from "./appointmentTypes.ts";
+import type { IPasswordReset, TAuthUser } from "./authTypes.ts";
+import type { TResponsibility } from "./responsibilityTypes.ts";
+import type { TQualification } from "./qualificationTypes.ts";
+import type { TSystemPreferences } from "./settingsTypes.ts";
+import type { TAttendance } from "./attendance.types.ts";
+import type { TDepartment } from "./departmentTypes.ts";
+import type { TCommittee } from "./committeeTypes.ts";
+import type { TDocument } from "./documentTypes.ts";
+import type { TStaff } from "./staffTypes.ts";
+import type { TRank } from "./rankTypes.ts";
 
 export type TPayroll = {
   id: string;
@@ -154,9 +63,9 @@ export type TAnnouncement = {
 
 // Database Interface
 export type TDatabase = {
-  users: TUser[];
   ranks: TRank[];
   staff: TStaff[];
+  users: TAuthUser[];
   payrolls: TPayroll[];
   documents: TDocument[];
   leaves: TLeaveRequest[];
@@ -165,7 +74,6 @@ export type TDatabase = {
   attendance: TAttendance[];
   departments: TDepartment[];
   notifications: TNotification[];
-  // Empnotification: TNotification
   announcements: TAnnouncement[];
   passwordResets: IPasswordReset[];
   qualifications: TQualification[];
@@ -173,8 +81,8 @@ export type TDatabase = {
   systemPreferences: TSystemPreferences;
   employmentHistory: TEmploymentHistory[];
   natureOfAppointments: TNatureOfAppointment[];
+  EmploymentHistoryResponse: TEmploymentHistory[];
   notificationPreferences: TNotificationPreferences[];
-  EmploymentHistoryResponse: TEmploymentHistoryResponse[];
 };
 
 // Request Interfaces
@@ -189,26 +97,38 @@ export type TAuthRequest = Request & {
 
 // Response DTOs
 export type TDashboardStats = {
+  // totalStaff: number;
+  // totalStaffChange: number; // % change from last month
+  // activeStaff: number;
+  // activeStaffChange: number;
+  // presentToday: number;
+  // onLeaveToday: number;
+  // onLeaveChange: number;
+  // attendanceRate: string;
+  // attendanceRateChange: number;
+  // pendingActions: number;
+  // lateArrivals: number;
+  // avgWorkHours: number;
+  // teachingStaff: number;
+  // nonTeachingStaff: number;
+  // totalDepartments: number;
   totalStaff: number;
-  totalStaffChange: number; // % change from last month
-  activeStaff: number;
-  activeStaffChange: number;
-  presentToday: number;
-  onLeaveToday: number;
+  avgWorkHours: number;
   onLeaveChange: number;
   attendanceRate: string;
-  attendanceRateChange: number;
-  pendingActions: number;
-  lateArrivals: number;
-  avgWorkHours: number;
-  teachingStaff: number;
-  nonTeachingStaff: number;
+  todayAttendance: number;
+  totalStaffChange: number;
+  totalActiveStaff: number;
+  activeStaffChange: number;
+  totalLateArrivals: number;
   totalDepartments: number;
-};
-
-export type TEmploymentHistoryResponse = {
-  data: TEmploymentHistory[];
-  nextPage: number | null;
+  totalOnLeaveStaff: number;
+  totalTeachingStaff: number;
+  totalPendingLeaves: number;
+  avgWorkHoursChange: number;
+  attendanceRateChange: number;
+  totalPresentLateToday: number;
+  totalNonTeachingStaff: number;
 };
 
 // Auth DTOs

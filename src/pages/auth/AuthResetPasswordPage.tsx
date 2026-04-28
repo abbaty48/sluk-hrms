@@ -1,5 +1,6 @@
 import { GraduationCap, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { AuthProvider } from "@sluk/src/states/contexts/AuthContext";
 import { useResetPassword } from "@/hooks/api/useAuthAPI";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
-export default function ResetPasswordPage() {
+function PasswordPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const resetPassword = useResetPassword();
@@ -224,5 +225,13 @@ export default function ResetPasswordPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <AuthProvider>
+      <PasswordPage />
+    </AuthProvider>
   );
 }

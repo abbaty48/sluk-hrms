@@ -1,50 +1,44 @@
+import { apiFetch } from "@sluk/src/lib/api.utils";
 import type { TDashboardStats } from "@/types/types";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import type { TStaffPerDepartment } from "@/types/staffTypes";
+import type { TChartStaffPerDepartment } from "@/types/staffTypes";
+import type { TMonthlyAttendanceTrend } from "@sluk/src/types/attendance.types";
 
 /**
  *
  * @returns
  */
 export function useMonthlyAttendanceTrendAPI() {
-  const { data } = useSuspenseQuery({
+  return useSuspenseQuery({
     queryKey: ["monthlyAttendanceTrend"],
-    queryFn: async () => {
-      return fetch("/api/charts/monthly-attendance-trend?months=6")
-        .then((res) => res.json())
-        .catch((error) => error.message);
-    },
+    queryFn: async () =>
+      await apiFetch<TMonthlyAttendanceTrend[]>(
+        "/api/charts/monthly-attendance-trend?months=6",
+      ),
   });
-  return { data };
 }
 /**
  *  query administrator dashboard stats
  * @returns and object of DashboardStats/null and an error.
  */
 export function useDashboardStatsAPI() {
-  const { data: stats } = useSuspenseQuery<TDashboardStats | null>({
+  return useSuspenseQuery({
     queryKey: ["adminDashboardStats"],
-    queryFn: async () => {
-      return fetch("/api/dashboard/stats")
-        .then((res) => res.json())
-        .catch((error) => error.message);
-    },
+    queryFn: async () =>
+      await apiFetch<TDashboardStats>("/api/dashboard/stats"),
   });
-  return { stats };
 }
 /**
  *
  */
 export function useStaffPerDepartmentAPI() {
-  const { data } = useSuspenseQuery<TStaffPerDepartment[]>({
+  return useSuspenseQuery<TChartStaffPerDepartment[]>({
     queryKey: ["staffsPerDepartment"],
-    queryFn: async () => {
-      return fetch("/api/charts/staff-per-department?limit=10")
-        .then((res) => res.json())
-        .catch((error) => error.message);
-    },
+    queryFn: async () =>
+      await apiFetch<TChartStaffPerDepartment[]>(
+        "/api/charts/staff-per-department?limit=10",
+      ),
   });
-  return { data };
 }
 /**
  *

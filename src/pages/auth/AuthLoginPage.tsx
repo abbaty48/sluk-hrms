@@ -1,84 +1,45 @@
 import {
-  GraduationCap,
-  EyeOff,
-  Shield,
-  User,
-  Mail,
-  Lock,
-  Eye,
-} from "lucide-react";
+  AuthProvider,
+  useAuthContext,
+} from "@sluk/src/states/contexts/AuthContext";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ROLE_CONFIGS } from "@/types/authTypes";
-import { useLogin } from "@/hooks/api/useAuthAPI";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useNavigate, Link } from "react-router-dom";
-import { Controller, useForm } from "react-hook-form";
+import { ApiError } from "@sluk/src/lib/api.utils";
 import { ThemeButton } from "@/components/ThemeButton";
-import type { ILoginCredentials } from "@/types/authTypes";
-import type { TUserRole } from "@sluk/src/types/userTypes";
+import type { IAuthCredentials } from "@/types/authTypes";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Eye, Mail, Lock, EyeOff, GraduationCap } from "lucide-react";
 
-export default function LoginPage() {
-  const navigate = useNavigate();
-  const login = useLogin();
+function LoginPage() {
   const {
     register,
-    control,
     handleSubmit,
-    formState: { errors },
-  } = useForm<ILoginCredentials>({
-    defaultValues: { role: "admin", rememberMe: true },
-  });
-
-  const [selectedRole, setSelectedRole] = useState<TUserRole>("admin");
+    formState: { errors, isSubmitted, isSubmitting },
+  } = useForm<IAuthCredentials>();
+  const { login } = useAuthContext();
+  const [isError, setIsError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const _handleSubmit = async ({
-    email,
-    password,
-    rememberMe,
-  }: ILoginCredentials) => {
+  const _handleSubmit = async ({ email, password }: IAuthCredentials) => {
+    setIsError(false);
     // Validation
     if (!email || !password) {
-      toast.error("Please enter email and password");
-      return;
-    }
-
-    if (!email.includes("@")) {
-      toast.error("Please enter a valid email address");
-      return;
+      return void toast.error("Please enter email and password");
     }
 
     try {
-      await login.mutateAsync({
-        email,
-        password,
-        rememberMe,
-        role: selectedRole,
-      });
-
+      await login({ email, password });
       toast.success("Login successful!");
-
-      // Navigate based on role
-      if (selectedRole === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/employee");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Login failed. Please try again.");
+    } catch (error) {
+      setIsError(true);
+      toast.error((error as ApiError).errorMessage);
     }
   };
 
-  const roleIcons = {
-    staff: User,
-    admin: Shield,
-  };
+  const isLogging = isSubmitted && !isError;
 
   return (
     <div className="min-h-screen flex">
@@ -145,56 +106,6 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Role Selection */}
-          <div className="mb-5">
-            <Label className="text-sm font-medium text-foreground mb-2 block">
-              Sign in as
-            </Label>
-            <div className="grid grid-cols-3 gap-2">
-              {(Object.keys(ROLE_CONFIGS) as TUserRole[]).map((role) => {
-                const config = ROLE_CONFIGS[role];
-                const Icon = roleIcons[role];
-                const isSelected = selectedRole === role;
-
-                return (
-                  <button
-                    key={role}
-                    type="button"
-                    onClick={() => setSelectedRole(role)}
-                    className={cn(
-                      "flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition-all text-center",
-                      isSelected
-                        ? "border-primary bg-primary/5 shadow-sm"
-                        : "border-border bg-card hover:border-primary/30 hover:bg-muted/50",
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
-                        isSelected
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground",
-                      )}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <span
-                      className={cn(
-                        "text-xs font-semibold",
-                        isSelected ? "text-primary" : "text-foreground",
-                      )}
-                    >
-                      {config.label}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground leading-tight">
-                      {config.description}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Login Form */}
           <form className="space-y-4" onSubmit={handleSubmit(_handleSubmit)}>
             {/* Email Field */}
@@ -212,7 +123,7 @@ export default function LoginPage() {
                   type="email"
                   className="pl-9"
                   autoComplete="email"
-                  disabled={login.isPending}
+                  disabled={isLogging}
                   placeholder="name@slu.edu.ng"
                   {...register("email", {
                     required: "Provide your login email address.",
@@ -235,10 +146,11 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   className="pl-9 pr-10"
-                  disabled={login.isPending}
+                  disabled={isLogging}
                   autoComplete="current-password"
                   placeholder="Enter your password"
                   type={showPassword ? "text" : "password"}
+                  title="Must contain at least one uppercase letter, one number, one special character, and be at least 8 characters long."
                   {...register("password", {
                     required: "Provide your login password.",
                   })}
@@ -261,38 +173,9 @@ export default function LoginPage() {
               )}
             </Field>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Controller
-                  control={control}
-                  name="rememberMe"
-                  render={({ formState }) => (
-                    <Checkbox id="remember" disabled={formState.isLoading} />
-                  )}
-                />
-                <Label
-                  htmlFor="remember"
-                  className="text-sm text-muted-foreground cursor-pointer"
-                >
-                  Remember me
-                </Label>
-              </div>
-              <Link
-                to="/auth/forgot-password"
-                className="text-sm text-primary hover:underline"
-              >
-                Forgot password?
-              </Link>
-            </div>
-
             {/* Submit Button */}
-            <Button
-              type="submit"
-              className="w-full h-11"
-              disabled={login.isPending}
-            >
-              {login.isPending ? "Signing in..." : "Sign In"}
+            <Button type="submit" className="w-full h-11" disabled={isLogging}>
+              {isSubmitting ? "Signing in..." : "Sign In"}
             </Button>
           </form>
 
@@ -309,5 +192,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthenticatePage() {
+  return (
+    <AuthProvider>
+      <LoginPage />
+    </AuthProvider>
   );
 }
