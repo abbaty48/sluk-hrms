@@ -1,6 +1,7 @@
 import type {
   TAcademicStats,
   TStudyStaffQuery,
+  TExtensionRequest,
   TExtensionRequestList,
   TExtensionRequestForm,
   TStaffOnStudyLeaveList,
@@ -64,7 +65,7 @@ export function useExtensionRequestList(
 
       // Add parameters properly
       params.set("page", pageParam.toString());
-      params.set("limit", searchCriteria?.limit || "5")
+      params.set("limit", searchCriteria?.limit || "5");
 
       // Add other search criteria (avoid duplicating limit and q)
       if (searchCriteria) {
@@ -180,6 +181,20 @@ export function useAcademicDivisionStudyStaffList(
     data: currentPage.data,
     pagination: currentPage.pagination,
   };
+}
+/**
+ *
+ */
+export function useEmployeeExtensionRequest(staffId: string) {
+  const { data } = useSuspenseQuery({
+    queryKey: ["employeeExtensionRequest", staffId],
+    queryFn: async () => {
+      return await apiFetch<TExtensionRequest | null>(
+        `/api/academic/extension-request/staffs/${staffId}`,
+      );
+    },
+  });
+  return data;
 }
 /***
  *

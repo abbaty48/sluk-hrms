@@ -11,349 +11,462 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  useCommittees,
-  useCreateCommittee,
-  useUpdateCommittee,
+  useCommitteeApi,
   useDeleteCommittee,
 } from "@/hooks/api/useAdminSettingsAPI";
 import { toast } from "sonner";
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useForm } from "react-hook-form";
+import { Suspense, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ListTabSkeleton, EmptyState } from "./AdminSettingsPageSkeleton";
-import { Plus, Edit, Trash2, UsersRound, User, Calendar } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Paginator } from "@sluk/src/components/Paginator";
+import { useDebounce } from "@sluk/src/hooks/use-debounce";
+import { EmptyState } from "@sluk/src/components/EmptyState";
+import { QueryErrorResetBoundary } from "@tanstack/react-query";
+import { Field, FieldLabel } from "@sluk/src/components/ui/field";
+import type { ErrorResponseType } from "@sluk/src/types/errorResponseType";
+import { Plus, Edit, UsersRound, Search, Trash, FilterX } from "lucide-react";
 
+type TState = {
+  limit: string;
+  page: number;
+  isFilter: boolean;
+  term: string | undefined;
+  actives: boolean | undefined;
+};
+
+/** */
 export function AdminSettingsCommitteesTab() {
-  const { data, isLoading } = useCommittees();
-  const createCommittee = useCreateCommittee();
-  const updateCommittee = useUpdateCommittee();
-  const deleteCommittee = useDeleteCommittee();
+  const [filter, setFilter] = useState<TState>({
+    limit: "5",
+    page: 1,
+    isFilter: false,
+    term: undefined,
+    actives: undefined,
+  });
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [editingCommittee, setEditingCommittee] = useState<TCommittee | null>(
     null,
   );
-  const [formData, setFormData] = useState<TCreateCommitteeRequest>({
-    name: "",
-    members: [],
-    chairman: "",
-    purpose: "",
-    description: "",
-    meetingSchedule: "",
-  });
-
-  const handleCreate = () => {
-    setEditingCommittee(null);
-    setFormData({
-      name: "",
-      description: "",
-      chairman: "",
-      members: [],
-      purpose: "",
-      meetingSchedule: "",
-    });
-    setIsDialogOpen(true);
+  /** */
+  const changeFitler = (state: Partial<TState>) => {
+    setFilter((prev) => ({
+      ...prev,
+      ...state,
+      isFilter: state.term !== undefined || state.actives !== undefined,
+    }));
   };
+  /** */
+  const resetFilter = () =>
+    changeFitler({ isFilter: false, actives: undefined, term: undefined });
+  /** */
+  const handleCreate = () => setIsDialogOpen(true);
+
+  return (
+    <>
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">
+              Committees
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Manage organizational committees and working groups
+            </p>
+          </div>
+          <Button onClick={handleCreate} disabled={filter.isFilter}>
+            <Plus className="h-4 w-4 mr-1" />
+            Add Committee
+          </Button>
+        </div>
+        {/*SEARCH*/}
+        <Card>
+          <CardContent className="space-y-1.5">
+            <div className="flex items-center gap-3">
+              <Search size={"18"} />
+              <Input
+                type="search"
+                value={filter.term ?? ""}
+                placeholder="Search communities..."
+                onChange={(e) => changeFitler({ term: e.currentTarget.value })}
+              />
+            </div>
+            {/*show filter*/}
+            {filter.isFilter && (
+              <Button variant={"ghost"} onClick={resetFilter}>
+                <FilterX />
+                Clear filters
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+        {/*<SearchCommittee term={filter.term} changeFitler={changeFitler} />*/}
+        {/* COMMITTEES */}
+        <QueryErrorResetBoundary>
+          <Suspense fallback={<TableSkeleton />}>
+            <CommitteeList
+              filter={filter}
+              changeFitler={changeFitler}
+              handleCreate={handleCreate}
+              setIsDialogOpen={setIsDialogOpen}
+              setEditingCommittee={setEditingCommittee}
+            />
+          </Suspense>
+        </QueryErrorResetBoundary>
+      </div>
+      {/* Create/Edit Dialog */}
+      <CommitteeDialog
+        isDialogOpen={isDialogOpen}
+        setIsDialogOpen={setIsDialogOpen}
+        editingCommittee={editingCommittee}
+      />
+    </>
+  );
+}
+
+/**
+ *
+ */
+function TR({
+  c,
+  setIsDialogOpen,
+  setEditingCommittee,
+}: {
+  c: TCommittee;
+  setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setEditingCommittee: React.Dispatch<React.SetStateAction<TCommittee | null>>;
+}) {
+  const { mutateAsync: deleteCommittee } = useDeleteCommittee();
 
   const handleEdit = (committee: TCommittee) => {
     setEditingCommittee(committee);
-    setFormData({
-      name: committee.name,
-      members: committee.members || [],
-      purpose: committee.purpose || "",
-      chairman: committee.chairman || "",
-      description: committee.description || "",
-      meetingSchedule: committee.meetingSchedule || "",
-    });
     setIsDialogOpen(true);
-  };
-
-  const handleSave = async () => {
-    try {
-      if (editingCommittee) {
-        await updateCommittee.mutateAsync({
-          id: editingCommittee.id,
-          data: formData,
-        });
-        toast.success("Committee updated successfully");
-      } else {
-        await createCommittee.mutateAsync(formData);
-        toast.success("Committee created successfully");
-      }
-      setIsDialogOpen(false);
-    } catch {
-      toast.error(
-        `Failed to ${editingCommittee ? "update" : "create"} committee`,
-      );
-    }
   };
 
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
 
     try {
-      await deleteCommittee.mutateAsync(id);
+      await deleteCommittee(id);
       toast.success("Committee deleted successfully");
     } catch {
       toast.error("Failed to delete committee");
     }
   };
 
-  if (isLoading) return <ListTabSkeleton />;
+  return (
+    <tr key={c.id} className="p-3 h-5 border-b border-border last:border-0 ">
+      <td className="py-3 px-4">{c.id}</td>
+      <td className="py-3 px-4">{c.name}</td>
+      <td className="py-3 px-4">{c.abbre || "N/A"}</td>
+      <td className="py-3 px-4">{c.description || "N/A"}</td>
+      <td className="py-3 px-4">
+        {c.isActive ? (
+          <span className="text-success-foreground bg-success-bg py-1 px-3 font-bold rounded-2xl text-xs">
+            Active
+          </span>
+        ) : (
+          <span>Not Active</span>
+        )}
+      </td>
+      <td className="py-3 px-4 flex items-center justify-between">
+        <Button variant={"ghost"} onClick={() => handleEdit(c)}>
+          <Edit />
+        </Button>
+        <Button variant={"ghost"} onClick={() => handleDelete(c.id, c.name)}>
+          <Trash />
+        </Button>
+      </td>
+    </tr>
+  );
+}
 
-  const committees = data?.data || [];
+/**
+ * Committee Table List
+ */
+export function CommitteeList({
+  filter,
+  setIsDialogOpen,
+  setEditingCommittee,
+  handleCreate,
+  changeFitler,
+}: {
+  filter: TState;
+  handleCreate: () => void;
+  changeFitler: (state: Partial<TState>) => void;
+  setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setEditingCommittee: React.Dispatch<React.SetStateAction<TCommittee | null>>;
+}) {
+  const term = useDebounce(filter.term!, 1000);
+
+  const {
+    isFetching,
+    pagination,
+    data: committees,
+  } = useCommitteeApi().useCommittees({ ...filter, term });
+
+  // Handle filter not found
+  if (committees.length <= 0 && filter.isFilter) {
+    return (
+      <EmptyState
+        icon={FilterX}
+        title="Not found"
+        actionLabel="Reset filter"
+        description={`Could not find any committee base on your criteria.`}
+        onAction={() =>
+          changeFitler({ ...filter, actives: undefined, term: undefined })
+        }
+      />
+    );
+  }
+
+  return committees.length === 0 ? (
+    <Card className="stats-card p-8">
+      <EmptyState
+        icon={UsersRound}
+        onAction={handleCreate}
+        title="No committees found"
+        actionLabel="Add Committee"
+        description="Get started by creating your first committee"
+      />
+    </Card>
+  ) : (
+    <Card>
+      <CardContent className="space-y-3">
+        <table className="text-sm w-full">
+          <thead>
+            <tr className="border-b border-border">
+              <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+                S/N
+              </th>
+              <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+                NAME
+              </th>
+              <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+                ABBREVIATION
+              </th>
+              <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+                DESCRIPTION
+              </th>
+              <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+                STATUS
+              </th>
+              <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+                ACTIONS
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {committees.map((c) => (
+              <TR
+                c={c}
+                key={c.id}
+                setIsDialogOpen={setIsDialogOpen}
+                setEditingCommittee={setEditingCommittee}
+              />
+            ))}
+          </tbody>
+        </table>
+        {pagination && (
+          <Paginator
+            isFetching={isFetching}
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            hasNextPage={pagination.hasNextPage}
+            fetchNextPage={() => changeFitler({ page: filter.page + 1 })}
+            fetchPreviousPage={() => changeFitler({ page: filter.page - 1 })}
+            hasPreviousPage={pagination.hasPrevPage}
+            onRowsPerPageChange={(limit) => changeFitler({ limit })}
+          />
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/**
+ * CommitteDialog
+ */
+function CommitteeDialog({
+  isDialogOpen,
+  setIsDialogOpen,
+  editingCommittee,
+}: {
+  isDialogOpen: boolean;
+  editingCommittee: TCommittee | null;
+  setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, defaultValues },
+  } = useForm<TCreateCommitteeRequest>({
+    defaultValues: {
+      name: editingCommittee?.name,
+      abbre: editingCommittee?.abbre || undefined,
+      description: editingCommittee?.description || undefined,
+    },
+  });
+  /**
+   *
+   */
+  const { useCreateCommittee, useUpdateCommittee } = useCommitteeApi();
+  /**
+   *
+   */
+  const { mutateAsync: createCommittee, isPending: isCreating } =
+    useCreateCommittee();
+  /**
+   *
+   */
+  const { mutateAsync: updateCommittee, isPaused: isUpdating } =
+    useUpdateCommittee();
+
+  const handleSave = async (formData: TCreateCommitteeRequest) => {
+    try {
+      if (editingCommittee) {
+        await updateCommittee({
+          id: editingCommittee.id,
+          data: formData,
+        });
+        toast.success("Committee updated successfully");
+      } else {
+        await createCommittee(formData);
+        toast.success("Committee created successfully");
+      }
+      setIsDialogOpen(false);
+    } catch (err) {
+      const error = err as ErrorResponseType;
+      toast.error(error.errorTitle, {
+        description: `Failed to ${editingCommittee ? "update" : "create"} committee`,
+      });
+    }
+  };
 
   return (
-    <div>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Committees</h2>
-          <p className="text-sm text-muted-foreground">
-            Manage organizational committees and working groups
-          </p>
-        </div>
-        <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-1" />
-          Add Committee
-        </Button>
-      </div>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>
+            {editingCommittee ? "Edit Committee" : "Add Committee"}
+          </DialogTitle>
+          <DialogDescription>
+            {editingCommittee
+              ? "Update the committee information"
+              : "Create a new committee"}
+          </DialogDescription>
+        </DialogHeader>
 
-      {/* Content */}
-      {committees.length === 0 ? (
-        <Card className="stats-card p-8">
-          <EmptyState
-            title="No committees found"
-            description="Get started by creating your first committee"
-            icon={UsersRound}
-            actionLabel="Add Committee"
-            onAction={handleCreate}
-          />
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {committees.map((committee) => (
-            <Card key={committee.id} className="stats-card p-5">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground mb-1">
-                    {committee.name}
-                  </h3>
-                  {committee.purpose && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {committee.purpose}
-                    </p>
-                  )}
-                </div>
-                <div className="flex gap-1 ml-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(committee)}
-                  >
-                    <Edit className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(committee.id, committee.name)}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
-
-              {committee.description && (
-                <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
-                  {committee.description}
-                </p>
-              )}
-
-              <div className="space-y-2">
-                {committee.chairman && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <User className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">
-                      Chair:
-                    </span>
-                    <span className="text-xs font-medium">
-                      {committee.chairman}
-                    </span>
-                  </div>
-                )}
-
-                {committee.members && committee.members.length > 0 && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <UsersRound className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">
-                      Members:
-                    </span>
-                    <Badge variant="secondary" className="text-xs">
-                      {committee.members.length}
-                    </Badge>
-                  </div>
-                )}
-
-                {committee.meetingSchedule && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">
-                      {committee.meetingSchedule}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-border">
-                <span
-                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    committee.isActive
-                      ? "bg-success/10 text-success"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {committee.isActive ? "Active" : "Inactive"}
-                </span>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* Create/Edit Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
-              {editingCommittee ? "Edit Committee" : "Add Committee"}
-            </DialogTitle>
-            <DialogDescription>
-              {editingCommittee
-                ? "Update the committee information"
-                : "Create a new committee"}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 max-h-[60vh] overflow-y-auto px-1">
-            <div className="space-y-2">
-              <Label htmlFor="name">Committee Name</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                placeholder="e.g., Academic Board Committee"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="purpose">Purpose</Label>
-              <Input
-                id="purpose"
-                value={formData.purpose}
-                onChange={(e) =>
-                  setFormData({ ...formData, purpose: e.target.value })
-                }
-                placeholder="e.g., Oversee academic policies and standards"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                placeholder="Detailed description of the committee's role and responsibilities"
-                rows={3}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="chairman">Chairman (Optional)</Label>
-                <Input
-                  id="chairman"
-                  value={formData.chairman}
-                  onChange={(e) =>
-                    setFormData({ ...formData, chairman: e.target.value })
-                  }
-                  placeholder="e.g., Prof. John Doe"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="meetingSchedule">
-                  Meeting Schedule (Optional)
-                </Label>
-                <Input
-                  id="meetingSchedule"
-                  value={formData.meetingSchedule}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      meetingSchedule: e.target.value,
-                    })
-                  }
-                  placeholder="e.g., Every Monday, 2 PM"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="members">
-                Members (Optional - Staff IDs, comma-separated)
-              </Label>
-              <Input
-                id="members"
-                value={formData.members?.join(", ") || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    members: e.target.value
-                      .split(",")
-                      .map((id) => id.trim())
-                      .filter(Boolean),
-                  })
-                }
-                placeholder="e.g., staff_1, staff_2, staff_3"
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter staff IDs separated by commas
-              </p>
-            </div>
-          </div>
+        <form
+          onSubmit={handleSubmit(handleSave)}
+          className="space-y-4 max-h-[60vh] overflow-y-auto px-1"
+        >
+          {/*NAME*/}
+          <Field className="space-y-2">
+            <FieldLabel>Committee Name</FieldLabel>
+            <Input
+              value={defaultValues?.name}
+              placeholder="e.g., Academic Board Committee"
+              {...register("name", {
+                required: "Provide the committee name.",
+              })}
+            />
+            {errors.name && (
+              <p className="text-red-500 text-xs">{errors.name.message}</p>
+            )}
+          </Field>
+          {/*ABBRE*/}
+          <Field className="space-y-2">
+            <FieldLabel>Abbreviation Name</FieldLabel>
+            <Input
+              placeholder="e.g. AB"
+              {...register("abbre")}
+              value={defaultValues?.abbre}
+            />
+          </Field>
+          {/*DESCRIPTION*/}
+          <Field className="space-y-2">
+            <FieldLabel htmlFor="description">
+              Description (Optional)
+            </FieldLabel>
+            <Textarea
+              id="description"
+              rows={3}
+              value={defaultValues?.description}
+              placeholder="Detailed description of the committee's role and responsibilities"
+              {...register("description")}
+            />
+          </Field>
 
           <DialogFooter>
             <Button
+              type="button"
               variant="outline"
+              disabled={isCreating || isUpdating}
               onClick={() => setIsDialogOpen(false)}
-              disabled={createCommittee.isPending || updateCommittee.isPending}
             >
               Cancel
             </Button>
-            <Button
-              onClick={handleSave}
-              disabled={
-                !formData.name ||
-                createCommittee.isPending ||
-                updateCommittee.isPending
-              }
-            >
-              {createCommittee.isPending || updateCommittee.isPending
-                ? "Saving..."
-                : "Save"}
+            <Button type="submit" disabled={isCreating || isUpdating}>
+              {isCreating || isUpdating ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/** */
+function TableSkeleton() {
+  return (
+    <Card className="stats-card overflow-hidden">
+      {/* Table Header */}
+      <table className="text-sm">
+        <thead>
+          <tr className="border-b border-border">
+            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+              S/N
+            </th>
+            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+              NAME
+            </th>
+            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+              ABBREVIATION
+            </th>
+            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+              DESCRIPTION
+            </th>
+            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+              STATUS
+            </th>
+            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider py-3 px-4">
+              ACTIONS
+            </th>
+          </tr>
+        </thead>
+      </table>
+      {/* Table Rows */}
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div
+          key={i}
+          className="p-2 px-4 flex justify-between gap-4 border-b border-border last:border-b-0"
+        >
+          <div className="h-4 w-full rounded shimmer" />
+          <div className="w-full h-4 rounded shimmer" />
+          <div className="h-4 w-full rounded shimmer" />
+          <div className="w-full h-4 rounded shimmer" />
+          <div className="w-full h-4 rounded shimmer" />
+          <div className="flex gap-2">
+            <div className="h-8 w-8 rounded shimmer" />
+            <div className="h-8 w-8 rounded shimmer" />
+          </div>
+        </div>
+      ))}
+    </Card>
   );
 }

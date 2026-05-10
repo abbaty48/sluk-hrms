@@ -72,7 +72,7 @@ export default function EmployeeAttendancePage() {
 }
 
 function EmployeeAttendance() {
-  const [page, setPage] = useState(1);
+  const [page] = useState(1);
   const [pagePerRow, setPagePerRow] = useState("5");
   const { data, isFetching, pagination, fetchNextPage, fetchPreviousPage } =
     useAttendanceSummary(page, pagePerRow);

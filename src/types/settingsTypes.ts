@@ -11,7 +11,8 @@ export type SettingsTab =
   | "appointments"
   | "responsibilities";
 
-export type DateFormat = "DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD";
+// export type DateFormat = "DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD";
+export type DateFormat = "DD_MM_YYYY" | "MM_DD_YYYY" | "YYYY_MM_DD";
 
 export type FiscalYearMonth =
   | "January"

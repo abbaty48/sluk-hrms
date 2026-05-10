@@ -14,6 +14,7 @@ import type { TCommittee } from "./committeeTypes.ts";
 import type { TDocument } from "./documentTypes.ts";
 import type { TStaff } from "./staffTypes.ts";
 import type { TRank } from "./rankTypes.ts";
+import type { TEmploymentHistory } from "./employeeHistoryTypes.ts";
 
 export type TPayroll = {
   id: string;

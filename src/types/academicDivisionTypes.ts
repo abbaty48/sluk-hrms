@@ -10,8 +10,8 @@ export type TAcademicStats = {
 };
 export type TStaffOnStudyLeave = {
   degreeType: string;
-  payStatus: "WithPay" | "WithoutPage";
-  durationYear: 1;
+  payStatus: "WithPayment" | "WithoutPayment";
+  durationYear: number;
   leaveCategory: "Study" | "Work";
   studyMode: string;
   institution: string;

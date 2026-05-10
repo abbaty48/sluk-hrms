@@ -1,11 +1,11 @@
 import { Suspense, useState } from "react";
 import { Briefcase, LucideHistory } from "lucide-react";
+import { Paginator } from "@sluk/src/components/Paginator";
+import { EmptyState } from "@sluk/src/components/EmptyState";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { useEmploymentHistory } from "@sluk/src/hooks/api/useEmployeeAPI";
 import { Card, CardContent, CardHeader } from "@sluk/src/components/ui/card";
 import { EmploymentHistorySkeleton } from "@/pages/dashboard/employee/skeletons/EmploymentHistorySkeleton";
-import { Paginator } from "@sluk/src/components/Paginator";
-import { EmptyState } from "@sluk/src/components/EmptyState";
 
 export default function EmploymentHistory() {
   return (

@@ -11,6 +11,7 @@ import type {
   LeaveTypeDistribution,
 } from "@/types/analytic-types";
 import { apiFetch } from "@sluk/src/lib/api.utils";
+import type { PayrollBreakdownData } from "@sluk/src/types/analyticTypes";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 
 // 1. Staff Strength Over Years
@@ -83,7 +84,9 @@ export function usePayrollBreakdown(filters?: AnalyticsFilters) {
   return useSuspenseQuery({
     queryKey: ["analytics", "payroll-breakdown", filters],
     queryFn: async () =>
-      await apiFetch(`/api/analytics/payroll-breakdown?${params}`),
+      await apiFetch<PayrollBreakdownData>(
+        `/api/analytics/payroll-breakdown?${params}`,
+      ),
     staleTime: 5 * 60 * 1000,
   });
 }

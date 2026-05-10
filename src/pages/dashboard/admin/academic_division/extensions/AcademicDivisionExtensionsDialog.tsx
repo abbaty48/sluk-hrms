@@ -72,8 +72,8 @@ export function ExtensionDialog({
       payload: data,
       action: extensionRequest ? "UPDATE" : "CREATE",
       success: {
-        title: "Successful Added/Update",
-        description: "Successful added/updated the new leave type.",
+        title: "Successful Added",
+        description: "Successful add the new extension request.",
       },
     };
 

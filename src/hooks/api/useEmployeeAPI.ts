@@ -7,14 +7,31 @@ import type { TStaff, TStaffStats } from "@/types/staffTypes";
 import type { TQualification } from "@sluk/src/types/qualificationTypes";
 import { type TEmploymentHistoryList } from "@/types/employeeHistoryTypes";
 import type { TAttendanceSummaryList } from "@sluk/src/types/attendance.types";
+import type { TLeaveStudyDetails } from "@sluk/src/types/leave-managementTypes";
 
-export function useEmployee() {
+/**
+ *
+ */
+export function useEmployee(staffId: string) {
   return useSuspenseQuery<TStaff>({
-    queryKey: ["employee"],
-    queryFn: async () => await apiFetch("/api/staffs/details"),
+    queryKey: ["employee", staffId],
+    queryFn: async () => await apiFetch(`/api/staffs/${staffId}/details`),
   });
 }
-
+/**
+ *
+ */
+export function useEmployeeStudyLeave(staffId: string) {
+  const { data } = useSuspenseQuery({
+    queryKey: ["employeeStudyLeave", staffId],
+    queryFn: async () =>
+      await apiFetch<{
+        payload?: null;
+        studyLeaveDetails?: TLeaveStudyDetails;
+      }>(`/api/staffs/${staffId}/details/study`),
+  });
+  return data.studyLeaveDetails ?? data.payload;
+}
 /**
  *
  */
@@ -73,19 +90,6 @@ export function useEmploymentHistory({
 /**
  *
  */
-
-// export function useAttendanceSummary() {
-//   const { data } = useQuery({
-//     queryKey: ["attendance-summary"],
-//     queryFn: async () => {
-//       return await apiFetch<TAttendanceSummaryList>(
-//         `/api/staffs/attendance/summary`,
-//       );
-//     },
-//   });
-//   return { data };
-// }
-
 export function useAttendanceSummary(
   page?: number,
   limit?: string,

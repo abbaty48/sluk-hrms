@@ -6,7 +6,7 @@ import { EmployeeNotFound } from "./EmployeeNotFound";
 import { Motion } from "@/components/Motion";
 
 export default function EmployeeProfilePage() {
-  const { data: staff, isLoading } = useEmployee();
+  const { data: staff, isLoading } = useEmployee("current");
 
   if (isLoading) return <ProfileSkeleton />;
   if (!staff) return <EmployeeNotFound />;

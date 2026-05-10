@@ -2,8 +2,8 @@ import { EmployeePersonalSkeleton } from "@/pages/dashboard/employee/skeletons/E
 import { User, MapPin, Phone, Mail, Calendar } from "lucide-react";
 import { useEmployee } from "@sluk/src/hooks/api/useEmployeeAPI";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
-import { formatDate, name } from "@sluk/src/lib/utils";
 import { EmployeeNotFound } from "./EmployeeNotFound";
+import { name } from "@sluk/src/lib/utils";
 import { Suspense } from "react";
 
 function InfoItem({
@@ -40,10 +40,9 @@ export default function EmployeePersonal() {
 }
 
 function PersonalDetails() {
-  const { data: staff } = useEmployee();
+  const { data: staff } = useEmployee("current");
 
   if (!staff) return <EmployeeNotFound />;
-
   return (
     <div className="m-4 grid md:grid-cols-2 gap-6">
       {/* LEFT CARD */}
@@ -55,7 +54,7 @@ function PersonalDetails() {
         <InfoItem
           icon={Calendar}
           label="Date of Birth"
-          value={formatDate(new Date(staff.dateOfBirth!))}
+          // value={formatDate(new Date(staff.dateOfBirth!))}
         />
         <InfoItem
           icon={User}

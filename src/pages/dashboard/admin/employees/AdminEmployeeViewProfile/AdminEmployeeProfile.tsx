@@ -1,55 +1,40 @@
 import {
-  formatPhoneNumber,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@sluk/src/components/ui/tabs";
+import {
+  name,
+  nameTitle,
   getStaffStatusLabel,
   getStaffStatusVariant,
 } from "@/lib/utils";
 import {
-  Mail,
-  Hash,
-  Flag,
-  Save,
-  Phone,
-  Pencil,
-  Building,
-  Calendar,
-  Briefcase,
-  ArrowLeft,
-} from "lucide-react";
-import {
-  AEVPDateInfoItem,
-  AEVPDepartmentInfoItem,
-  AEVPEmptyEmployee,
-  AEVPInfoItem,
-  AEVPRankInfoItem,
-} from "./AdminEmployeeProfilePageComponents";
-import {
   useStaffProfile,
   useUpdateStaffProfileAPI,
 } from "@/hooks/api/useAdminStaffApi";
-import type {
-  TStaff,
-  TStaffDetails,
-  TStaffProfileUpdateRequest,
-} from "@/types/staffTypes";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AEPDialog } from "./AdminEmployeeProfilePageDialog";
-import { Separator } from "@/components/ui/separator";
-import { Activity, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Motion } from "@/components/Motion";
+import {
+  EmployeeProfilePersonalView,
+  EmployeeProfileStudyLeaveView,
+} from "./AdminEmployeeProfileViews";
+import { Activity, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { Motion } from "@/components/Motion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import type { TStaffDetails } from "@/types/staffTypes";
+import { AEPDialog } from "./AdminEmployeeProfilePageDialog";
+import { AEVPEmptyEmployee } from "./AdminEmployeeProfilePageComponents";
+import { Mail, Flag, Save, Phone, Pencil, ArrowLeft } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type TPageProps = {
   handleEdit?: () => void;
   handleBack: () => void;
   staffId?: string;
 };
-
-const employeeName = (employee: TStaff) =>
-  [employee.firstName, employee.lastName].join(" ");
 
 /**
  *
@@ -62,43 +47,28 @@ function EmployeeProfile({
   handleBack: () => void;
 }) {
   const [isEditing, setIsEditing] = useState(false);
-  const formRef = useRef<HTMLFormElement | null>(null);
   const [openChangeStatus, setOpenChangeStatus] = useState(false);
   const { mutateAsync: updateProfile, isPending: isUpdating } =
     useUpdateStaffProfileAPI();
-  const { handleSubmit, ...formHook } = useForm<TStaffProfileUpdateRequest>({
-    defaultValues: {
-      name: employeeName(employee),
-      email: employee.email,
-      phone: employee.phone,
-      rankId: employee.rankId,
-      departmentId: employee.departmentId ?? "N/A",
-      joinOn: employee.dateOfFirstAppointment
-        ? new Date(employee.dateOfFirstAppointment).toISOString()
-        : new Date().toDateString(),
-    },
-  });
 
   const handleSaveEdit = async () => {
-    if (await formHook.trigger()) {
-      try {
-        await updateProfile({
-          staffId: employee.id,
-          ...formHook.getValues(),
-        });
-        toast.success("Update successful", {
-          description: "Employee detail successful updated.",
-        });
-        setIsEditing(false);
-      } catch (error: any) {
-        toast.error("Update Failed ", {
-          description: error.message || "Failed to update employee profile.",
-        });
-      }
-    }
+    // if (await formHook.trigger()) {
+    //   try {
+    //     await updateProfile({
+    //       staffId: employee.id,
+    //       ...formHook.getValues(),
+    //     });
+    //     toast.success("Update successful", {
+    //       description: "Employee detail successful updated.",
+    //     });
+    //     setIsEditing(false);
+    //   } catch (error: any) {
+    //     toast.error("Update Failed ", {
+    //       description: error.message || "Failed to update employee profile.",
+    //     });
+    //   }
+    // }
   };
-
-  const getEmployeeInitials = `${employeeName(employee).split("")[0]?.toLocaleUpperCase()}${employeeName(employee).split("")[1]?.toLocaleUpperCase()}`;
 
   return (
     <>
@@ -155,25 +125,25 @@ function EmployeeProfile({
       </div>
 
       {/* Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="flex flex-wrap flex-row gap-4">
         {/* Profile Card */}
-        <Motion variant="scale" delay={0.1}>
+        <Motion variant="scale" delay={0.1} className="min-w-96">
           <Card className="flex flex-col items-center text-center py-8 gap-4">
             {/* Avatar */}
             <Avatar className="h-24 w-24">
               <AvatarImage
                 src={employee.profilePhoto || ""}
-                alt={employeeName(employee)}
+                alt={name(employee)}
               />
               <AvatarFallback className="bg-primary/10 text-primary text-2xl font-bold">
-                {getEmployeeInitials}
+                {nameTitle(name(employee))}
               </AvatarFallback>
             </Avatar>
 
             {/* Name & Position */}
             <>
               <h2 className="text-xl font-semibold text-card-foreground">
-                {employeeName(employee)}
+                {name(employee)}
               </h2>
               <p className="text-sm text-muted-foreground">{employee.rank}</p>
             </>
@@ -208,132 +178,42 @@ function EmployeeProfile({
             </Activity>
           </Card>
         </Motion>
-
+        <Tabs defaultValue={"personal_work"} className="flex-auto">
+          <TabsList>
+            <TabsTrigger value="personal_work">Personal & Work</TabsTrigger>
+            <TabsTrigger value="study_leave">Study Leave</TabsTrigger>
+          </TabsList>
+          <TabsContent value="personal_work">
+            <EmployeeProfilePersonalView
+              employee={employee}
+              isEditing={isEditing}
+              isUpdating={isUpdating}
+              handleSaveEdit={handleSaveEdit}
+            />
+          </TabsContent>
+          <TabsContent value="study_leave">
+            <EmployeeProfileStudyLeaveView
+              isEditing={isEditing}
+              isUpdating={isUpdating}
+              employeeID={employee.id}
+              handleSaveEdit={handleSaveEdit}
+            />
+          </TabsContent>
+        </Tabs>
         {/* Information Cards */}
-        <form
-          ref={formRef}
-          onSubmit={handleSubmit(handleSaveEdit)}
-          className="lg:col-span-2 space-y-6"
-        >
-          {/* Personal Information */}
-          <Motion variant="fadeUp" delay={0.2}>
-            <Card className="p-4">
-              <h3 className="text-sm font-semibold text-card-foreground mb-2">
-                Personal Information
-              </h3>
-
-              <fieldset
-                disabled={isUpdating}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-1"
-              >
-                <AEVPInfoItem
-                  name=""
-                  icon={Hash}
-                  label="Employee ID"
-                  value={employee.id}
-                />
-
-                <AEVPInfoItem
-                  name="name"
-                  isRequired
-                  icon={Briefcase}
-                  label="Full Name"
-                  formHook={formHook}
-                  value={employeeName(employee)}
-                  isEditing={isEditing}
-                  requiredMessage="Staff name must be provided, but omitted."
-                />
-
-                <AEVPInfoItem
-                  icon={Mail}
-                  isRequired
-                  name="email"
-                  label="Email Address"
-                  formHook={formHook}
-                  value={employee.email}
-                  isEditing={isEditing}
-                  requiredMessage="Staff email must be provided, but omitted."
-                />
-
-                <AEVPInfoItem
-                  icon={Phone}
-                  name="phone"
-                  isRequired
-                  label="Phone Number"
-                  formHook={formHook}
-                  isEditing={isEditing}
-                  value={formatPhoneNumber(employee.phone || "N/A")}
-                  requiredMessage="Staff phone number must be provided, but omitted."
-                />
-              </fieldset>
-            </Card>
-          </Motion>
-
-          {/* Work Information */}
-          <Motion variant="fadeUp" delay={0.3}>
-            <Card className="p-4">
-              <h3 className="text-sm font-semibold text-card-foreground mb-2">
-                Work Information
-              </h3>
-
-              <fieldset
-                className="grid grid-cols-1 sm:grid-cols-2 gap-1"
-                disabled={isUpdating}
-              >
-                <AEVPDepartmentInfoItem
-                  isRequired
-                  icon={Building}
-                  name="department"
-                  isEditing={isEditing}
-                  value={employee.department?.id || "N/A"}
-                  label={employee.department?.name || "N/A"}
-                />
-
-                <AEVPRankInfoItem
-                  name="rank"
-                  isRequired
-                  icon={Briefcase}
-                  isEditing={isEditing}
-                  label={employee.rank}
-                  value={employee.rankId}
-                />
-
-                <AEVPInfoItem
-                  icon={Flag}
-                  name="status"
-                  label="Status"
-                  value={getStaffStatusLabel(employee.status)}
-                />
-
-                <AEVPDateInfoItem
-                  name="joinOn"
-                  icon={Calendar}
-                  label="Join Date"
-                  isEditing={isEditing}
-                  value={
-                    employee.dateOfFirstAppointment
-                      ? new Date(employee.dateOfFirstAppointment).toDateString()
-                      : ""
-                  }
-                />
-              </fieldset>
-            </Card>
-          </Motion>
-        </form>
       </div>
 
       {/* Change Status Dialog */}
       <AEPDialog
         employeeId={employee.id}
+        employeeName={name(employee)}
         employeeStatus={employee.status}
         openChangeStatus={openChangeStatus}
-        employeeName={employeeName(employee)}
         setOpenChangeStatus={setOpenChangeStatus}
       />
     </>
   );
 }
-
 /**
  *
  */

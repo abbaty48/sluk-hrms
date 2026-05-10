@@ -24,6 +24,7 @@ export interface TUserProfile {
 }
 
 export type TAuthUser = {
+  sId: string;
   sub: string;
   email: string;
   role: TUserRole;

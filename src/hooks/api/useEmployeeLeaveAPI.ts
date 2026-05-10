@@ -19,6 +19,14 @@ export function useLeaveBalancesAPI() {
   return data.data;
 }
 
+export function useLeaveTypesAPI() {
+  const { data } = useSuspenseQuery({
+    queryKey: ["leave-types"],
+    queryFn: async () => await apiFetch<TLeaveBalanceList>(`/api/leaves/types`),
+  });
+  return data.data;
+}
+
 export function useLeaveHistoryAPI({
   key,
   limit,

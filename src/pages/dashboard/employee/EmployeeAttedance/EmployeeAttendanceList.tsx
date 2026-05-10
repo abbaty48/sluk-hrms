@@ -22,7 +22,6 @@ export function EmployeeAttendanceList({
   attendances,
   isFetching,
   pagination,
-  page,
 }: AttendanceTableProps) {
   const getStatusBadgeClass = (status: string) => {
     const baseClass =

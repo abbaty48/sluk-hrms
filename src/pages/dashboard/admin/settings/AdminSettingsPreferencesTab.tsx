@@ -16,8 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { useState, useEffect, useEffectEvent } from "react";
+import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { PreferencesTabSkeleton } from "./AdminSettingsPageSkeleton";
+import { useState, useEffect, useEffectEvent, Suspense } from "react";
 import type { DateFormat, FiscalYearMonth } from "@/types/settingsTypes";
 
 const APPROVAL_LEVELS = [1, 2, 3, 4, 5];
@@ -35,9 +36,19 @@ const FISCAL_MONTHS: FiscalYearMonth[] = [
   "November",
   "December",
 ];
-const DATE_FORMATS: DateFormat[] = ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD"];
+const DATE_FORMATS: DateFormat[] = ["DD_MM_YYYY", "MM_DD_YYYY", "YYYY_MM_DD"];
 
 export function AdminSettingsPreferencesTab() {
+  return (
+    <QueryErrorResetBoundary>
+      <Suspense fallback={<SettingSkeleton />}>
+        <SettingsPreferencesTab />
+      </Suspense>
+    </QueryErrorResetBoundary>
+  );
+}
+
+function SettingsPreferencesTab() {
   const { data: preferences, isLoading, error } = useSystemPreferences();
   const updatePreferences = useUpdatePreferences();
 
@@ -47,7 +58,7 @@ export function AdminSettingsPreferencesTab() {
     smsNotifications: false,
     emailNotifications: true,
     institutionAbbreviation: "",
-    dateFormat: "DD/MM/YYYY" as DateFormat,
+    dateFormat: "DD_MM_YYYY" as DateFormat,
     fiscalYearStart: "January" as FiscalYearMonth,
   });
 
@@ -247,5 +258,98 @@ export function AdminSettingsPreferencesTab() {
         </Card>
       </div>
     </div>
+  );
+}
+
+function SettingSkeleton() {
+  return (
+    <>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Preferences</h2>
+          <p className="text-sm text-muted-foreground">
+            General system settings and preferences
+          </p>
+        </div>
+        <div className="h-9 w-35 shimmer flex items-center justify-center">
+          <Save className="h-4 w-4 mr-1" />
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        {/* Institution Details */}
+        <Card className="stats-card p-6">
+          <h3 className="text-sm font-semibold text-foreground mb-4">
+            Institution Details
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="inst-name">Institution Name</Label>
+              <div className="h-10 w-10/12 shimmer"></div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="inst-abbr">Abbreviation</Label>
+              <div className="h-10 w-10/12 shimmer"></div>
+            </div>
+          </div>
+        </Card>
+
+        {/* System Configuration */}
+        <Card className="stats-card p-6">
+          <h3 className="text-sm font-semibold text-foreground mb-4">
+            System Configuration
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label>Date Format</Label>
+              <div className="h-10 w-10/12 shimmer"></div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Fiscal Year Start</Label>
+              <div className="h-10 w-10/12 shimmer"></div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Leave Approval Levels</Label>
+              <div className="h-10 w-10/12 shimmer"></div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Notifications */}
+        <Card className="stats-card p-6">
+          <h3 className="text-sm font-semibold text-foreground mb-4">
+            Notifications
+          </h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Email Notifications
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Send email alerts for leave approvals and payroll
+                </p>
+              </div>
+              <div className="h-6 w-6 rounded-full shimmer"></div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  SMS Notifications
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Send SMS alerts for urgent notifications
+                </p>
+              </div>
+              <div className="h-6 w-6 rounded-full shimmer"></div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </>
   );
 }

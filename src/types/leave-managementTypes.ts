@@ -236,7 +236,7 @@ export type TLeavePending = TLeave & {
 
 export type TLeavePendingList = {
   data: TLeavePending[];
-  pagination: ReturnType<typeof __pagination> | null;
+  pagination: TPagination | null
 };
 
 export type TChartAttendanceCurrentWeek = {

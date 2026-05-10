@@ -25,13 +25,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Paginator } from "@/components/Paginator";
 import { Plus, Edit, Trash2, Building2 } from "lucide-react";
+import { EmptyState } from "@sluk/src/components/EmptyState";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
-import {
-  EmptyState,
-  DepartmentsTabSkeleton,
-} from "./AdminSettingsPageSkeleton";
-import type { ErrorResponseType } from "@sluk/src/types/errorResponseType";
 import { SelectFilter } from "@sluk/src/components/SelectFilter";
+import { DepartmentsTabSkeleton } from "./AdminSettingsPageSkeleton";
+import type { ErrorResponseType } from "@sluk/src/types/errorResponseType";
+
 import { StaffSelectItems } from "@sluk/src/components/StaffSelectItems";
 
 export function AdminSettingsDepartmentTab() {

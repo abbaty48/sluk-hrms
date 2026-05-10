@@ -14,8 +14,8 @@ import type {
 import type { TPagination } from "@/types/types";
 import {
   apiFetch,
-  invalidateQueries,
   queryClient,
+  invalidateQueries,
 } from "@sluk/src/lib/api.utils";
 
 type SearchCriteria = Partial<TLeaveFilters>;
@@ -77,7 +77,7 @@ export function useLeavesAPI(searchCriteria?: SearchCriteria) {
  */
 export function useLeaveTypesAPI() {
   const { data } = useSuspenseQuery({
-    queryKey: ["adminLeaveTypes"],
+    queryKey: ["LeaveTypes"],
     queryFn: async () => await apiFetch<TLeaveType[]>("/api/leaves/types"),
   });
   return data;
@@ -164,6 +164,7 @@ export function useLeaveRejection() {
     mutationFn: async (id: string) => {
       await apiFetch(`/api/leaves/${id}/REJECTED`, {
         method: "PATCH",
+        body: JSON.stringify({}),
       });
     },
     onSuccess: async () => {
@@ -180,7 +181,7 @@ export function useLeaveApproval() {
     mutationFn: async (id: string) => {
       await apiFetch(`/api/leaves/${id}/APPROVED`, {
         method: "PATCH",
-        body: JSON.stringify({ comments: "Approved" }),
+        body: JSON.stringify({}),
       });
     },
     onSuccess: async () => {

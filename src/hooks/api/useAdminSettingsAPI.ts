@@ -2,7 +2,7 @@ import type {
   TSystemPreferences,
   TUpdatePreferencesRequest,
 } from "@/types/settingsTypes";
-import { apiFetch } from "@sluk/src/lib/api.utils";
+import { apiFetch, invalidateQueries } from "@sluk/src/lib/api.utils";
 import type {
   TAppointmentsList,
   TNatureOfAppointment,
@@ -23,13 +23,20 @@ import type {
   TResponsibilitiesList,
   TCreateResponsibilityRequest,
 } from "@sluk/src/types/responsibilityTypes";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+  useSuspenseInfiniteQuery,
+} from "@tanstack/react-query";
 
 export function useSystemPreferences() {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ["settings", "preferences"],
-    queryFn: async () =>
-      await apiFetch<TSystemPreferences>("/api/settings/preferences"),
+    queryFn: async () => {
+      return await apiFetch<TSystemPreferences>("/api/settings/preferences");
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
@@ -54,15 +61,51 @@ export function useUpdatePreferences() {
 // 3. COMMITTEES HOOKS
 // ========================================
 
-export function useCommittees(activeOnly = false) {
-  const params = activeOnly ? "?active=true" : "";
+export function useCommittees({
+  term,
+  actives,
+  page = 1,
+  limit = "5",
+}: Partial<{
+  limit: string;
+  page: number;
+  term?: string;
+  actives?: boolean;
+}>) {
+  //
+  const params = new URLSearchParams();
+  params.set("page", String(page));
+  params.set("limit", limit);
+  //
+  if (term) {
+    params.set("term", term);
+  }
+  if (actives) {
+    params.set("actives", String(actives));
+  }
+  //
+  const { data, fetchNextPage, fetchPreviousPage, isFetching } =
+    useSuspenseInfiniteQuery({
+      queryKey: ["settings", "committees", { page, limit, term, actives }],
+      initialPageParam: 1,
+      maxPages: +limit,
+      queryFn: async () =>
+        await apiFetch<TCommitteesList>(`/api/settings/committees?${params}`),
+      getNextPageParam: (lastPage) =>
+        lastPage?.pagination?.page ? lastPage.pagination.page + 1 : undefined,
+      getPreviousPageParam: (firstPage) =>
+        firstPage?.pagination?.page ? firstPage.pagination.page - 1 : undefined,
+    });
 
-  return useQuery({
-    queryKey: ["settings", "committees", activeOnly],
-    queryFn: async () =>
-      await apiFetch<TCommitteesList>(`/api/settings/committees${params}`),
-    staleTime: 2 * 60 * 1000,
-  });
+  const currentPage = data.pages[data.pages.length - 1];
+
+  return {
+    isFetching,
+    fetchNextPage,
+    fetchPreviousPage,
+    data: currentPage.data,
+    pagination: currentPage.pagination,
+  };
 }
 
 export function useCreateCommittee() {
@@ -93,7 +136,7 @@ export function useUpdateCommittee() {
       data: Partial<TCommittee>;
     }) => {
       return await apiFetch(`/api/settings/committees/${id}`, {
-        method: "PATCH",
+        method: "PUT",
         body: JSON.stringify(data),
       });
     },
@@ -118,26 +161,53 @@ export function useDeleteCommittee() {
   });
 }
 
+export function useCommitteeApi() {
+  return {
+    useCommittees,
+    useCreateCommittee,
+    useUpdateCommittee,
+    useDeleteCommittee,
+  };
+}
+
 // ========================================
 // 4. RESPONSIBILITIES HOOKS
 // ========================================
 
-export function useResponsibilities(filters?: {
-  activeOnly?: boolean;
-  department?: string;
-}) {
+export function useResponsibilities(
+  term: string | undefined = undefined,
+  page: number = 1,
+) {
+  //
   const params = new URLSearchParams();
-  if (filters?.activeOnly) params.set("active", "true");
-  if (filters?.department) params.set("department", filters.department);
-
-  return useQuery({
-    queryKey: ["settings", "responsibilities", filters],
+  params.set("page", String(page));
+  //
+  if (term) params.set("term", term);
+  //
+  const { data, isFetching } = useSuspenseInfiniteQuery({
+    queryKey: ["settings", "responsibilities", term, page],
     queryFn: async () =>
       await apiFetch<TResponsibilitiesList>(
         `/api/settings/responsibilities?${params}`,
       ),
-    staleTime: 2 * 60 * 1000,
+    maxPages: 5,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage?.pagination?.hasNextPage
+        ? lastPage.pagination.page + 1
+        : undefined,
+    getPreviousPageParam: (firstPage) =>
+      firstPage?.pagination?.hasNextPage
+        ? firstPage.pagination.page - 1
+        : undefined,
   });
+
+  const currentPage = data.pages[data.pages.length - 1];
+  return {
+    isFetching,
+    data: currentPage.data,
+    pagination: currentPage.pagination,
+  };
 }
 
 export function useCreateResponsibility() {
@@ -183,114 +253,161 @@ export function useUpdateResponsibility() {
 }
 
 export function useDeleteResponsibility() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (id: string) =>
       await apiFetch(`/api/settings/responsibilities/${id}`, {
         method: "DELETE",
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["settings", "responsibilities"],
-      });
+      invalidateQueries(["settings", "responsibilities"]);
     },
   });
 }
+
+export const useResponsibilityAPI = {
+  useResponsibilities,
+  useCreateResponsibility,
+  useUpdateResponsibility,
+  useDeleteResponsibility,
+};
 
 // ========================================
 // 5. RANKS HOOKS
 // ========================================
 
-export function useRanks(filters?: {
-  activeOnly?: boolean;
-  category?: string;
-}) {
+export function useRanks(
+  term: string | undefined = undefined,
+  page: number = 1,
+) {
+  //
   const params = new URLSearchParams();
-  if (filters?.activeOnly) params.set("active", "true");
-  if (filters?.category) params.set("category", filters.category);
-
-  return useQuery({
-    queryKey: ["settings", "ranks", filters],
-    queryFn: async () =>
-      await apiFetch<TRanksList>(`/api/settings/ranks?${params}`),
-    staleTime: 2 * 60 * 1000,
+  params.set("page", String(page));
+  //
+  if (term) params.set("q", term);
+  //
+  const { data, isFetching } = useSuspenseInfiniteQuery({
+    queryKey: ["settings", "ranks", term, page],
+    queryFn: async () => await apiFetch<TRanksList>(`/api/ranks?${params}`),
+    maxPages: 5,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage?.pagination?.hasNextPage
+        ? lastPage.pagination.page + 1
+        : undefined,
+    getPreviousPageParam: (firstPage) =>
+      firstPage?.pagination?.hasNextPage
+        ? firstPage.pagination.page - 1
+        : undefined,
   });
+
+  const currentPage = data.pages[data.pages.length - 1];
+  return {
+    isFetching,
+    data: currentPage.data,
+    pagination: currentPage.pagination,
+  };
 }
 
 export function useCreateRank() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (data: TCreateRankRequest) => {
-      return await apiFetch("/api/settings/ranks", {
+      return await apiFetch("/api/ranks", {
         method: "POST",
         body: JSON.stringify(data),
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["settings", "ranks"] });
+      invalidateQueries(["settings", "ranks"]);
     },
   });
 }
 
 export function useUpdateRank() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<TRank> }) => {
-      return await apiFetch(`/api/settings/ranks/${id}`, {
-        method: "PATCH",
+      return await apiFetch(`/api/ranks/${id}`, {
+        method: "PUT",
         body: JSON.stringify(data),
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["settings", "ranks"] });
+      invalidateQueries(["settings", "ranks"]);
     },
   });
 }
 
 export function useDeleteRank() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (id: string) =>
-      await fetch(`/api/settings/ranks/${id}`, {
+      await apiFetch(`/api/ranks/${id}`, {
         method: "DELETE",
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["settings", "ranks"] });
+      invalidateQueries(["settings", "ranks"]);
     },
   });
 }
+
+export const useRankAPI = {
+  useRanks,
+  useCreateRank,
+  useUpdateRank,
+  useDeleteRank,
+};
 
 // ========================================
 // 6. NATURE OF APPOINTMENTS HOOKS
 // ========================================
 
-export function useAppointments(activeOnly = false) {
-  const params = activeOnly ? "?active=true" : "";
-
-  return useQuery({
-    queryKey: ["settings", "appointments", activeOnly],
+export function useAppointments(
+  term: string | undefined = undefined,
+  page: number = 1,
+) {
+  const params = new URLSearchParams();
+  /** */
+  params.set("page", String(page));
+  /** */
+  if (term) params.set("q", term);
+  /** */
+  // if (active) params.set("active", String(active));
+  /** */
+  const { data, isFetching } = useSuspenseInfiniteQuery({
+    queryKey: ["settings", "appointments", term, page],
     queryFn: async () =>
-      await apiFetch<TAppointmentsList>(`/api/settings/appointments${params}`),
-    staleTime: 2 * 60 * 1000,
+      await apiFetch<TAppointmentsList>(`/api/settings/appointments?${params}`),
+    maxPages: 5,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage?.pagination?.hasNextPage
+        ? lastPage.pagination.page + 1
+        : undefined,
+    getPreviousPageParam: (firstPage) =>
+      firstPage?.pagination?.hasNextPage
+        ? firstPage.pagination.page - 1
+        : undefined,
   });
+
+  const currentPage = data.pages[data.pages.length - 1];
+  return {
+    isFetching,
+    data: currentPage.data,
+    pagination: currentPage.pagination,
+  };
 }
 
 export function useCreateAppointment() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (data: TCreateAppointmentRequest) => {
       return await apiFetch("/api/settings/appointments", {
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          name: data.name,
+          description: data.description,
+        }),
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["settings", "appointments"] });
+      invalidateQueries(["settings", "appointments"]);
     },
   });
 }
@@ -330,3 +447,10 @@ export function useDeleteAppointment() {
     },
   });
 }
+
+export const useAppointmentAPI = {
+  useAppointments,
+  useCreateAppointment,
+  useUpdateAppointment,
+  useDeleteAppointment,
+};

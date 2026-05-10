@@ -62,7 +62,7 @@ function TableRow({
   endDate,
   startDate,
   leaveType,
-  allowedDays,
+  totalDays,
 }: TLeaveItem) {
   //
   const { mutateAsync: mutateRejection, isPending: isRejecting } =
@@ -129,7 +129,7 @@ function TableRow({
       </td>
       <td className="py-3 px-4 hidden lg:table-cell">
         <span className="text-sm font-medium text-card-foreground">
-          {allowedDays}
+          {totalDays}
         </span>
       </td>
       <td className="py-3 px-4">
@@ -188,7 +188,7 @@ export function LeavePageTable() {
 
   useEffect(() => {
     (() => {
-      setFilters({ leaves });
+      setFilters({ leaves: [] });
     })();
   }, []);
 

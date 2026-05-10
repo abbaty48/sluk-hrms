@@ -1,4 +1,4 @@
-import type { __pagination } from "#utils/utils_helper.ts";
+import type { TPagination } from "./types";
 
 export type TNotificationType =
   | "leave_approved"
@@ -39,7 +39,7 @@ export type TNotificationStats = {
 
 export type TNotificationList = {
   data: TNotification[];
-  pagination: ReturnType<typeof __pagination> & { unreadCount: number };
+  pagination: TPagination & { unreadCount: number };
 };
 
 export type TMarkReadPayload = {

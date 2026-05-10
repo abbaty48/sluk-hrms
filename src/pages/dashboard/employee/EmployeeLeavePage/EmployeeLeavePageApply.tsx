@@ -1,12 +1,10 @@
-import {
-  useApplyLeaveAPI,
-  useLeaveBalancesAPI,
-} from "@/hooks/api/useEmployeeLeaveAPI";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import type { ErrorResponseType } from "@sluk/src/types/errorResponseType";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TLeaveApplication } from "@/types/leave-managementTypes";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { useLeaveTypesAPI } from "@sluk/src/hooks/api/useAdminLeave";
+import { useApplyLeaveAPI } from "@/hooks/api/useEmployeeLeaveAPI";
 import { SelectFilter } from "@/components/SelectFilter";
 import { useForm, Controller } from "react-hook-form";
 import { SelectItem } from "@/components/ui/select";
@@ -17,10 +15,10 @@ import { GraduationCap } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-function EmployeeLeaveBalanceFilter() {
-  const data = useLeaveBalancesAPI();
+function LeaveTypes() {
+  const data = useLeaveTypesAPI();
   return data.map((type) => (
-    <SelectItem key={type.leaveTypeId} value={type.leaveTypeId}>
+    <SelectItem key={type.id} value={type.id}>
       {type.name}
     </SelectItem>
   ));
@@ -99,7 +97,7 @@ export function EmployeeLeavePageApply({
                         setOnStudyLeave(e === "lt_5" ? true : false);
                       }}
                     >
-                      <EmployeeLeaveBalanceFilter />
+                      <LeaveTypes />
                     </SelectFilter>
                   )}
                 />

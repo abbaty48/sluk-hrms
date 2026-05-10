@@ -129,7 +129,6 @@ export function useStaffProfile(staffId: string) {
     queryKey: ["employeeProfile", staffId],
     queryFn: async () =>
       await apiFetch<TStaffDetails>(`/api/staffs/${staffId}/details`),
-    // enabled: !!employeeId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

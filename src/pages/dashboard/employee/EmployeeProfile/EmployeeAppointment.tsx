@@ -38,7 +38,7 @@ export default function EmployeeAppointment() {
   );
 }
 function AppointmentsDetails() {
-  const { data: staff } = useEmployee();
+  const { data: staff } = useEmployee("current");
 
   return (
     <div className="m-4 grid md:grid-cols-2 gap-6">

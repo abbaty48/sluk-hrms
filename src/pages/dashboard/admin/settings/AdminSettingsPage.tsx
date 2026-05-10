@@ -1,10 +1,10 @@
 import {
   Medal,
   Shield,
-  FileText,
   Building2,
   UsersRound,
   SlidersVertical,
+  FileText,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -14,8 +14,8 @@ import type { SettingsTab } from "@/types/settingsTypes";
 import { AdminSettingsRanksTab } from "./AdminSettingsRanksTab";
 import { AdminSettingsCommitteesTab } from "./AdminSettingsCommiteeTab";
 import { AdminSettingsDepartmentTab } from "./AdminSettingsDepartmentsTab";
-import { AdminSettingsPreferencesTab } from "./AdminSettingsPreferencesTab";
 import { AdminSettingsAppointmentsTab } from "./AdminSettingsAppointmentTab";
+import { AdminSettingsPreferencesTab } from "./AdminSettingsPreferencesTab";
 import { AdminSettingsResponsibilitiesTab } from "./AdminSettingsResponsibilityTab";
 
 interface TabConfig {

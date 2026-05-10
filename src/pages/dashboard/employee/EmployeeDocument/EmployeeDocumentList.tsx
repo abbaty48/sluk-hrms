@@ -3,7 +3,7 @@ import {
   useEmployeeDocument,
 } from "@sluk/src/hooks/api/useEmployeeDocumentAPI";
 import { useState, Suspense } from "react";
-import { Eye, Download, Box, CrossIcon, X } from "lucide-react";
+import { Eye, Download, Box, X } from "lucide-react";
 import { Paginator } from "@sluk/src/components/Paginator";
 import { EmptyState } from "@sluk/src/components/EmptyState";
 import type { TDocument } from "@sluk/src/types/documentTypes";
@@ -97,8 +97,6 @@ function DocumentsTable() {
     data: documents,
     pagination,
     isFetching,
-    fetchNextPage,
-    fetchPreviousPage,
   } = useEmployeeDocument({ ...filters });
 
   const handleView = (docId: string) => {
